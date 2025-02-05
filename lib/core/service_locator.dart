@@ -5,8 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:devpaul_todo_app/data/datasources/operator_data_source.dart';
 import 'package:devpaul_todo_app/data/repositories/operator_repository_impl.dart';
-import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
-import 'package:devpaul_todo_app/domain/usecases/operators/operator_use_cases.dart';
+import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
+import 'package:devpaul_todo_app/domain/usecases/users/operator_use_cases.dart';
 import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
 import 'package:devpaul_todo_app/data/datasources/auth_storage.dart';
 import 'package:devpaul_todo_app/data/datasources/firebase_auth_data_source.dart';
@@ -49,7 +49,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Register(sl()));
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
   sl.registerLazySingleton(
-    () => CreateOperator(
+    () => CreateUser(
       repository: sl<UserRepository>(),
       authRepository: sl<AuthRepository>(),
     ),
@@ -72,7 +72,7 @@ Future<void> init() async {
 
   sl.registerFactory(
     () => OperatorBloc(
-      createOperatorUseCase: sl<CreateOperator>(),
+      createOperatorUseCase: sl<CreateUser>(),
       getOperatorsUseCase: sl<GetOperators>(),
       updateOperatorUseCase: sl<UpdateOperator>(),
       deleteOperatorUseCase: sl<DeleteOperator>(),

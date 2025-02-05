@@ -1,6 +1,6 @@
 // domain/usecases/delete_operator.dart
 
-import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
+import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
 class DeleteOperator {
   final UserRepository repository;
@@ -8,6 +8,6 @@ class DeleteOperator {
   DeleteOperator(this.repository);
 
   Future<void> call(String id) {
-    return repository.deleteOperator(id);
+    return repository.deleteUser(id);
   }
 }

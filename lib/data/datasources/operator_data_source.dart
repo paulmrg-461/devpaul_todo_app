@@ -4,9 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class OperatorDataSource {
   Future<void> createUser(UserModel operatorModel);
-  Future<List<UserModel>> getOperators();
-  Future<void> updateOperator(UserModel operatorModel);
-  Future<void> deleteOperator(String id);
+  Future<List<UserModel>> getUsers();
+  Future<void> updateUser(UserModel operatorModel);
+  Future<void> deleteUser(String id);
 }
 
 class OperatorDataSourceImpl implements OperatorDataSource {
@@ -24,7 +24,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   }
 
   @override
-  Future<List<UserModel>> getOperators() async {
+  Future<List<UserModel>> getUsers() async {
     try {
       final querySnapshot = await firestore.collection('operators').get();
       return querySnapshot.docs
@@ -36,7 +36,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   }
 
   @override
-  Future<void> updateOperator(UserModel operatorModel) async {
+  Future<void> updateUser(UserModel operatorModel) async {
     try {
       await firestore
           .collection('operators')
@@ -48,7 +48,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   }
 
   @override
-  Future<void> deleteOperator(String id) async {
+  Future<void> deleteUser(String id) async {
     try {
       // Primero elimina el operador de Firestore
       await firestore.collection('operators').doc(id).delete();

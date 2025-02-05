@@ -24,20 +24,20 @@ class OperatorRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<List<User>> getOperators() async {
-    final operatorModels = await dataSource.getOperators();
+  Future<List<User>> getUsers() async {
+    final operatorModels = await dataSource.getUsers();
     return operatorModels.map((model) => model.toEntity()).toList();
   }
 
   @override
-  Future<void> updateOperator(User operator) async {
+  Future<void> updateUser(User operator) async {
     final operatorModel = UserModel.fromEntity(operator);
-    await dataSource.updateOperator(operatorModel);
+    await dataSource.updateUser(operatorModel);
   }
 
   @override
-  Future<void> deleteOperator(String id) {
-    return dataSource.deleteOperator(id);
+  Future<void> deleteUser(String id) {
+    return dataSource.deleteUser(id);
   }
 
   @override

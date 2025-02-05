@@ -1,5 +1,5 @@
 import 'package:devpaul_todo_app/domain/entities/user.dart';
-import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
+import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
 class UpdateOperator {
   final UserRepository repository;
@@ -7,6 +7,6 @@ class UpdateOperator {
   UpdateOperator(this.repository);
 
   Future<void> call(User operator) {
-    return repository.updateOperator(operator);
+    return repository.updateUser(operator);
   }
 }

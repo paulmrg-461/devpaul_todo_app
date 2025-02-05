@@ -3,14 +3,14 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:devpaul_todo_app/data/models/operator_model.dart';
 import 'package:devpaul_todo_app/domain/entities/user.dart';
-import 'package:devpaul_todo_app/domain/usecases/operators/operator_use_cases.dart';
+import 'package:devpaul_todo_app/domain/usecases/users/operator_use_cases.dart';
 import 'package:equatable/equatable.dart';
 
 part 'operator_event.dart';
 part 'operator_state.dart';
 
 class OperatorBloc extends Bloc<OperatorEvent, OperatorState> {
-  final CreateOperator createOperatorUseCase;
+  final CreateUser createOperatorUseCase;
   final GetOperators getOperatorsUseCase;
   final UpdateOperator updateOperatorUseCase;
   final DeleteOperator deleteOperatorUseCase;
