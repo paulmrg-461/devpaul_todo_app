@@ -27,9 +27,24 @@ const List<BottomBarItem> bottombarListAdmin = [
     icon: Icons.person_outline_rounded,
     widget: ProfileTab(),
   ),
+  BottomBarItem(
+    label: 'Perfil',
+    icon: Icons.person_outline_rounded,
+    widget: ProfileTab(),
+  ),
 ];
 
 const List<BottomBarItem> bottombarList = [
+  BottomBarItem(
+    label: 'Perfil',
+    icon: Icons.person_outline_rounded,
+    widget: ProfileTab(),
+  ),
+  BottomBarItem(
+    label: 'Perfil',
+    icon: Icons.person_outline_rounded,
+    widget: ProfileTab(),
+  ),
   BottomBarItem(
     label: 'Perfil',
     icon: Icons.person_outline_rounded,

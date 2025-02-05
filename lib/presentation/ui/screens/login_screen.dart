@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       BlocProvider.of<AuthBloc>(context).add(
         AuthLoginEvent(
-          '${(_usernameController.text.trim()).toLowerCase()}@diegolopez.com',
+          (_usernameController.text.trim()).toLowerCase(),
           _passwordController.text.trim(),
         ),
       );
@@ -71,17 +71,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     CustomInput(
                       width: 460,
-                      hintText: "Nombre de usuario",
+                      hintText: "Email",
                       controller: _usernameController,
                       validator: (value) =>
-                          InputValidator.usernameValidator(value),
-                      textInputType: TextInputType.name,
-                      icon: Icons.person_outline_rounded,
+                          InputValidator.emailValidator(value),
+                      textInputType: TextInputType.emailAddress,
+                      icon: Icons.email_outlined,
                       marginBottom: 8,
                     ),
                     CustomInput(
                       width: 460,
-                      hintText: "Contraseña",
+                      hintText: "Password",
                       controller: _passwordController,
                       validator: (value) =>
                           InputValidator.emptyValidator(value: value),
