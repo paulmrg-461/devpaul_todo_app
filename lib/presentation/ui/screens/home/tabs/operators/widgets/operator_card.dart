@@ -1,13 +1,13 @@
-import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OperatorCard extends StatelessWidget {
-  const OperatorCard({super.key, required this.user});
+  const OperatorCard({super.key, required this.operator});
 
-  final User user;
+  final User operator;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +28,14 @@ class OperatorCard extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        onTap: () => print('Operador seleccionado: ${user.name}'),
+        onTap: () => print('Operador seleccionado: ${operator.name}'),
         child: Row(
           children: [
-            if (user.signaturePhotoUrl.isNotEmpty)
+            if (operator.signaturePhotoUrl.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  user.signaturePhotoUrl,
+                  operator.signaturePhotoUrl,
                   width: MediaQuery.of(context).size.width * 0.275,
                   height: 60,
                   fit: BoxFit.fitWidth, // Ajusta el fit según tus necesidades
@@ -59,18 +59,18 @@ class OperatorCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${user.name} ${user.lastname}',
+                    '${operator.name} ${operator.lastname}',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                   ),
                   const SizedBox(height: 4),
                   TrailingWidget(
-                    text: (user.email).split('@')[0],
+                    text: (operator.email).split('@')[0],
                     icon: Icons.person_outline_rounded,
                   ),
                   TrailingWidget(
-                    text: 'DNI: ${user.dni}',
+                    text: 'DNI: ${operator.dni}',
                     icon: Icons.badge_outlined,
                   ),
                 ],
@@ -104,11 +104,11 @@ class OperatorCard extends StatelessWidget {
   /// Acción a realizar al seleccionar Editar
   void _onEdit(BuildContext context) {
     // Implementa la lógica de edición, por ejemplo, navegar a una pantalla de edición
-    print('Editar operador: ${user.name}');
+    print('Editar operador: ${operator.name}');
     // Ejemplo de navegación:
     // Navigator.push(
     //   context,
-    //   MaterialPageRoute(builder: (context) => EditOperatorScreen(user: user)),
+    //   MaterialPageRoute(builder: (context) => EditOperatorScreen(operator: operator)),
     // );
   }
 
@@ -119,7 +119,7 @@ class OperatorCard extends StatelessWidget {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
           content: Text(
-            '¿Estás seguro de que deseas eliminar al operador ${user.name} ${user.lastname}? Esta acción no se puede deshacer.',
+            '¿Estás seguro de que deseas eliminar al operador ${operator.name} ${operator.lastname}? Esta acción no se puede deshacer.',
           ),
           actions: [
             TextButton(
@@ -131,14 +131,14 @@ class OperatorCard extends StatelessWidget {
             TextButton(
               onPressed: () {
                 context.read<OperatorBloc>().add(
-                      DeleteOperatorEvent(user.id),
+                      DeleteUserEvent(operator.id),
                     );
 
                 Navigator.of(dialogContext).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Operador ${user.name} eliminado exitosamente',
+                      'Operador ${operator.name} eliminado exitosamente',
                     ),
                   ),
                 );

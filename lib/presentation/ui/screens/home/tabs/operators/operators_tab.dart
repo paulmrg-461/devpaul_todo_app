@@ -1,4 +1,4 @@
-import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/operators/widgets/operator_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,7 +15,7 @@ class _OperatorsTabState extends State<OperatorsTab> {
   void initState() {
     super.initState();
     // Agregamos el evento para obtener los operadores al iniciar el widget
-    context.read<OperatorBloc>().add(GetOperatorsEvent());
+    context.read<OperatorBloc>().add(GetUsersEvent());
   }
 
   @override
@@ -32,8 +32,8 @@ class _OperatorsTabState extends State<OperatorsTab> {
           return ListView.builder(
             itemCount: operators.length,
             itemBuilder: (context, index) {
-              final user = operators[index];
-              return OperatorCard(user: user);
+              final operator = operators[index];
+              return OperatorCard(operator: operator);
             },
           );
         } else if (state is OperatorFailure) {
