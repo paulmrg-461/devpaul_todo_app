@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:devpaul_todo_app/data/models/operator_model.dart';
-import 'package:devpaul_todo_app/domain/entities/operator.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:devpaul_todo_app/domain/usecases/operators/operator_use_cases.dart';
 import 'package:equatable/equatable.dart';
 

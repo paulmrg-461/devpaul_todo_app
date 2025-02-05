@@ -6,7 +6,7 @@ abstract class OperatorEvent extends Equatable {
 }
 
 class CreateOperatorEvent extends OperatorEvent {
-  final OperatorModel operator;
+  final UserModel operator;
   final Uint8List signatureBytes;
 
   CreateOperatorEvent(this.operator, this.signatureBytes);
@@ -18,7 +18,7 @@ class CreateOperatorEvent extends OperatorEvent {
 class GetOperatorsEvent extends OperatorEvent {}
 
 class UpdateOperatorEvent extends OperatorEvent {
-  final OperatorModel operator;
+  final UserModel operator;
 
   UpdateOperatorEvent(this.operator);
 

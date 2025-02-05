@@ -3,9 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class OperatorDataSource {
-  Future<void> createOperator(OperatorModel operatorModel);
-  Future<List<OperatorModel>> getOperators();
-  Future<void> updateOperator(OperatorModel operatorModel);
+  Future<void> createUser(UserModel operatorModel);
+  Future<List<UserModel>> getOperators();
+  Future<void> updateOperator(UserModel operatorModel);
   Future<void> deleteOperator(String id);
 }
 
@@ -15,7 +15,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   OperatorDataSourceImpl(this.firestore);
 
   @override
-  Future<void> createOperator(OperatorModel operatorModel) async {
+  Future<void> createUser(UserModel operatorModel) async {
     try {
       await firestore.collection('operators').add(operatorModel.toMap());
     } catch (e) {
@@ -24,11 +24,11 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   }
 
   @override
-  Future<List<OperatorModel>> getOperators() async {
+  Future<List<UserModel>> getOperators() async {
     try {
       final querySnapshot = await firestore.collection('operators').get();
       return querySnapshot.docs
-          .map((doc) => OperatorModel.fromSnapshot(doc))
+          .map((doc) => UserModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
       throw Exception('Error al obtener los operadores: $e');
@@ -36,7 +36,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   }
 
   @override
-  Future<void> updateOperator(OperatorModel operatorModel) async {
+  Future<void> updateOperator(UserModel operatorModel) async {
     try {
       await firestore
           .collection('operators')

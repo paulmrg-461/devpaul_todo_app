@@ -3,7 +3,7 @@
 import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
 
 class DeleteOperator {
-  final OperatorRepository repository;
+  final UserRepository repository;
 
   DeleteOperator(this.repository);
 

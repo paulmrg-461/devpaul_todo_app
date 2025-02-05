@@ -1,13 +1,13 @@
 import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:devpaul_todo_app/domain/entities/operator.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OperatorCard extends StatelessWidget {
   const OperatorCard({super.key, required this.operator});
 
-  final Operator operator;
+  final User operator;
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +61,8 @@ class OperatorCard extends StatelessWidget {
                   Text(
                     '${operator.name} ${operator.lastname}',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   TrailingWidget(
@@ -131,8 +131,8 @@ class OperatorCard extends StatelessWidget {
             TextButton(
               onPressed: () {
                 context.read<OperatorBloc>().add(
-                  DeleteOperatorEvent(operator.id),
-                );
+                      DeleteOperatorEvent(operator.id),
+                    );
 
                 Navigator.of(dialogContext).pop();
                 ScaffoldMessenger.of(context).showSnackBar(

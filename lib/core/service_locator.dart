@@ -36,7 +36,7 @@ Future<void> init() async {
 
   // Repositorios
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
-  sl.registerLazySingleton<OperatorRepository>(
+  sl.registerLazySingleton<UserRepository>(
     () => OperatorRepositoryImpl(
       dataSource: sl<OperatorDataSource>(),
       storageDataSource: sl<FirebaseStorageDataSource>(),
@@ -50,13 +50,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
   sl.registerLazySingleton(
     () => CreateOperator(
-      repository: sl<OperatorRepository>(),
+      repository: sl<UserRepository>(),
       authRepository: sl<AuthRepository>(),
     ),
   );
-  sl.registerLazySingleton(() => GetOperators(sl<OperatorRepository>()));
-  sl.registerLazySingleton(() => UpdateOperator(sl<OperatorRepository>()));
-  sl.registerLazySingleton(() => DeleteOperator(sl<OperatorRepository>()));
+  sl.registerLazySingleton(() => GetOperators(sl<UserRepository>()));
+  sl.registerLazySingleton(() => UpdateOperator(sl<UserRepository>()));
+  sl.registerLazySingleton(() => DeleteOperator(sl<UserRepository>()));
   sl.registerLazySingleton(() => UploadFile(sl()));
 
   // Bloc

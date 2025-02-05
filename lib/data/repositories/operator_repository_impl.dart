@@ -5,10 +5,10 @@ import 'dart:typed_data';
 import 'package:devpaul_todo_app/data/datasources/firebase_storage_data_source.dart';
 import 'package:devpaul_todo_app/data/datasources/operator_data_source.dart';
 import 'package:devpaul_todo_app/data/models/operator_model.dart';
-import 'package:devpaul_todo_app/domain/entities/operator.dart';
-import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
+import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
-class OperatorRepositoryImpl implements OperatorRepository {
+class OperatorRepositoryImpl implements UserRepository {
   final OperatorDataSource dataSource;
   final FirebaseStorageDataSource storageDataSource;
 
@@ -18,20 +18,20 @@ class OperatorRepositoryImpl implements OperatorRepository {
   });
 
   @override
-  Future<void> createOperator(Operator operator) async {
-    final operatorModel = OperatorModel.fromEntity(operator);
-    await dataSource.createOperator(operatorModel);
+  Future<void> createUser(User operator) async {
+    final operatorModel = UserModel.fromEntity(operator);
+    await dataSource.createUser(operatorModel);
   }
 
   @override
-  Future<List<Operator>> getOperators() async {
+  Future<List<User>> getOperators() async {
     final operatorModels = await dataSource.getOperators();
     return operatorModels.map((model) => model.toEntity()).toList();
   }
 
   @override
-  Future<void> updateOperator(Operator operator) async {
-    final operatorModel = OperatorModel.fromEntity(operator);
+  Future<void> updateOperator(User operator) async {
+    final operatorModel = UserModel.fromEntity(operator);
     await dataSource.updateOperator(operatorModel);
   }
 

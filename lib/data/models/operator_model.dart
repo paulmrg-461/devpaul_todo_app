@@ -1,39 +1,30 @@
 // data/models/operator_model.dart
 
-import 'package:devpaul_todo_app/domain/entities/operator.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class OperatorModel extends Operator {
-  OperatorModel({
-    required super.id,
+class UserModel extends User {
+  UserModel({
     required super.name,
-    required super.lastname,
-    required super.dni,
-    required super.signaturePhotoUrl,
+    required super.photoUrl,
     required super.uid,
     required super.email,
     required super.token,
     required super.password,
   });
 
-  OperatorModel copyWith({
-    String? id,
+  UserModel copyWith({
     String? name,
-    String? lastname,
-    String? dni,
-    String? signaturePhotoUrl,
+    String? photoUrl,
     String? uid,
     String? email,
     String? token,
     String? username,
     String? password,
   }) {
-    return OperatorModel(
-      id: id ?? this.id,
+    return UserModel(
       name: name ?? this.name,
-      lastname: lastname ?? this.lastname,
-      dni: dni ?? this.dni,
-      signaturePhotoUrl: signaturePhotoUrl ?? this.signaturePhotoUrl,
+      photoUrl: photoUrl ?? this.photoUrl,
       uid: uid ?? this.uid,
       email: email ?? this.email,
       token: token ?? this.token,
@@ -41,31 +32,25 @@ class OperatorModel extends Operator {
     );
   }
 
-  factory OperatorModel.fromEntity(Operator operator) {
-    return OperatorModel(
-      id: operator.id,
+  factory UserModel.fromEntity(User operator) {
+    return UserModel(
       name: operator.name,
-      lastname: operator.lastname,
-      email: operator.email,
-      dni: operator.dni,
-      signaturePhotoUrl: operator.signaturePhotoUrl,
+      photoUrl: operator.photoUrl,
       uid: operator.uid,
+      email: operator.email,
       token: operator.token,
       password: operator.password,
     );
   }
 
-  factory OperatorModel.fromSnapshot(DocumentSnapshot doc) {
+  factory UserModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
-    return OperatorModel(
-      id: doc.id,
+    return UserModel(
       name: data['name'] ?? '',
-      lastname: data['lastname'] ?? '',
-      email: data['email'] ?? '',
-      dni: data['dni'] ?? '',
-      signaturePhotoUrl: data['signaturePhotoUrl'] ?? '',
+      photoUrl: data['photoUrl'] ?? '',
       uid: data['uid'] ?? '',
+      email: data['email'] ?? '',
       token: data['token'] ?? '',
       password: data['password'] ?? '',
     );
@@ -74,25 +59,20 @@ class OperatorModel extends Operator {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'lastname': lastname,
-      'email': email,
-      'dni': dni,
-      'signaturePhotoUrl': signaturePhotoUrl,
+      'photoUrl': photoUrl,
       'uid': uid,
+      'email': email,
       'token': token,
       'password': password,
     };
   }
 
-  Operator toEntity() {
-    return Operator(
-      id: id,
+  User toEntity() {
+    return User(
       name: name,
-      lastname: lastname,
-      email: email,
-      dni: dni,
-      signaturePhotoUrl: signaturePhotoUrl,
+      photoUrl: photoUrl,
       uid: uid,
+      email: email,
       token: token,
       password: password,
     );

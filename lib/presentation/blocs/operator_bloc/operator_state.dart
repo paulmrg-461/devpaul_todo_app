@@ -10,7 +10,7 @@ final class OperatorInitial extends OperatorState {}
 final class OperatorLoading extends OperatorState {}
 
 final class OperatorSuccess extends OperatorState {
-  final List<Operator>? operators;
+  final List<User>? operators;
 
   OperatorSuccess({this.operators});
 

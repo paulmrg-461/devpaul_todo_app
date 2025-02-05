@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
 
 class UploadFile {
-  final OperatorRepository repository;
+  final UserRepository repository;
 
   UploadFile(this.repository);
 

@@ -220,7 +220,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
 
   void _onSubmit(Uint8List signature) {
     if (_formKey.currentState!.validate()) {
-      final OperatorModel operator = OperatorModel(
+      final UserModel operator = UserModel(
         id: '',
         name: _nameController.text,
         lastname: _lastnameController.text,
