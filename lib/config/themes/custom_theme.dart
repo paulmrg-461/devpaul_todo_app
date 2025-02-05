@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class CustomTheme {
   static bool isDarkMode = false;
   // static const Color primaryColor = Color(0xffa6ce39);
-  static const Color primaryColor = Colors.lightGreen;
+  static const Color primaryColor = Colors.blue;
   static final TextStyle defaultFontStyle = GoogleFonts.manrope();
 
   static final TextTheme textTheme = TextTheme(

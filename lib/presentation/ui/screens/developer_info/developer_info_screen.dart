@@ -17,7 +17,7 @@ class DeveloperInformationScreen extends StatelessWidget {
           child: Column(
             children: [
               const CustomAssetImage(path: 'assets/logo.png', height: 125),
-              _titleText('CDA Panamericana App'),
+              _titleText('DevPaul ToDo App'),
               FutureBuilder(
                 future: getAppVersion(),
                 builder: (context, snapshot) {
