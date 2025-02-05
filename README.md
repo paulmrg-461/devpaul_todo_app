@@ -38,19 +38,18 @@ This repository contains a cross-platform application (Web & Android) developed 
    ```
 
 3. **Firebase configuration**
-- Crea un proyecto en Firebase Console.
-- Añade una aplicación Android y/o Web según corresponda.
-- Descarga el archivo google-services.json (Android) y/o firebaseConfig (Web) y colócalo en la carpeta adecuada:
+- Create project at Firebase Console.
+- Add Android and Web app.
+- Download file google-services.json (Android) and firebaseConfig (Web):
   - Android: /android/app/
   - Web: /web/
-- Actualiza los archivos de configuración de tu proyecto para reflejar la información de tu app en Firebase.
 
-4. **Ejecutar la Aplicación**
-- En Android, conecta tu dispositivo o usa un emulador y corre el siguiente comando:
+4. **Run app**
+- Android:
    ```bash
    flutter run
    ```
-- Para web, usa el siguiente comando para iniciar el servidor de desarrollo:
+- Web:
    ```bash
    flutter run -d chrome
    ```
@@ -59,21 +58,21 @@ This repository contains a cross-platform application (Web & Android) developed 
 ## Application Usage
 
 - **Login Screen (Optional)**  
-  Provides authentication to ensure access is granted only to authorized users (instructors/administrators).
+  Provides authentication to ensure that only authorized users can access the app.
 
-- **Attendance Registration**  
-  1. Enter the student's ID number.  
-  2. If the student already exists in the database, the Name and Phone fields will auto-complete.  
-  3. Select the Class Type (adaptation, ethics, techniques, practice, legal framework, workshop).  
-  4. Record the Date/Time and the Number of Hours.  
-  5. Capture the student's signature.  
-  6. Save the record in Firebase.
+- **Activity Registration**  
+  1. Enter the activity title, description, and due date/time.  
+  2. Select the activity type (e.g., work, personal, academic, leisure).  
+  3. Choose the classification (Urgent, Important, Not Urgent, Not Important).  
+  4. Optionally add links and images.  
+  5. Upon creating or editing an activity, the app automatically synchronizes with the DeepSeek AI API to generate a step-by-step solution guide.  
+  6. Save the activity record in Firebase Firestore.
 
 - **Visualization and Reporting (Web)**  
-  - Access the web version to review all records.  
-  - Filter records by date range, class type, student, etc.  
-  - View details of each attendance entry and export the information as PDF (additional module).
-
+  - Access the web version to review all registered activities.  
+  - Filter activities by date range, type, classification, etc.  
+  - View detailed information for each activity, including the DeepSeek-generated solution steps.  
+  - Optionally export the activity data as a PDF (additional module).
 ---
 
 ## Project Structure
@@ -181,6 +180,9 @@ Developed by:
 - Jimmy Realpe
 
 Email: co.devpaul@gmail.com
+
 Phone: 3148580454
+
 <a  href="https://devpaul.pro">https://devpaul.pro/</a>
+
 Feel free to reach out for any inquiries or collaborations!
