@@ -19,7 +19,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
     try {
       await firestore.collection('operators').add(operatorModel.toMap());
     } catch (e) {
-      throw Exception('Error al crear el operador: $e');
+      throw Exception('Error al crear el user: $e');
     }
   }
 
@@ -43,14 +43,14 @@ class OperatorDataSourceImpl implements OperatorDataSource {
           .doc(operatorModel.id)
           .update(operatorModel.toMap());
     } catch (e) {
-      throw Exception('Error al actualizar el operador: $e');
+      throw Exception('Error al actualizar el user: $e');
     }
   }
 
   @override
   Future<void> deleteUser(String id) async {
     try {
-      // Primero elimina el operador de Firestore
+      // Primero elimina el user de Firestore
       await firestore.collection('operators').doc(id).delete();
 
       // Luego, elimina el usuario de Firebase Auth
@@ -59,7 +59,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
         await user.delete();
       }
     } catch (e) {
-      throw Exception('Error al eliminar el operador: $e');
+      throw Exception('Error al eliminar el user: $e');
     }
   }
 }

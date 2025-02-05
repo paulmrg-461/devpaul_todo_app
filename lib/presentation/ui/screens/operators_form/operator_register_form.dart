@@ -53,12 +53,12 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: const Text('Crear Operador')),
+      appBar: AppBar(title: const Text('Crear User')),
       body: BlocListener<OperatorBloc, OperatorState>(
         listener: (context, state) {
           if (state is OperatorSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Operador creado exitosamente')),
+              const SnackBar(content: Text('User creado exitosamente')),
             );
             Navigator.pop(context);
           } else if (state is OperatorFailure) {
@@ -147,7 +147,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
                     const Positioned(
                       left: 16,
                       top: 8,
-                      child: Text('Firma operador:'),
+                      child: Text('Firma user:'),
                     ),
                     Positioned(
                       right: 6,
@@ -220,7 +220,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
 
   void _onSubmit(Uint8List signature) {
     if (_formKey.currentState!.validate()) {
-      final UserModel operator = UserModel(
+      final UserModel user = UserModel(
         id: '',
         name: _nameController.text,
         lastname: _lastnameController.text,
@@ -233,7 +233,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
       );
 
       context.read<OperatorBloc>().add(
-            CreateUserEvent(operator, signature),
+            CreateUserEvent(user, signature),
           );
       _resetForm();
     }

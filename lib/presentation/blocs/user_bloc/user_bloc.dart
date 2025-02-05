@@ -49,7 +49,7 @@ class OperatorBloc extends Bloc<UserEvent, OperatorState> {
       // Emitir el evento para recargar la lista actualizada de operadores
       add(GetUsersEvent());
     } catch (e) {
-      emit(OperatorFailure('Error al crear el operador: $e'));
+      emit(OperatorFailure('Error al crear el user: $e'));
     }
   }
 
@@ -72,12 +72,12 @@ class OperatorBloc extends Bloc<UserEvent, OperatorState> {
   ) async {
     emit(OperatorLoading());
     try {
-      await updateOperatorUseCase(event.operator);
+      await updateOperatorUseCase(event.user);
 
       // Emitir el evento para recargar la lista actualizada de operadores
       add(GetUsersEvent());
     } catch (e) {
-      emit(OperatorFailure('Error al actualizar el operador.'));
+      emit(OperatorFailure('Error al actualizar el user.'));
     }
   }
 
@@ -92,7 +92,7 @@ class OperatorBloc extends Bloc<UserEvent, OperatorState> {
       // Emitir el evento para recargar la lista actualizada de operadores
       add(GetUsersEvent());
     } catch (e) {
-      emit(OperatorFailure('Error al eliminar el operador.'));
+      emit(OperatorFailure('Error al eliminar el user.'));
     }
   }
 }

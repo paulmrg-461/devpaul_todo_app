@@ -18,12 +18,12 @@ class CreateUserEvent extends UserEvent {
 class GetUsersEvent extends UserEvent {}
 
 class UpdateUserEvent extends UserEvent {
-  final UserModel operator;
+  final UserModel user;
 
-  UpdateUserEvent(this.operator);
+  UpdateUserEvent(this.user);
 
   @override
-  List<Object?> get props => [operator];
+  List<Object?> get props => [user];
 }
 
 class DeleteUserEvent extends UserEvent {

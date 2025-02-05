@@ -5,9 +5,9 @@ import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OperatorCard extends StatelessWidget {
-  const OperatorCard({super.key, required this.operator});
+  const OperatorCard({super.key, required this.user});
 
-  final User operator;
+  final User user;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +28,14 @@ class OperatorCard extends StatelessWidget {
         ],
       ),
       child: InkWell(
-        onTap: () => print('Operador seleccionado: ${operator.name}'),
+        onTap: () => print('User seleccionado: ${user.name}'),
         child: Row(
           children: [
-            if (operator.signaturePhotoUrl.isNotEmpty)
+            if (user.signaturePhotoUrl.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  operator.signaturePhotoUrl,
+                  user.signaturePhotoUrl,
                   width: MediaQuery.of(context).size.width * 0.275,
                   height: 60,
                   fit: BoxFit.fitWidth, // Ajusta el fit según tus necesidades
@@ -53,24 +53,24 @@ class OperatorCard extends StatelessWidget {
                 ),
               ),
             const SizedBox(width: 22),
-            // Información del operador
+            // Información del user
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${operator.name} ${operator.lastname}',
+                    '${user.name} ${user.lastname}',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                   ),
                   const SizedBox(height: 4),
                   TrailingWidget(
-                    text: (operator.email).split('@')[0],
+                    text: (user.email).split('@')[0],
                     icon: Icons.person_outline_rounded,
                   ),
                   TrailingWidget(
-                    text: 'DNI: ${operator.dni}',
+                    text: 'DNI: ${user.dni}',
                     icon: Icons.badge_outlined,
                   ),
                 ],
@@ -104,11 +104,11 @@ class OperatorCard extends StatelessWidget {
   /// Acción a realizar al seleccionar Editar
   void _onEdit(BuildContext context) {
     // Implementa la lógica de edición, por ejemplo, navegar a una pantalla de edición
-    print('Editar operador: ${operator.name}');
+    print('Editar user: ${user.name}');
     // Ejemplo de navegación:
     // Navigator.push(
     //   context,
-    //   MaterialPageRoute(builder: (context) => EditOperatorScreen(operator: operator)),
+    //   MaterialPageRoute(builder: (context) => EditOperatorScreen(user: user)),
     // );
   }
 
@@ -119,7 +119,7 @@ class OperatorCard extends StatelessWidget {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
           content: Text(
-            '¿Estás seguro de que deseas eliminar al operador ${operator.name} ${operator.lastname}? Esta acción no se puede deshacer.',
+            '¿Estás seguro de que deseas eliminar al user ${user.name} ${user.lastname}? Esta acción no se puede deshacer.',
           ),
           actions: [
             TextButton(
@@ -131,14 +131,14 @@ class OperatorCard extends StatelessWidget {
             TextButton(
               onPressed: () {
                 context.read<OperatorBloc>().add(
-                      DeleteUserEvent(operator.id),
+                      DeleteUserEvent(user.id),
                     );
 
                 Navigator.of(dialogContext).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Operador ${operator.name} eliminado exitosamente',
+                      'User ${user.name} eliminado exitosamente',
                     ),
                   ),
                 );
