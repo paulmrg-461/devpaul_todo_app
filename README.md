@@ -27,17 +27,17 @@ This repository contains a cross-platform application (Web & Android) developed 
 1. **Clone the repository**  
 
    ```bash
-   git clone https://github.com/usuario/flutter-asistencias-diego-lopez.git
-   cd flutter-asistencias-diego-lopez
+   git clone https://github.com/paulmrg-461/devpaul_todo_app.git
+   cd devpaul_todo_app
    ```
 
-2. **Instalar Dependencias**
+2. **Install dependencies**
 
    ```bash
    flutter pub get
    ```
 
-3. **Configurar Firebase**
+3. **Firebase configuration**
 - Crea un proyecto en Firebase Console.
 - Añade una aplicación Android y/o Web según corresponda.
 - Descarga el archivo google-services.json (Android) y/o firebaseConfig (Web) y colócalo en la carpeta adecuada:
@@ -56,57 +56,98 @@ This repository contains a cross-platform application (Web & Android) developed 
    ```
 
 ---
-## Uso de la Aplicación
-- Pantalla de Inicio de Sesión (opcional)
-Autenticación para garantizar el acceso solo a usuarios autorizados (instructores/administradores).
+## Application Usage
 
-- Registro de Asistencia
-1. Ingresa la Cédula del estudiante.
-2. Si ya existe el estudiante en la base de datos, se autocompletarán los campos de Nombre y Teléfono.
-3. Selecciona el Tipo de Clase (adaptación, ética, técnicas, práctica, marco legal, taller).
-4. Registra la Fecha/Hora y la Cantidad de Horas.
-5. Recopila la Firma del estudiante.
-6. Guarda el registro en Firebase.
+- **Login Screen (Optional)**  
+  Provides authentication to ensure access is granted only to authorized users (instructors/administrators).
 
-- Visualización y Reportes (Web)
-  - Accede a la versión web para consultar todos los registros.
-  - Filtra por rango de fechas, tipo de clase, estudiante, etc.
-  - Visualiza los detalles de cada asistencia y exporta (módulo adicional) la información en PDF.
+- **Attendance Registration**  
+  1. Enter the student's ID number.  
+  2. If the student already exists in the database, the Name and Phone fields will auto-complete.  
+  3. Select the Class Type (adaptation, ethics, techniques, practice, legal framework, workshop).  
+  4. Record the Date/Time and the Number of Hours.  
+  5. Capture the student's signature.  
+  6. Save the record in Firebase.
+
+- **Visualization and Reporting (Web)**  
+  - Access the web version to review all records.  
+  - Filter records by date range, class type, student, etc.  
+  - View details of each attendance entry and export the information as PDF (additional module).
+
+---
 
 ## Project Structure
 
-```vbnet
-flutter-asistencias-diego-lopez/
+```plaintext
+devpaul-todo/
 ├── android/
 ├── ios/
 ├── web/
 ├── lib/
-│   ├── models/
-│   ├── services/
-│   ├── pages/
-│   └── main.dart
+│   ├── config/
+│   │   ├── global/
+│   │   │   └── app_config.dart         // Global configuration variables/settings
+│   │   ├── routes/
+│   │   │   └── app_routes.dart         // App route definitions
+│   │   └── themes/
+│   │       ├── app_theme.dart          // Theme configurations (light/dark, etc.)
+│   │       └── colors.dart             // Custom color definitions
+│   ├── core/
+│   │   ├── firebase/
+│   │   │   └── firebase_options.dart   // Firebase configuration options
+│   │   ├── helpers/
+│   │   │   └── date_helper.dart        // Date formatting and manipulation helpers
+│   │   ├── validators/
+│   │   │   └── input_validator.dart    // Input validation logic
+│   │   └── service_locator.dart        // Dependency injection setup
+│   ├── data/
+│   │   ├── datasources/
+│   │   │   └── remote_data_source.dart // Remote API/Firestore data sources
+│   │   ├── models/
+│   │   │   └── task_model.dart         // Data model implementations
+│   │   └── repositories/
+│   │       └── task_repository_impl.dart  // Repository implementations interfacing with data sources
+│   ├── domain/
+│   │   ├── entities/
+│   │   │   └── task.dart               // Core business entities/models
+│   │   ├── failures/
+│   │   │   └── server_failure.dart     // Error/failure definitions
+│   │   ├── repositories/
+│   │   │   └── task_repository.dart    // Abstract repository contracts
+│   │   └── usecases/
+│   │       └── get_tasks_for_day.dart  // Use case implementations for business logic
+│   ├── presentation/
+│   │   ├── bloc/
+│   │   │   ├── task_bloc.dart          // BLoC for task management
+│   │   │   ├── task_event.dart         // Events for Task BLoC
+│   │   │   └── task_state.dart         // States for Task BLoC
+│   │   ├── constants/
+│   │   │   └── app_constants.dart      // App-wide constant values
+│   │   └── ui/
+│   │       ├── screens/
+│   │       │   ├── home_page.dart      // Home screen for displaying tasks
+│   │       │   ├── login_page.dart     // Login screen for user authentication
+│   │       │   └── add_task_dialog.dart// Dialog for adding new tasks
+│   │       └── widgets/
+│   │           ├── custom_button.dart  // Reusable custom button widget
+│   │           └── task_tile.dart      // Widget to display a single task item
+│   └── main.dart                       // Application entry point
 ├── test/
-├── pubspec.yaml
-└── README.md
+│   ├── unit/
+│   │   └── example_test.dart           // Unit tests
+│   └── widget/
+│       └── home_page_test.dart         // Widget tests for the UI
+├── pubspec.yaml                        // Project dependencies and configuration
+└── README.md                           // Project documentation
 ```
-- assets/: Contains images, icons, and screenshots used in the application.
-- lib/: Main source code of the application.
-- core/validators/: Contains input validation logic.
-- domain/entities/: Defines data models.
-- presentation/: UI layer with providers, shared components, and views.
-- providers/: State management providers.
-- shared/: Reusable widgets and components.
-- views/: Different views for large, medium, and small screens.
-- web/: Web-specific configurations and assets.
-- test/: Contains unit and widget tests.
-- pubspec.yaml: Project dependencies and configurations.
 
 ## Technologies Used
 - Flutter: UI toolkit for building natively compiled applications.
 - Dart: Programming language optimized for UI.
 - Google Fonts: For custom typography.
-- url_launcher: To handle URL launching for the contact form.
+- Firebase: Backend as a Service for mobile and web apps.
 - Flutter Localization: For multilingual support.
+- DeepSeek: AI responses from DeepSeek API
 
 ## Contributing
 Contributions are welcome! Follow these steps to get started:
@@ -129,7 +170,7 @@ Contributions are welcome! Follow these steps to get started:
      git push origin feature/YourFeatureName
    ```
    This command will launch the portfolio in your default web browser.
-5. **OPen a Pull Request**
+5. **Open a Pull Request**
 
 ## License
 This project is licensed under the MIT License.
@@ -140,9 +181,6 @@ Developed by:
 - Jimmy Realpe
 
 Email: co.devpaul@gmail.com
-
 Phone: 3148580454
-
 <a  href="https://devpaul.pro">https://devpaul.pro/</a>
-
 Feel free to reach out for any inquiries or collaborations!
