@@ -27,7 +27,7 @@ final appRouter = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
-      path: '/operator-register',
+      path: '/user-register',
       name: OperatorRegisterForm.name,
       builder: (context, state) => const OperatorRegisterForm(),
     ),

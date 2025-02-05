@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
+import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
 class UploadFile {
   final UserRepository repository;

@@ -32,8 +32,8 @@ class _OperatorsTabState extends State<OperatorsTab> {
           return ListView.builder(
             itemCount: operators.length,
             itemBuilder: (context, index) {
-              final operator = operators[index];
-              return OperatorCard(operator: operator);
+              final user = operators[index];
+              return OperatorCard(user: user);
             },
           );
         } else if (state is OperatorFailure) {

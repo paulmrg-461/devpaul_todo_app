@@ -3,23 +3,23 @@
 import 'dart:typed_data';
 
 import 'package:devpaul_todo_app/data/datasources/firebase_storage_data_source.dart';
-import 'package:devpaul_todo_app/data/datasources/operator_data_source.dart';
-import 'package:devpaul_todo_app/data/models/operator_model.dart';
+import 'package:devpaul_todo_app/data/datasources/user_data_source.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
-class OperatorRepositoryImpl implements UserRepository {
+class UserRepositoryImpl implements UserRepository {
   final OperatorDataSource dataSource;
   final FirebaseStorageDataSource storageDataSource;
 
-  OperatorRepositoryImpl({
+  UserRepositoryImpl({
     required this.dataSource,
     required this.storageDataSource,
   });
 
   @override
-  Future<void> createUser(User operator) async {
-    final operatorModel = UserModel.fromEntity(operator);
+  Future<void> createUser(User user) async {
+    final operatorModel = UserModel.fromEntity(user);
     await dataSource.createUser(operatorModel);
   }
 
@@ -30,8 +30,8 @@ class OperatorRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> updateUser(User operator) async {
-    final operatorModel = UserModel.fromEntity(operator);
+  Future<void> updateUser(User user) async {
+    final operatorModel = UserModel.fromEntity(user);
     await dataSource.updateUser(operatorModel);
   }
 

@@ -6,24 +6,24 @@ abstract class OperatorEvent extends Equatable {
 }
 
 class CreateOperatorEvent extends OperatorEvent {
-  final UserModel operator;
+  final UserModel user;
   final Uint8List signatureBytes;
 
-  CreateOperatorEvent(this.operator, this.signatureBytes);
+  CreateOperatorEvent(this.user, this.signatureBytes);
 
   @override
-  List<Object?> get props => [operator, signatureBytes];
+  List<Object?> get props => [user, signatureBytes];
 }
 
 class GetOperatorsEvent extends OperatorEvent {}
 
 class UpdateOperatorEvent extends OperatorEvent {
-  final UserModel operator;
+  final UserModel user;
 
-  UpdateOperatorEvent(this.operator);
+  UpdateOperatorEvent(this.user);
 
   @override
-  List<Object?> get props => [operator];
+  List<Object?> get props => [user];
 }
 
 class DeleteOperatorEvent extends OperatorEvent {

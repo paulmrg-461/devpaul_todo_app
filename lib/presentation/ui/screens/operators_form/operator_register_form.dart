@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
-import 'package:devpaul_todo_app/data/models/operator_model.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -220,7 +220,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
 
   void _onSubmit(Uint8List signature) {
     if (_formKey.currentState!.validate()) {
-      final UserModel operator = UserModel(
+      final UserModel user = UserModel(
         id: '',
         name: _nameController.text,
         lastname: _lastnameController.text,
@@ -233,7 +233,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
       );
 
       context.read<OperatorBloc>().add(
-            CreateOperatorEvent(operator, signature),
+            CreateOperatorEvent(user, signature),
           );
       _resetForm();
     }

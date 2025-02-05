@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
-import 'package:devpaul_todo_app/data/models/operator_model.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/domain/entities/user.dart';
-import 'package:devpaul_todo_app/domain/usecases/users/operator_use_cases.dart';
+import 'package:devpaul_todo_app/domain/usecases/users/user_use_cases.dart';
 import 'package:equatable/equatable.dart';
 
 part 'operator_event.dart';
@@ -11,9 +11,9 @@ part 'operator_state.dart';
 
 class OperatorBloc extends Bloc<OperatorEvent, OperatorState> {
   final CreateUser createOperatorUseCase;
-  final GetOperators getOperatorsUseCase;
-  final UpdateOperator updateOperatorUseCase;
-  final DeleteOperator deleteOperatorUseCase;
+  final GetUsers getOperatorsUseCase;
+  final UpdateUser updateOperatorUseCase;
+  final DeleteUser deleteOperatorUseCase;
   final UploadFile uploadFileUseCase;
 
   OperatorBloc({
@@ -38,12 +38,12 @@ class OperatorBloc extends Bloc<OperatorEvent, OperatorState> {
     try {
       final fileUrl = await uploadFileUseCase(
         folderName: 'operator_signatures',
-        fileName: '${event.operator.email}.png',
+        fileName: '${event.user.email}.png',
         fileBytes: event.signatureBytes,
       );
 
       await createOperatorUseCase(
-        event.operator.copyWith(signaturePhotoUrl: fileUrl),
+        event.user.copyWith(signaturePhotoUrl: fileUrl),
       );
 
       // Emitir el evento para recargar la lista actualizada de operadores
@@ -72,7 +72,7 @@ class OperatorBloc extends Bloc<OperatorEvent, OperatorState> {
   ) async {
     emit(OperatorLoading());
     try {
-      await updateOperatorUseCase(event.operator);
+      await updateOperatorUseCase(event.user);
 
       // Emitir el evento para recargar la lista actualizada de operadores
       add(GetOperatorsEvent());

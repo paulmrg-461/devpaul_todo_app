@@ -1,4 +1,4 @@
-import 'package:devpaul_todo_app/data/models/operator_model.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/domain/entities/user_entity.dart';
 import 'package:devpaul_todo_app/domain/repositories/auth_repository.dart';
 import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
@@ -9,15 +9,15 @@ class CreateUser {
 
   CreateUser({required this.authRepository, required this.repository});
 
-  Future<void> call(UserModel operator) async {
+  Future<void> call(UserModel newUser) async {
     final UserEntity? user = await authRepository.register(
-      operator.email,
-      operator.password,
+      newUser.email,
+      newUser.password,
     );
 
-    final UserModel operatorToSave = operator.copyWith(
+    final UserModel userToSave = newUser.copyWith(
       uid: user?.uid ?? '',
     );
-    return repository.createUser(operatorToSave);
+    return repository.createUser(userToSave);
   }
 }

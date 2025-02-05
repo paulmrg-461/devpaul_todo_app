@@ -11,5 +11,6 @@ class User extends UserEntity {
     required super.email,
     required super.password,
     required super.token,
+    required super.id,
   });
 }

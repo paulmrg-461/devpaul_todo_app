@@ -3,10 +3,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:devpaul_todo_app/data/datasources/operator_data_source.dart';
-import 'package:devpaul_todo_app/data/repositories/operator_repository_impl.dart';
+import 'package:devpaul_todo_app/data/datasources/user_data_source.dart';
+import 'package:devpaul_todo_app/data/repositories/user_repository_impl.dart';
 import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
-import 'package:devpaul_todo_app/domain/usecases/users/operator_use_cases.dart';
+import 'package:devpaul_todo_app/domain/usecases/users/user_use_cases.dart';
 import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
 import 'package:devpaul_todo_app/data/datasources/auth_storage.dart';
 import 'package:devpaul_todo_app/data/datasources/firebase_auth_data_source.dart';
@@ -37,7 +37,7 @@ Future<void> init() async {
   // Repositorios
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<UserRepository>(
-    () => OperatorRepositoryImpl(
+    () => UserRepositoryImpl(
       dataSource: sl<OperatorDataSource>(),
       storageDataSource: sl<FirebaseStorageDataSource>(),
     ),
@@ -54,9 +54,9 @@ Future<void> init() async {
       authRepository: sl<AuthRepository>(),
     ),
   );
-  sl.registerLazySingleton(() => GetOperators(sl<UserRepository>()));
-  sl.registerLazySingleton(() => UpdateOperator(sl<UserRepository>()));
-  sl.registerLazySingleton(() => DeleteOperator(sl<UserRepository>()));
+  sl.registerLazySingleton(() => GetUsers(sl<UserRepository>()));
+  sl.registerLazySingleton(() => UpdateUser(sl<UserRepository>()));
+  sl.registerLazySingleton(() => DeleteUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => UploadFile(sl()));
 
   // Bloc
@@ -73,9 +73,9 @@ Future<void> init() async {
   sl.registerFactory(
     () => OperatorBloc(
       createOperatorUseCase: sl<CreateUser>(),
-      getOperatorsUseCase: sl<GetOperators>(),
-      updateOperatorUseCase: sl<UpdateOperator>(),
-      deleteOperatorUseCase: sl<DeleteOperator>(),
+      getOperatorsUseCase: sl<GetUsers>(),
+      updateOperatorUseCase: sl<UpdateUser>(),
+      deleteOperatorUseCase: sl<DeleteUser>(),
       uploadFileUseCase: sl<UploadFile>(),
     ),
   );

@@ -2,10 +2,10 @@
 
 import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
-class DeleteOperator {
+class DeleteUser {
   final UserRepository repository;
 
-  DeleteOperator(this.repository);
+  DeleteUser(this.repository);
 
   Future<void> call(String id) {
     return repository.deleteUser(id);
