@@ -57,8 +57,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text(
+                      'To Do App',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    const SizedBox(height: 24),
                     SizedBox(
-                      width: 260,
+                      width: 170,
                       child: Image.asset(
                         'assets/logo.png',
                         fit: BoxFit.fitWidth,
@@ -98,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         return FilledButton.icon(
                           onPressed: () => _onLoginPressed(context),
-                          label: const Text('Ingresar'),
+                          label: const Text('Login'),
                           icon: const Icon(Icons.login_rounded),
                         );
                       },
