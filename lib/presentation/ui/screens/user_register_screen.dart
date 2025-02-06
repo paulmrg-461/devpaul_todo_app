@@ -1,13 +1,12 @@
 import 'dart:typed_data';
-
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
 import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:signature/signature.dart';
 
 class UserRegisterScreen extends StatefulWidget {
   static const String name = 'user_register_screen';
@@ -24,43 +23,75 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  final SignatureController _signatureController = SignatureController(
-    penStrokeWidth: 3,
-    penColor: Colors.black,
-    exportBackgroundColor: Colors.white,
-  );
-  bool _isSignatureLocked = false;
-  void _toggleSignatureLock() {
-    setState(() {
-      _isSignatureLocked = !_isSignatureLocked;
-    });
-  }
+  Uint8List? _profileImageBytes;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void dispose() {
-    _signatureController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  /// Permite elegir la imagen de perfil ya sea desde cámara o galería.
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile =
+        await _picker.pickImage(source: source, imageQuality: 75);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      setState(() {
+        _profileImageBytes = bytes;
+      });
+    }
+  }
+
+  /// Muestra las opciones para seleccionar imagen (cámara o galería).
+  void _showImageSourceActionSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a photo'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from gallery'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: const Text('User register')),
+      appBar: AppBar(title: const Text('User Register')),
       body: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is OperatorSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('User creado exitosamente')),
+              const SnackBar(content: Text('User created successfully')),
             );
             Navigator.pop(context);
           } else if (state is OperatorFailure) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(state.message)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.message)),
+            );
           }
         },
         child: Padding(
@@ -69,6 +100,24 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
             key: _formKey,
             child: ListView(
               children: [
+                // Widget para seleccionar foto de perfil.
+                Center(
+                  child: GestureDetector(
+                    onTap: _showImageSourceActionSheet,
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundImage: _profileImageBytes != null
+                          ? MemoryImage(_profileImageBytes!)
+                          : const AssetImage('assets/default_profile.png')
+                              as ImageProvider,
+                      child: _profileImageBytes == null
+                          ? const Icon(Icons.add_a_photo,
+                              size: 30, color: Colors.white)
+                          : null,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 CustomInput(
                   width: _inputsWidth,
                   hintText: "Full name",
@@ -107,79 +156,37 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   padding: EdgeInsets.only(bottom: 12, top: 6),
                   child: Divider(),
                 ),
-                Stack(
-                  children: [
-                    AbsorbPointer(
-                      absorbing: _isSignatureLocked,
-                      child: Signature(
-                        controller: _signatureController,
-                        width: screenWidth,
-                        height: 210,
-                        backgroundColor: Colors.grey[200]!,
-                      ),
-                    ),
-                    const Positioned(
-                      left: 16,
-                      top: 8,
-                      child: Text('Firma user:'),
-                    ),
-                    Positioned(
-                      right: 6,
-                      top: 0,
-                      child: Row(
-                        children: [
-                          IconButton(
-                            onPressed: () => _signatureController.clear(),
-                            icon: const Icon(Icons.clear_rounded),
-                            tooltip: 'Limpiar estado',
-                          ),
-                          IconButton(
-                            onPressed:
-                                _toggleSignatureLock, // Alternar el bloqueo
-                            icon: Icon(
-                              _isSignatureLocked
-                                  ? Icons.lock_rounded
-                                  : Icons.lock_open_rounded,
-                              color: _isSignatureLocked
-                                  ? Colors.red
-                                  : Colors.green,
-                            ),
-                            tooltip: _isSignatureLocked
-                                ? 'Desbloquear Interacción'
-                                : 'Bloquear Interacción',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     OutlinedButton(
                       onPressed: _resetForm,
-                      child: const Text('Cancelar'),
+                      child: const Text('Cancel'),
                     ),
                     const SizedBox(width: 12),
                     FilledButton.icon(
                       onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          if (_signatureController.isNotEmpty) {
-                            final signature =
-                                await _signatureController.toPngBytes();
-
-                            _onSubmit(signature!);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Por favor, firme el formulario'),
-                              ),
-                            );
-                          }
+                        if (!_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please fill out the form correctly'),
+                            ),
+                          );
+                          return;
                         }
+                        if (_profileImageBytes == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please select a profile photo'),
+                            ),
+                          );
+                          return;
+                        }
+                        _onSubmit(_profileImageBytes!);
                       },
-                      label: const Text('Guardar'),
+                      label: const Text('Register'),
                       icon: const Icon(Icons.save_outlined),
                     ),
                   ],
@@ -192,7 +199,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     );
   }
 
-  void _onSubmit(Uint8List signature) {
+  void _onSubmit(Uint8List photoBytes) {
     if (_formKey.currentState!.validate()) {
       final UserModel user = UserModel(
         name: _nameController.text,
@@ -205,7 +212,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
       );
 
       context.read<UserBloc>().add(
-            CreateUserEvent(user, signature),
+            CreateUserEvent(user, photoBytes),
           );
       _resetForm();
     }
@@ -216,7 +223,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
       _nameController.clear();
       _emailController.clear();
       _passwordController.clear();
-      _signatureController.clear();
+      _profileImageBytes = null;
     });
     context.pop();
   }

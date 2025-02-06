@@ -10,17 +10,17 @@ part 'user_event.dart';
 part 'user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
-  final CreateUser createOperatorUseCase;
-  final GetUsers getOperatorsUseCase;
-  final UpdateUser updateOperatorUseCase;
-  final DeleteUser deleteOperatorUseCase;
+  final CreateUser createUserUseCase;
+  final GetUsers getUsersUseCase;
+  final UpdateUser updateUserUseCase;
+  final DeleteUser deleteUserUseCase;
   final UploadFile uploadFileUseCase;
 
   UserBloc({
-    required this.createOperatorUseCase,
-    required this.getOperatorsUseCase,
-    required this.updateOperatorUseCase,
-    required this.deleteOperatorUseCase,
+    required this.createUserUseCase,
+    required this.getUsersUseCase,
+    required this.updateUserUseCase,
+    required this.deleteUserUseCase,
     required this.uploadFileUseCase,
   }) : super(OperatorInitial()) {
     on<CreateUserEvent>(_onCreateOperator);
@@ -37,12 +37,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     try {
       final fileUrl = await uploadFileUseCase(
-        folderName: 'operator_signatures',
+        folderName: 'profile_photos',
         fileName: '${event.user.email}.png',
         fileBytes: event.signatureBytes,
       );
 
-      await createOperatorUseCase(
+      await createUserUseCase(
         event.user.copyWith(photoUrl: fileUrl),
       );
 
@@ -59,7 +59,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     emit(OperatorLoading());
     try {
-      final operators = await getOperatorsUseCase();
+      final operators = await getUsersUseCase();
       emit(OperatorSuccess(operators: operators));
     } catch (e) {
       emit(OperatorFailure('Error al obtener los users.'));
@@ -72,7 +72,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     emit(OperatorLoading());
     try {
-      await updateOperatorUseCase(event.user);
+      await updateUserUseCase(event.user);
 
       // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
@@ -87,7 +87,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     emit(OperatorLoading());
     try {
-      await deleteOperatorUseCase(event.id);
+      await deleteUserUseCase(event.id);
 
       // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());

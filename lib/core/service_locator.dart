@@ -72,10 +72,10 @@ Future<void> init() async {
 
   sl.registerFactory(
     () => UserBloc(
-      createOperatorUseCase: sl<CreateUser>(),
-      getOperatorsUseCase: sl<GetUsers>(),
-      updateOperatorUseCase: sl<UpdateUser>(),
-      deleteOperatorUseCase: sl<DeleteUser>(),
+      createUserUseCase: sl<CreateUser>(),
+      getUsersUseCase: sl<GetUsers>(),
+      updateUserUseCase: sl<UpdateUser>(),
+      deleteUserUseCase: sl<DeleteUser>(),
       uploadFileUseCase: sl<UploadFile>(),
     ),
   );
