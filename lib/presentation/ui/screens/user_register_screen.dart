@@ -184,7 +184,8 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+
+                const SizedBox(height: 36),
                 CustomInput(
                   width: _inputsWidth,
                   hintText: "Full name",
@@ -226,7 +227,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   icon: const Icon(Icons.save_outlined),
                 ),
                 const Padding(
-                  padding: EdgeInsets.only(bottom: 6, top: 22),
+                  padding: EdgeInsets.only(bottom: 6, top: 26),
                   child: Divider(),
                 ),
                 TextButton(

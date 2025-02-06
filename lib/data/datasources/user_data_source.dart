@@ -17,9 +17,13 @@ class UserDataSourceImpl implements UserDataSource {
   @override
   Future<void> createUser(UserModel userModel) async {
     try {
-      await firestore.collection('users').add(userModel.toMap());
+      // Se usa el uid como id del documento para evitar duplicados.
+      await firestore
+          .collection('users')
+          .doc(userModel.uid)
+          .set(userModel.toMap());
     } catch (e) {
-      throw Exception('Error al crear el user: $e');
+      throw Exception('Error to create user: $e');
     }
   }
 
@@ -31,7 +35,7 @@ class UserDataSourceImpl implements UserDataSource {
           .map((doc) => UserModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      throw Exception('Error al obtener los users: $e');
+      throw Exception('Error to get users: $e');
     }
   }
 
@@ -40,17 +44,17 @@ class UserDataSourceImpl implements UserDataSource {
     try {
       await firestore
           .collection('users')
-          .doc(userModel.id)
+          .doc(userModel.uid)
           .update(userModel.toMap());
     } catch (e) {
-      throw Exception('Error al actualizar el user: $e');
+      throw Exception('Error to update user: $e');
     }
   }
 
   @override
   Future<void> deleteUser(String id) async {
     try {
-      // Primero elimina el user de Firestore
+      // Primero elimina el usuario de Firestore
       await firestore.collection('users').doc(id).delete();
 
       // Luego, elimina el usuario de Firebase Auth
@@ -59,7 +63,7 @@ class UserDataSourceImpl implements UserDataSource {
         await user.delete();
       }
     } catch (e) {
-      throw Exception('Error al eliminar el user: $e');
+      throw Exception('Error to delete user: $e');
     }
   }
 }

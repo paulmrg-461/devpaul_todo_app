@@ -49,7 +49,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
-      emit(OperatorFailure('Error al crear el user: $e'));
+      emit(OperatorFailure('Error to create user: $e'));
     }
   }
 
@@ -62,7 +62,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final users = await getUsersUseCase();
       emit(OperatorSuccess(users: users));
     } catch (e) {
-      emit(OperatorFailure('Error al obtener los users.'));
+      emit(OperatorFailure('Error to get users: $e'));
     }
   }
 
@@ -77,7 +77,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
-      emit(OperatorFailure('Error al actualizar el user.'));
+      emit(OperatorFailure('Error to update user: $e'));
     }
   }
 
@@ -92,7 +92,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
-      emit(OperatorFailure('Error al eliminar el user.'));
+      emit(OperatorFailure('Error to delete user: $e'));
     }
   }
 }
