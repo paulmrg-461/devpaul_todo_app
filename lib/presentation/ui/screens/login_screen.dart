@@ -3,7 +3,7 @@ import 'package:devpaul_todo_app/presentation/ui/widgets/custom_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:devpaul_todo_app/presentation/blocs/user_bloc/auth_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String name = 'login_screen';
