@@ -9,14 +9,14 @@ import 'package:equatable/equatable.dart';
 part 'user_event.dart';
 part 'user_state.dart';
 
-class OperatorBloc extends Bloc<UserEvent, OperatorState> {
+class UserBloc extends Bloc<UserEvent, UserState> {
   final CreateUser createOperatorUseCase;
   final GetUsers getOperatorsUseCase;
   final UpdateUser updateOperatorUseCase;
   final DeleteUser deleteOperatorUseCase;
   final UploadFile uploadFileUseCase;
 
-  OperatorBloc({
+  UserBloc({
     required this.createOperatorUseCase,
     required this.getOperatorsUseCase,
     required this.updateOperatorUseCase,
@@ -31,7 +31,7 @@ class OperatorBloc extends Bloc<UserEvent, OperatorState> {
 
   Future<void> _onCreateOperator(
     CreateUserEvent event,
-    Emitter<OperatorState> emit,
+    Emitter<UserState> emit,
   ) async {
     emit(OperatorLoading());
 
@@ -46,7 +46,7 @@ class OperatorBloc extends Bloc<UserEvent, OperatorState> {
         event.user.copyWith(photoUrl: fileUrl),
       );
 
-      // Emitir el evento para recargar la lista actualizada de operadores
+      // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
       emit(OperatorFailure('Error al crear el user: $e'));
@@ -55,26 +55,26 @@ class OperatorBloc extends Bloc<UserEvent, OperatorState> {
 
   Future<void> _onGetOperators(
     GetUsersEvent event,
-    Emitter<OperatorState> emit,
+    Emitter<UserState> emit,
   ) async {
     emit(OperatorLoading());
     try {
       final operators = await getOperatorsUseCase();
       emit(OperatorSuccess(operators: operators));
     } catch (e) {
-      emit(OperatorFailure('Error al obtener los operadores.'));
+      emit(OperatorFailure('Error al obtener los users.'));
     }
   }
 
   Future<void> _onUpdateOperator(
     UpdateUserEvent event,
-    Emitter<OperatorState> emit,
+    Emitter<UserState> emit,
   ) async {
     emit(OperatorLoading());
     try {
       await updateOperatorUseCase(event.user);
 
-      // Emitir el evento para recargar la lista actualizada de operadores
+      // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
       emit(OperatorFailure('Error al actualizar el user.'));
@@ -83,13 +83,13 @@ class OperatorBloc extends Bloc<UserEvent, OperatorState> {
 
   Future<void> _onDeleteOperator(
     DeleteUserEvent event,
-    Emitter<OperatorState> emit,
+    Emitter<UserState> emit,
   ) async {
     emit(OperatorLoading());
     try {
       await deleteOperatorUseCase(event.id);
 
-      // Emitir el evento para recargar la lista actualizada de operadores
+      // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
       emit(OperatorFailure('Error al eliminar el user.'));

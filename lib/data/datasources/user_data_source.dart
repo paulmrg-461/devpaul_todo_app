@@ -31,7 +31,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
           .map((doc) => UserModel.fromSnapshot(doc))
           .toList();
     } catch (e) {
-      throw Exception('Error al obtener los operadores: $e');
+      throw Exception('Error al obtener los users: $e');
     }
   }
 

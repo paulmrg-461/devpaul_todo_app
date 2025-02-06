@@ -9,21 +9,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:signature/signature.dart';
 
-class OperatorRegisterForm extends StatefulWidget {
-  static const String name = 'operator_register_form_screen';
-  const OperatorRegisterForm({super.key});
+class UserRegisterScreen extends StatefulWidget {
+  static const String name = 'user_register_screen';
+  const UserRegisterScreen({super.key});
 
   @override
-  _OperatorRegisterFormState createState() => _OperatorRegisterFormState();
+  _UserRegisterScreenState createState() => _UserRegisterScreenState();
 }
 
-class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
+class _UserRegisterScreenState extends State<UserRegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   static const double _inputsWidth = 220;
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _lastnameController = TextEditingController();
-  final TextEditingController _dniController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   final SignatureController _signatureController = SignatureController(
@@ -42,9 +40,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
   void dispose() {
     _signatureController.dispose();
     _nameController.dispose();
-    _lastnameController.dispose();
-    _dniController.dispose();
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -53,8 +49,8 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(title: const Text('Crear User')),
-      body: BlocListener<OperatorBloc, OperatorState>(
+      appBar: AppBar(title: const Text('User register')),
+      body: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is OperatorSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -75,7 +71,7 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
               children: [
                 CustomInput(
                   width: _inputsWidth,
-                  hintText: "Nombres",
+                  hintText: "Full name",
                   controller: _nameController,
                   validator: (value) => InputValidator.emptyValidator(
                     minCharacters: 3,
@@ -88,39 +84,17 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
                 ),
                 CustomInput(
                   width: _inputsWidth,
-                  hintText: "Apellidos",
-                  controller: _lastnameController,
-                  validator: (value) => InputValidator.emptyValidator(
-                    minCharacters: 3,
-                    value: value,
-                  ),
-                  textCapitalization: TextCapitalization.words,
-                  textInputType: TextInputType.name,
-                  icon: Icons.person_outline,
-                  marginBottom: 4,
-                ),
-                CustomInput(
-                  width: _inputsWidth,
-                  hintText: "Cédula",
-                  controller: _dniController,
-                  validator: (value) => InputValidator.numberValidator(value),
-                  textInputType: TextInputType.number,
-                  isNumeric: true,
-                  icon: Icons.medical_information_outlined,
-                  marginBottom: 4,
-                ),
-                CustomInput(
-                  width: _inputsWidth,
-                  hintText: "Nombre de usuario",
-                  controller: _usernameController,
-                  validator: (value) => InputValidator.usernameValidator(value),
+                  hintText: "Email",
+                  controller: _emailController,
+                  validator: (value) => InputValidator.emailValidator(value),
                   textCapitalization: TextCapitalization.none,
-                  icon: Icons.person_outline,
+                  textInputType: TextInputType.emailAddress,
+                  icon: Icons.email_outlined,
                   marginBottom: 4,
                 ),
                 CustomInput(
-                  width: 460,
-                  hintText: "Contraseña",
+                  width: _inputsWidth,
+                  hintText: "Password",
                   controller: _passwordController,
                   validator: (value) =>
                       InputValidator.emptyValidator(value: value),
@@ -221,18 +195,16 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
   void _onSubmit(Uint8List signature) {
     if (_formKey.currentState!.validate()) {
       final UserModel user = UserModel(
-        id: '',
         name: _nameController.text,
-        lastname: _lastnameController.text,
-        email: '${(_usernameController.text).toLowerCase()}@diegolopez.com',
-        dni: _dniController.text,
-        signaturePhotoUrl: '',
+        email: _emailController.text,
+        password: _passwordController.text,
+        id: '',
+        photoUrl: '',
         uid: '',
         token: '',
-        password: _passwordController.text,
       );
 
-      context.read<OperatorBloc>().add(
+      context.read<UserBloc>().add(
             CreateUserEvent(user, signature),
           );
       _resetForm();
@@ -242,10 +214,8 @@ class _OperatorRegisterFormState extends State<OperatorRegisterForm> {
   void _resetForm() {
     setState(() {
       _nameController.clear();
-      _lastnameController.clear();
-      _usernameController.clear();
+      _emailController.clear();
       _passwordController.clear();
-      _dniController.clear();
       _signatureController.clear();
     });
     context.pop();

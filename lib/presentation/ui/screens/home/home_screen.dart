@@ -1,6 +1,6 @@
 import 'package:devpaul_todo_app/config/global/environment.dart';
 import 'package:devpaul_todo_app/domain/entities/user_entity.dart';
-import 'package:devpaul_todo_app/presentation/blocs/user_bloc/auth_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/widgets/bottom_bar_item.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/screens.dart';
 import 'package:flutter/material.dart';
@@ -86,10 +86,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? FloatingActionButton(
                     onPressed: () => currentPageIndex == 0
                         ? context.pushNamed(
-                            OperatorRegisterForm.name,
+                            UserRegisterScreen.name,
                           )
                         : context.pushNamed(
-                            OperatorRegisterForm.name,
+                            UserRegisterScreen.name,
                           ),
                     child: const Icon(Icons.add),
                   )

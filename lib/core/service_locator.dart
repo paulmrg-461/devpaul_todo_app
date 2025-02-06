@@ -7,13 +7,13 @@ import 'package:devpaul_todo_app/data/datasources/user_data_source.dart';
 import 'package:devpaul_todo_app/data/repositories/user_repository_impl.dart';
 import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 import 'package:devpaul_todo_app/domain/usecases/users/user_use_cases.dart';
-import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:devpaul_todo_app/data/datasources/auth_storage.dart';
 import 'package:devpaul_todo_app/data/datasources/firebase_auth_data_source.dart';
 import 'package:devpaul_todo_app/data/repositories/auth_repository_impl.dart';
 import 'package:devpaul_todo_app/domain/repositories/auth_repository.dart';
 import 'package:devpaul_todo_app/domain/usecases/authentication/authentication_use_cases.dart';
-import 'package:devpaul_todo_app/presentation/blocs/user_bloc/auth_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -71,7 +71,7 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => OperatorBloc(
+    () => UserBloc(
       createOperatorUseCase: sl<CreateUser>(),
       getOperatorsUseCase: sl<GetUsers>(),
       updateOperatorUseCase: sl<UpdateUser>(),

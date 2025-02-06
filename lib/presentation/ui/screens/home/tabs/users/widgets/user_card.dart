@@ -130,7 +130,7 @@ class UserCard extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                context.read<OperatorBloc>().add(
+                context.read<UserBloc>().add(
                       DeleteUserEvent(user.id),
                     );
 

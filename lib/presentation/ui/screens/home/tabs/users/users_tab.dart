@@ -14,20 +14,20 @@ class _OperatorsTabState extends State<OperatorsTab> {
   @override
   void initState() {
     super.initState();
-    // Agregamos el evento para obtener los operadores al iniciar el widget
-    context.read<OperatorBloc>().add(GetUsersEvent());
+    // Agregamos el evento para obtener los users al iniciar el widget
+    context.read<UserBloc>().add(GetUsersEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OperatorBloc, OperatorState>(
+    return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
         if (state is OperatorLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is OperatorSuccess) {
           final operators = state.operators ?? [];
           if (operators.isEmpty) {
-            return const Center(child: Text('No hay operadores disponibles.'));
+            return const Center(child: Text('No hay users disponibles.'));
           }
           return ListView.builder(
             itemCount: operators.length,
@@ -39,7 +39,7 @@ class _OperatorsTabState extends State<OperatorsTab> {
         } else if (state is OperatorFailure) {
           return Center(child: Text(state.message));
         } else {
-          return const Center(child: Text('No hay operadores disponibles.'));
+          return const Center(child: Text('No hay users disponibles.'));
         }
       },
     );
