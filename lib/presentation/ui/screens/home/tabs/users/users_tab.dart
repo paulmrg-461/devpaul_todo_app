@@ -1,5 +1,5 @@
 import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
-import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/operators/widgets/operator_card.dart';
+import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/users/widgets/user_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,7 +33,7 @@ class _OperatorsTabState extends State<OperatorsTab> {
             itemCount: operators.length,
             itemBuilder: (context, index) {
               final user = operators[index];
-              return OperatorCard(user: user);
+              return UserCard(user: user);
             },
           );
         } else if (state is OperatorFailure) {

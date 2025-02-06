@@ -1,11 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
-import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class OperatorCard extends StatelessWidget {
-  const OperatorCard({super.key, required this.user});
+class UserCard extends StatelessWidget {
+  const UserCard({super.key, required this.user});
 
   final User user;
 
@@ -31,11 +31,11 @@ class OperatorCard extends StatelessWidget {
         onTap: () => print('User seleccionado: ${user.name}'),
         child: Row(
           children: [
-            if (user.signaturePhotoUrl.isNotEmpty)
+            if (user.photoUrl.isNotEmpty)
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  user.signaturePhotoUrl,
+                  user.photoUrl,
                   width: MediaQuery.of(context).size.width * 0.275,
                   height: 60,
                   fit: BoxFit.fitWidth, // Ajusta el fit según tus necesidades
@@ -59,18 +59,18 @@ class OperatorCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${user.name} ${user.lastname}',
+                    user.name,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                   ),
                   const SizedBox(height: 4),
                   TrailingWidget(
-                    text: (user.email).split('@')[0],
+                    text: user.email,
                     icon: Icons.person_outline_rounded,
                   ),
                   TrailingWidget(
-                    text: 'DNI: ${user.dni}',
+                    text: 'UID: ${user.uid}',
                     icon: Icons.badge_outlined,
                   ),
                 ],
@@ -119,7 +119,7 @@ class OperatorCard extends StatelessWidget {
         return AlertDialog(
           title: const Text('Confirmar Eliminación'),
           content: Text(
-            '¿Estás seguro de que deseas eliminar al user ${user.name} ${user.lastname}? Esta acción no se puede deshacer.',
+            '¿Estás seguro de que deseas eliminar al user ${user.name}? Esta acción no se puede deshacer.',
           ),
           actions: [
             TextButton(
