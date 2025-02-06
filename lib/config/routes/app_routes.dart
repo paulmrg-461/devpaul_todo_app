@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 final appRouter = GoRouter(
   redirect: (context, state) {
     final user = FirebaseAuth.instance.currentUser;
-    final loggingIn = state.uri.toString() == '/login';
+    final loggingIn = state.uri.toString() == '/login' ||
+        state.uri.toString() == '/user-register';
 
     if (user == null && !loggingIn) {
       return '/login';
@@ -27,9 +28,9 @@ final appRouter = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
-      path: '/operator-register',
-      name: OperatorRegisterForm.name,
-      builder: (context, state) => const OperatorRegisterForm(),
+      path: '/user-register',
+      name: UserRegisterScreen.name,
+      builder: (context, state) => const UserRegisterScreen(),
     ),
     GoRoute(
       path: '/developer-information',

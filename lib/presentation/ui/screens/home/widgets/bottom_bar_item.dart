@@ -18,9 +18,14 @@ class BottomBarItem {
 
 const List<BottomBarItem> bottombarListAdmin = [
   BottomBarItem(
-    label: 'Operadores',
+    label: 'Users',
     icon: Icons.engineering_outlined,
     widget: OperatorsTab(),
+  ),
+  BottomBarItem(
+    label: 'Perfil',
+    icon: Icons.person_outline_rounded,
+    widget: ProfileTab(),
   ),
   BottomBarItem(
     label: 'Perfil',
@@ -30,6 +35,16 @@ const List<BottomBarItem> bottombarListAdmin = [
 ];
 
 const List<BottomBarItem> bottombarList = [
+  BottomBarItem(
+    label: 'Perfil',
+    icon: Icons.person_outline_rounded,
+    widget: ProfileTab(),
+  ),
+  BottomBarItem(
+    label: 'Perfil',
+    icon: Icons.person_outline_rounded,
+    widget: ProfileTab(),
+  ),
   BottomBarItem(
     label: 'Perfil',
     icon: Icons.person_outline_rounded,

@@ -3,17 +3,17 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:devpaul_todo_app/data/datasources/operator_data_source.dart';
-import 'package:devpaul_todo_app/data/repositories/operator_repository_impl.dart';
-import 'package:devpaul_todo_app/domain/repositories/operator_repository.dart';
-import 'package:devpaul_todo_app/domain/usecases/operators/operator_use_cases.dart';
-import 'package:devpaul_todo_app/presentation/blocs/operator_bloc/operator_bloc.dart';
+import 'package:devpaul_todo_app/data/datasources/user_data_source.dart';
+import 'package:devpaul_todo_app/data/repositories/user_repository_impl.dart';
+import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
+import 'package:devpaul_todo_app/domain/usecases/users/user_use_cases.dart';
+import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
 import 'package:devpaul_todo_app/data/datasources/auth_storage.dart';
 import 'package:devpaul_todo_app/data/datasources/firebase_auth_data_source.dart';
 import 'package:devpaul_todo_app/data/repositories/auth_repository_impl.dart';
 import 'package:devpaul_todo_app/domain/repositories/auth_repository.dart';
 import 'package:devpaul_todo_app/domain/usecases/authentication/authentication_use_cases.dart';
-import 'package:devpaul_todo_app/presentation/blocs/user_bloc/auth_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -30,15 +30,15 @@ Future<void> init() async {
   sl.registerLazySingleton<FirebaseStorageDataSource>(
     () => FirebaseStorageDataSourceImpl(sl()),
   );
-  sl.registerLazySingleton<OperatorDataSource>(
-    () => OperatorDataSourceImpl(sl<FirebaseFirestore>()),
+  sl.registerLazySingleton<UserDataSource>(
+    () => UserDataSourceImpl(sl<FirebaseFirestore>()),
   );
 
   // Repositorios
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
-  sl.registerLazySingleton<OperatorRepository>(
-    () => OperatorRepositoryImpl(
-      dataSource: sl<OperatorDataSource>(),
+  sl.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(
+      dataSource: sl<UserDataSource>(),
       storageDataSource: sl<FirebaseStorageDataSource>(),
     ),
   );
@@ -49,14 +49,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => Register(sl()));
   sl.registerLazySingleton(() => GetCurrentUser(sl()));
   sl.registerLazySingleton(
-    () => CreateOperator(
-      repository: sl<OperatorRepository>(),
+    () => CreateUser(
+      repository: sl<UserRepository>(),
       authRepository: sl<AuthRepository>(),
     ),
   );
-  sl.registerLazySingleton(() => GetOperators(sl<OperatorRepository>()));
-  sl.registerLazySingleton(() => UpdateOperator(sl<OperatorRepository>()));
-  sl.registerLazySingleton(() => DeleteOperator(sl<OperatorRepository>()));
+  sl.registerLazySingleton(() => GetUsers(sl<UserRepository>()));
+  sl.registerLazySingleton(() => UpdateUser(sl<UserRepository>()));
+  sl.registerLazySingleton(() => DeleteUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => UploadFile(sl()));
 
   // Bloc
@@ -71,11 +71,11 @@ Future<void> init() async {
   );
 
   sl.registerFactory(
-    () => OperatorBloc(
-      createOperatorUseCase: sl<CreateOperator>(),
-      getOperatorsUseCase: sl<GetOperators>(),
-      updateOperatorUseCase: sl<UpdateOperator>(),
-      deleteOperatorUseCase: sl<DeleteOperator>(),
+    () => UserBloc(
+      createUserUseCase: sl<CreateUser>(),
+      getUsersUseCase: sl<GetUsers>(),
+      updateUserUseCase: sl<UpdateUser>(),
+      deleteUserUseCase: sl<DeleteUser>(),
       uploadFileUseCase: sl<UploadFile>(),
     ),
   );

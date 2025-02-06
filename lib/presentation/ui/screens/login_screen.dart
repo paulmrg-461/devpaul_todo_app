@@ -3,7 +3,7 @@ import 'package:devpaul_todo_app/presentation/ui/widgets/custom_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:devpaul_todo_app/presentation/blocs/user_bloc/auth_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String name = 'login_screen';
@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       BlocProvider.of<AuthBloc>(context).add(
         AuthLoginEvent(
-          '${(_usernameController.text.trim()).toLowerCase()}@diegolopez.com',
+          (_usernameController.text.trim()).toLowerCase(),
           _passwordController.text.trim(),
         ),
       );
@@ -57,8 +57,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text(
+                      'To Do App',
+                      style:
+                          Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    const SizedBox(height: 24),
                     SizedBox(
-                      width: 260,
+                      width: 170,
                       child: Image.asset(
                         'assets/logo.png',
                         fit: BoxFit.fitWidth,
@@ -71,17 +79,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     CustomInput(
                       width: 460,
-                      hintText: "Nombre de usuario",
+                      hintText: "Email",
                       controller: _usernameController,
                       validator: (value) =>
-                          InputValidator.usernameValidator(value),
-                      textInputType: TextInputType.name,
-                      icon: Icons.person_outline_rounded,
+                          InputValidator.emailValidator(value),
+                      textInputType: TextInputType.emailAddress,
+                      icon: Icons.email_outlined,
                       marginBottom: 8,
                     ),
                     CustomInput(
                       width: 460,
-                      hintText: "Contraseña",
+                      hintText: "Password",
                       controller: _passwordController,
                       validator: (value) =>
                           InputValidator.emptyValidator(value: value),
@@ -98,10 +106,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         return FilledButton.icon(
                           onPressed: () => _onLoginPressed(context),
-                          label: const Text('Ingresar'),
+                          label: const Text('Login'),
                           icon: const Icon(Icons.login_rounded),
                         );
                       },
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: () => context.go('/user-register'),
+                      child: const Text("Don't have an account? Register"),
                     ),
                   ],
                 ),
