@@ -105,14 +105,14 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   child: GestureDetector(
                     onTap: _showImageSourceActionSheet,
                     child: CircleAvatar(
-                      radius: 50,
+                      radius: 76,
                       backgroundImage: _profileImageBytes != null
                           ? MemoryImage(_profileImageBytes!)
                           : const AssetImage('assets/default_profile.png')
                               as ImageProvider,
                       child: _profileImageBytes == null
                           ? const Icon(Icons.add_a_photo,
-                              size: 30, color: Colors.white)
+                              size: 38, color: Colors.white)
                           : null,
                     ),
                   ),
@@ -152,44 +152,42 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   passwordVisibility: true,
                   marginBottom: 22,
                 ),
+
+                const SizedBox(height: 16),
+
+                FilledButton.icon(
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please fill out the form correctly'),
+                        ),
+                      );
+                      return;
+                    }
+                    if (_profileImageBytes == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Please select a profile photo'),
+                        ),
+                      );
+                      return;
+                    }
+                    _onSubmit(_profileImageBytes!);
+                  },
+                  label: const Text('Register'),
+                  icon: const Icon(Icons.save_outlined),
+                ),
                 const Padding(
-                  padding: EdgeInsets.only(bottom: 12, top: 6),
+                  padding: EdgeInsets.only(bottom: 6, top: 22),
                   child: Divider(),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    OutlinedButton(
-                      onPressed: _resetForm,
-                      child: const Text('Cancel'),
-                    ),
-                    const SizedBox(width: 12),
-                    FilledButton.icon(
-                      onPressed: () async {
-                        if (!_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content:
-                                  Text('Please fill out the form correctly'),
-                            ),
-                          );
-                          return;
-                        }
-                        if (_profileImageBytes == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Please select a profile photo'),
-                            ),
-                          );
-                          return;
-                        }
-                        _onSubmit(_profileImageBytes!);
-                      },
-                      label: const Text('Register'),
-                      icon: const Icon(Icons.save_outlined),
-                    ),
-                  ],
+                TextButton(
+                  onPressed: () {
+                    _resetForm();
+                    context.go('/login');
+                  },
+                  child: const Text("Already have an account? Login"),
                 ),
               ],
             ),

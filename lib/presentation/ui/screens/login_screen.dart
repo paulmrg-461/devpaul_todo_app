@@ -113,10 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextButton(
-                      onPressed: () {
-                        print("Navigating to /user-register");
-                        context.go('/user-register');
-                      },
+                      onPressed: () => context.go('/user-register'),
                       child: const Text("Don't have an account? Register"),
                     ),
                   ],
