@@ -27,6 +27,9 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
   Uint8List? _profileImageBytes;
   final ImagePicker _picker = ImagePicker();
 
+  /// Flag para evitar que se intente registrar más de una vez.
+  bool _userCreated = false;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -35,7 +38,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     super.dispose();
   }
 
-  /// Selecciona la imagen de perfil ya sea desde cámara o galería.
+  /// Selecciona la imagen de perfil desde cámara o galería.
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile =
         await _picker.pickImage(source: source, imageQuality: 75);
@@ -47,7 +50,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     }
   }
 
-  /// Muestra las opciones para elegir la imagen.
+  /// Muestra las opciones para seleccionar imagen.
   void _showImageSourceActionSheet() {
     showModalBottomSheet(
       context: context,
@@ -92,11 +95,11 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
       );
       return;
     }
-    // Dispara el evento para registrar el usuario (sólo email y password son necesarios aquí)
+    // Dispara el evento para registrar al usuario (sólo se usan email y password).
     context.read<AuthBloc>().add(
           AuthRegisterEvent(
-            _emailController.text,
-            _passwordController.text,
+            _emailController.text.trim(),
+            _passwordController.text.trim(),
           ),
         );
   }
@@ -115,22 +118,29 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        // Listener para AuthBloc: al autenticarse correctamente, se crea el registro en Firestore.
         BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthAuthenticated) {
-              final authUser = state.user;
-              final newUser = UserModel(
-                name: _nameController.text,
-                email: _emailController.text,
-                password: _passwordController.text,
-                id: authUser.id,
-                photoUrl: '',
-                uid: authUser.uid,
-                token: authUser.token,
-              );
-              context
-                  .read<UserBloc>()
-                  .add(CreateUserEvent(newUser, _profileImageBytes!));
+              if (!_userCreated) {
+                _userCreated = true;
+                final authUser = state.user;
+                final newUser = UserModel(
+                  name: _nameController.text.trim(),
+                  email: _emailController.text.trim(),
+                  password: _passwordController.text.trim(),
+                  id: authUser.id, // O usa authUser.uid según tu lógica.
+                  photoUrl: '', // Se actualizará tras la subida de la imagen.
+                  uid: authUser.uid,
+                  token: authUser.token,
+                );
+                // Crea el registro en Firestore y sube la foto de perfil.
+                context
+                    .read<UserBloc>()
+                    .add(CreateUserEvent(newUser, _profileImageBytes!));
+              }
+              // Una vez completado el proceso, navega a la pantalla Home.
+              context.go('/');
             } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
@@ -138,15 +148,10 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
             }
           },
         ),
-        // Listener para el UserBloc: muestra el resultado de la creación del usuario en Firestore.
+        // Listener para UserBloc: muestra errores al crear el registro en Firestore.
         BlocListener<UserBloc, UserState>(
           listener: (context, state) {
-            if (state is OperatorSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('User created successfully')),
-              );
-              Navigator.pop(context);
-            } else if (state is OperatorFailure) {
+            if (state is OperatorFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text(state.message)),
               );

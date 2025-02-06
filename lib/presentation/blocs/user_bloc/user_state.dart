@@ -10,12 +10,12 @@ final class OperatorInitial extends UserState {}
 final class OperatorLoading extends UserState {}
 
 final class OperatorSuccess extends UserState {
-  final List<User>? operators;
+  final List<User>? users;
 
-  OperatorSuccess({this.operators});
+  OperatorSuccess({this.users});
 
   @override
-  List<Object?> get props => [operators];
+  List<Object?> get props => [users];
 }
 
 class OperatorFailure extends UserState {

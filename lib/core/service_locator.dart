@@ -30,15 +30,15 @@ Future<void> init() async {
   sl.registerLazySingleton<FirebaseStorageDataSource>(
     () => FirebaseStorageDataSourceImpl(sl()),
   );
-  sl.registerLazySingleton<OperatorDataSource>(
-    () => OperatorDataSourceImpl(sl<FirebaseFirestore>()),
+  sl.registerLazySingleton<UserDataSource>(
+    () => UserDataSourceImpl(sl<FirebaseFirestore>()),
   );
 
   // Repositorios
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImpl(
-      dataSource: sl<OperatorDataSource>(),
+      dataSource: sl<UserDataSource>(),
       storageDataSource: sl<FirebaseStorageDataSource>(),
     ),
   );

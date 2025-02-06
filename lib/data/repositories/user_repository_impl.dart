@@ -9,7 +9,7 @@ import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  final OperatorDataSource dataSource;
+  final UserDataSource dataSource;
   final FirebaseStorageDataSource storageDataSource;
 
   UserRepositoryImpl({
@@ -19,8 +19,8 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> createUser(User user) async {
-    final operatorModel = UserModel.fromEntity(user);
-    await dataSource.createUser(operatorModel);
+    final userModel = UserModel.fromEntity(user);
+    await dataSource.createUser(userModel);
   }
 
   @override
@@ -31,8 +31,8 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> updateUser(User user) async {
-    final operatorModel = UserModel.fromEntity(user);
-    await dataSource.updateUser(operatorModel);
+    final userModel = UserModel.fromEntity(user);
+    await dataSource.updateUser(userModel);
   }
 
   @override

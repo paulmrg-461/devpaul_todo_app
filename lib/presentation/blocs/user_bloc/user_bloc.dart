@@ -59,8 +59,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     emit(OperatorLoading());
     try {
-      final operators = await getUsersUseCase();
-      emit(OperatorSuccess(operators: operators));
+      final users = await getUsersUseCase();
+      emit(OperatorSuccess(users: users));
     } catch (e) {
       emit(OperatorFailure('Error al obtener los users.'));
     }

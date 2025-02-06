@@ -2,22 +2,22 @@ import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-abstract class OperatorDataSource {
-  Future<void> createUser(UserModel operatorModel);
+abstract class UserDataSource {
+  Future<void> createUser(UserModel userModel);
   Future<List<UserModel>> getUsers();
-  Future<void> updateUser(UserModel operatorModel);
+  Future<void> updateUser(UserModel userModel);
   Future<void> deleteUser(String id);
 }
 
-class OperatorDataSourceImpl implements OperatorDataSource {
+class UserDataSourceImpl implements UserDataSource {
   final FirebaseFirestore firestore;
 
-  OperatorDataSourceImpl(this.firestore);
+  UserDataSourceImpl(this.firestore);
 
   @override
-  Future<void> createUser(UserModel operatorModel) async {
+  Future<void> createUser(UserModel userModel) async {
     try {
-      await firestore.collection('operators').add(operatorModel.toMap());
+      await firestore.collection('users').add(userModel.toMap());
     } catch (e) {
       throw Exception('Error al crear el user: $e');
     }
@@ -26,7 +26,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   @override
   Future<List<UserModel>> getUsers() async {
     try {
-      final querySnapshot = await firestore.collection('operators').get();
+      final querySnapshot = await firestore.collection('users').get();
       return querySnapshot.docs
           .map((doc) => UserModel.fromSnapshot(doc))
           .toList();
@@ -36,12 +36,12 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   }
 
   @override
-  Future<void> updateUser(UserModel operatorModel) async {
+  Future<void> updateUser(UserModel userModel) async {
     try {
       await firestore
-          .collection('operators')
-          .doc(operatorModel.id)
-          .update(operatorModel.toMap());
+          .collection('users')
+          .doc(userModel.id)
+          .update(userModel.toMap());
     } catch (e) {
       throw Exception('Error al actualizar el user: $e');
     }
@@ -51,7 +51,7 @@ class OperatorDataSourceImpl implements OperatorDataSource {
   Future<void> deleteUser(String id) async {
     try {
       // Primero elimina el user de Firestore
-      await firestore.collection('operators').doc(id).delete();
+      await firestore.collection('users').doc(id).delete();
 
       // Luego, elimina el usuario de Firebase Auth
       User? user = FirebaseAuth.instance.currentUser;

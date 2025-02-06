@@ -25,14 +25,14 @@ class _OperatorsTabState extends State<OperatorsTab> {
         if (state is OperatorLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is OperatorSuccess) {
-          final operators = state.operators ?? [];
-          if (operators.isEmpty) {
+          final users = state.users ?? [];
+          if (users.isEmpty) {
             return const Center(child: Text('No hay users disponibles.'));
           }
           return ListView.builder(
-            itemCount: operators.length,
+            itemCount: users.length,
             itemBuilder: (context, index) {
-              final user = operators[index];
+              final user = users[index];
               return UserCard(user: user);
             },
           );
