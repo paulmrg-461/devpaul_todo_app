@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
 import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 
 class UserRegisterScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     super.dispose();
   }
 
-  /// Permite elegir la imagen de perfil ya sea desde cámara o galería.
+  /// Selecciona la imagen de perfil ya sea desde cámara o galería.
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile =
         await _picker.pickImage(source: source, imageQuality: 75);
@@ -46,7 +47,7 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     }
   }
 
-  /// Muestra las opciones para seleccionar imagen (cámara o galería).
+  /// Muestra las opciones para elegir la imagen.
   void _showImageSourceActionSheet() {
     showModalBottomSheet(
       context: context,
@@ -77,30 +78,91 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     );
   }
 
+  /// Valida el formulario y dispara el evento de registro en AuthBloc.
+  void _onSubmit() {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill out the form correctly')),
+      );
+      return;
+    }
+    if (_profileImageBytes == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a profile photo')),
+      );
+      return;
+    }
+    // Dispara el evento para registrar el usuario (sólo email y password son necesarios aquí)
+    context.read<AuthBloc>().add(
+          AuthRegisterEvent(
+            _emailController.text,
+            _passwordController.text,
+          ),
+        );
+  }
+
+  /// Reinicia el formulario.
+  void _resetForm() {
+    setState(() {
+      _nameController.clear();
+      _emailController.clear();
+      _passwordController.clear();
+      _profileImageBytes = null;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('User Register')),
-      body: BlocListener<UserBloc, UserState>(
-        listener: (context, state) {
-          if (state is OperatorSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('User created successfully')),
-            );
-            Navigator.pop(context);
-          } else if (state is OperatorFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
-        child: Padding(
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthAuthenticated) {
+              final authUser = state.user;
+              final newUser = UserModel(
+                name: _nameController.text,
+                email: _emailController.text,
+                password: _passwordController.text,
+                id: authUser.id,
+                photoUrl: '',
+                uid: authUser.uid,
+                token: authUser.token,
+              );
+              context
+                  .read<UserBloc>()
+                  .add(CreateUserEvent(newUser, _profileImageBytes!));
+            } else if (state is AuthError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+        ),
+        // Listener para el UserBloc: muestra el resultado de la creación del usuario en Firestore.
+        BlocListener<UserBloc, UserState>(
+          listener: (context, state) {
+            if (state is OperatorSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('User created successfully')),
+              );
+              Navigator.pop(context);
+            } else if (state is OperatorFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message)),
+              );
+            }
+          },
+        ),
+      ],
+      child: Scaffold(
+        appBar: AppBar(title: const Text('User Register')),
+        body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 22),
           child: Form(
             key: _formKey,
             child: ListView(
               children: [
-                // Widget para seleccionar foto de perfil.
+                // Selector de foto de perfil.
                 Center(
                   child: GestureDetector(
                     onTap: _showImageSourceActionSheet,
@@ -152,29 +214,9 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   passwordVisibility: true,
                   marginBottom: 22,
                 ),
-
                 const SizedBox(height: 16),
-
                 FilledButton.icon(
-                  onPressed: () async {
-                    if (!_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please fill out the form correctly'),
-                        ),
-                      );
-                      return;
-                    }
-                    if (_profileImageBytes == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please select a profile photo'),
-                        ),
-                      );
-                      return;
-                    }
-                    _onSubmit(_profileImageBytes!);
-                  },
+                  onPressed: _onSubmit,
                   label: const Text('Register'),
                   icon: const Icon(Icons.save_outlined),
                 ),
@@ -195,34 +237,5 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
         ),
       ),
     );
-  }
-
-  void _onSubmit(Uint8List photoBytes) {
-    if (_formKey.currentState!.validate()) {
-      final UserModel user = UserModel(
-        name: _nameController.text,
-        email: _emailController.text,
-        password: _passwordController.text,
-        id: '',
-        photoUrl: '',
-        uid: '',
-        token: '',
-      );
-
-      context.read<UserBloc>().add(
-            CreateUserEvent(user, photoBytes),
-          );
-      _resetForm();
-    }
-  }
-
-  void _resetForm() {
-    setState(() {
-      _nameController.clear();
-      _emailController.clear();
-      _passwordController.clear();
-      _profileImageBytes = null;
-    });
-    context.pop();
   }
 }
