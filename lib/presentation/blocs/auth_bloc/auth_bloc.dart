@@ -61,17 +61,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await registerUseCase(event.email, event.password);
       if (user != null) {
-        // Almacena el token y el correo
-        await authStorage.storeToken(
-          user.token,
-        ); // Asumiendo que UserEntity tiene un campo token
+        await authStorage.storeToken(user.token);
         await authStorage.storeEmail(event.email);
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthError('Registration failed'));
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      if (e.toString().contains("already in use")) {
+        // Si el correo ya está en uso, se intenta iniciar sesión con ese usuario
+        try {
+          final user = await loginUseCase(event.email, event.password);
+          if (user != null) {
+            await authStorage.storeToken(user.token);
+            await authStorage.storeEmail(event.email);
+            emit(AuthAuthenticated(user));
+          } else {
+            emit(AuthError('Login failed after duplicate registration'));
+          }
+        } catch (loginError) {
+          emit(AuthError(loginError.toString()));
+        }
+      } else {
+        emit(AuthError(e.toString()));
+      }
     }
   }
 

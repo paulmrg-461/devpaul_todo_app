@@ -16,12 +16,14 @@ class UserDataSourceImpl implements UserDataSource {
 
   @override
   Future<void> createUser(UserModel userModel) async {
+    print("Creating user: ${userModel.uid} - ${userModel.email}");
     try {
       // Se usa el uid como id del documento para evitar duplicados.
       await firestore
           .collection('users')
           .doc(userModel.uid)
           .set(userModel.toMap());
+      print("User created successfully in Firestore.");
     } catch (e) {
       throw Exception('Error to create user: $e');
     }

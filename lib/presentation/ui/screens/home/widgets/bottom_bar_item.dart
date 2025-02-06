@@ -18,7 +18,7 @@ class BottomBarItem {
 
 const List<BottomBarItem> bottombarListAdmin = [
   BottomBarItem(
-    label: 'Operadores',
+    label: 'Users',
     icon: Icons.engineering_outlined,
     widget: OperatorsTab(),
   ),

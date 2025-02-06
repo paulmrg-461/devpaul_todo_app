@@ -10,14 +10,17 @@ class CreateUser {
   CreateUser({required this.authRepository, required this.repository});
 
   Future<void> call(UserModel newUser) async {
-    final UserEntity? user = await authRepository.register(
-      newUser.email,
-      newUser.password,
-    );
-
-    final UserModel userToSave = newUser.copyWith(
-      uid: user?.uid ?? '',
-    );
-    return repository.createUser(userToSave);
+    // Si el uid ya viene asignado, significa que el usuario ya está autenticado,
+    // por lo que solo debemos crear el registro en Firestore.
+    if (newUser.uid.isEmpty) {
+      final UserEntity? user = await authRepository.register(
+        newUser.email,
+        newUser.password,
+      );
+      newUser = newUser.copyWith(
+        uid: user?.uid ?? '',
+      );
+    }
+    return repository.createUser(newUser);
   }
 }

@@ -129,15 +129,20 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   name: _nameController.text.trim(),
                   email: _emailController.text.trim(),
                   password: _passwordController.text.trim(),
-                  id: authUser.id, // O usa authUser.uid según tu lógica.
+                  id: authUser.id, // O usa authUser.uid, según tu lógica.
                   photoUrl: '', // Se actualizará tras la subida de la imagen.
-                  uid: authUser.uid,
+                  uid: authUser.uid, // Este valor ya no estará vacío.
                   token: authUser.token,
                 );
-                // Crea el registro en Firestore y sube la foto de perfil.
+                // Llama al UserBloc para subir la foto y crear el registro en Firestore.
                 context
                     .read<UserBloc>()
                     .add(CreateUserEvent(newUser, _profileImageBytes!));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content:
+                          Text("User ${newUser.name} created successfully")),
+                );
               }
               // Una vez completado el proceso, navega a la pantalla Home.
               context.go('/');
