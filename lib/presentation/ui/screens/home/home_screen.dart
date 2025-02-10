@@ -1,5 +1,5 @@
 import 'package:devpaul_todo_app/config/global/environment.dart';
-import 'package:devpaul_todo_app/domain/entities/user_entity.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/widgets/bottom_bar_item.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/screens.dart';
@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildDrawerContent(
     BuildContext context,
-    UserEntity user,
+    UserModel user,
     bool isAdmin,
   ) {
     return ListView(

@@ -26,7 +26,10 @@ class ProfileTab extends StatelessWidget {
                   ),
                   child: Icon(Icons.person, size: 80, color: Colors.grey[600]),
                 ),
+                Text(state.user.name, style: textTheme.bodyMedium),
                 Text(state.user.email, style: textTheme.bodyMedium),
+                Text(state.user.uid, style: textTheme.bodySmall),
+                Text(state.user.photoUrl, style: textTheme.bodySmall),
                 const SizedBox(height: 48),
                 OutlinedButton.icon(
                   onPressed: () {

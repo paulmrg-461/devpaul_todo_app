@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:devpaul_todo_app/data/datasources/auth_storage.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:meta/meta.dart';
-import 'package:devpaul_todo_app/domain/entities/user_entity.dart';
 import 'package:devpaul_todo_app/domain/usecases/authentication/authentication_use_cases.dart';
 
 part 'auth_event.dart';
@@ -59,10 +59,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     try {
-      final user = await registerUseCase(event.email, event.password);
+      final user = await registerUseCase(event.userModel);
       if (user != null) {
         await authStorage.storeToken(user.token);
-        await authStorage.storeEmail(event.email);
+        await authStorage.storeEmail(event.userModel.email);
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthError('Registration failed'));
@@ -71,10 +71,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (e.toString().contains("already in use")) {
         // Si el correo ya está en uso, se intenta iniciar sesión con ese usuario
         try {
-          final user = await loginUseCase(event.email, event.password);
+          final user = await loginUseCase(
+              event.userModel.email, event.userModel.password);
           if (user != null) {
             await authStorage.storeToken(user.token);
-            await authStorage.storeEmail(event.email);
+            await authStorage.storeEmail(event.userModel.email);
             emit(AuthAuthenticated(user));
           } else {
             emit(AuthError('Login failed after duplicate registration'));

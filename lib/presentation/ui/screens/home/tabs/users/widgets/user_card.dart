@@ -36,12 +36,12 @@ class UserCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
                   user.photoUrl,
-                  width: MediaQuery.of(context).size.width * 0.275,
+                  width: 60,
                   height: 60,
                   fit: BoxFit.fitWidth, // Ajusta el fit según tus necesidades
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
-                      width: 136,
+                      width: 60,
                       height: 60,
                       color: Colors.grey[200],
                       child: const Icon(
