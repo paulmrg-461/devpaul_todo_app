@@ -14,6 +14,7 @@ final sl = GetIt.instance;
 Future<void> init() async {
   // Shared Preferences
   final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
   // Firebase
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);
@@ -38,6 +39,7 @@ Future<void> init() async {
       storageDataSource: sl<FirebaseStorageDataSource>(),
     ),
   );
+  sl.registerLazySingleton<ThemeRepository>(() => ThemeRepositoryImpl(sl()));
 
   // Casos de Uso
   sl.registerLazySingleton(() => Login(sl()));
@@ -54,6 +56,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => DeleteUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => UploadFile(sl()));
+  // Theme Use Cases
+  sl.registerLazySingleton(() => GetThemeModeUseCase(sl()));
+  sl.registerLazySingleton(() => SaveThemeModeUseCase(sl()));
 
   // Bloc
   sl.registerFactory(
@@ -73,6 +78,14 @@ Future<void> init() async {
       updateUserUseCase: sl<UpdateUser>(),
       deleteUserUseCase: sl<DeleteUser>(),
       uploadFileUseCase: sl<UploadFile>(),
+    ),
+  );
+
+  // Theme Bloc
+  sl.registerFactory(
+    () => ThemeBloc(
+      getThemeModeUseCase: sl(),
+      saveThemeModeUseCase: sl(),
     ),
   );
 
