@@ -7,10 +7,13 @@ import 'package:devpaul_todo_app/domain/usecases/use_cases.dart';
 import 'package:devpaul_todo_app/data/datasources/data_datasources.dart';
 import 'package:devpaul_todo_app/data/repositories/data_repositories.dart';
 import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // Shared Preferences
+  final sharedPreferences = await SharedPreferences.getInstance();
   // Firebase
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);

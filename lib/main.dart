@@ -1,14 +1,13 @@
-import 'package:devpaul_todo_app/config/routes/app_routes.dart';
-import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
-import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:devpaul_todo_app/config/routes/app_routes.dart';
+import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:devpaul_todo_app/core/firebase/firebase_options.dart';
 import 'package:devpaul_todo_app/core/service_locator.dart';
-import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'core/service_locator.dart' as di;
 
 void main() async {
@@ -37,10 +36,14 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (context) => sl<UserBloc>()),
       ],
-      child: MaterialApp.router(
-        routerConfig: appRouter,
-        title: 'DevPaul ToDo App',
-        theme: CustomTheme.theme,
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, state) {
+          return MaterialApp.router(
+            routerConfig: appRouter,
+            title: 'DevPaul Todo App',
+            theme: CustomTheme.getThemeData(state.isDarkMode),
+          );
+        },
       ),
     );
   }

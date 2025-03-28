@@ -25,13 +25,14 @@ class CustomTheme {
     labelSmall: defaultFontStyle,
   );
 
-  static final ThemeData theme = ThemeData(
-    useMaterial3: true,
-    textTheme: textTheme,
-    colorScheme: ColorScheme.fromSeed(
-      brightness: isDarkMode ? Brightness.dark : Brightness.light,
-      seedColor: primaryColor,
-      // dynamicSchemeVariant: DynamicSchemeVariant.fidelity
-    ),
-  );
+  static ThemeData getThemeData(bool isDarkMode) {
+    return ThemeData(
+      useMaterial3: true,
+      textTheme: textTheme,
+      colorScheme: ColorScheme.fromSeed(
+        brightness: isDarkMode ? Brightness.dark : Brightness.light,
+        seedColor: primaryColor,
+      ),
+    );
+  }
 }
