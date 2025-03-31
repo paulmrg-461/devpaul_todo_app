@@ -1,4 +1,3 @@
-import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -43,15 +42,15 @@ class CustomInput extends StatefulWidget {
     this.enabledInputInteraction = true,
     this.textCapitalization = TextCapitalization.none,
     this.borderRadius = 8,
-    this.backgroundColor = Colors.white,
-    this.borderColor = CustomTheme.primaryColor,
-    this.fontColor = Colors.black87,
+    this.backgroundColor,
+    this.borderColor,
+    this.fontColor,
     this.minLines = 1,
     this.maxLines = 1,
     this.maxLenght,
     this.expands = false,
     this.width,
-    this.marginBottom = 4,
+    this.marginBottom = 8,
     this.marginTop = 4,
     this.marginLeft = 4,
     this.marginRight = 4,
@@ -68,13 +67,25 @@ class _CustomInputState extends State<CustomInput> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    Color getBackgroundColor() => widget.backgroundColor ?? colorScheme.surface;
+    Color getBorderColor() => widget.borderColor ?? colorScheme.primary;
+    Color getFontColor() => widget.fontColor ?? colorScheme.onSurface;
+    Color getIconColor() => widget.borderColor ?? colorScheme.primary;
+
     OutlineInputBorder getBorder({
       required Color borderColor,
       required double borderWidth,
-    }) => OutlineInputBorder(
-      borderRadius: BorderRadius.circular(widget.borderRadius!),
-      borderSide: BorderSide(color: borderColor, width: borderWidth),
-    );
+    }) =>
+        OutlineInputBorder(
+          borderRadius: BorderRadius.circular(widget.borderRadius!),
+          borderSide: BorderSide(
+            color: borderColor,
+            width: borderWidth,
+          ),
+        );
 
     return Container(
       width: widget.width,
@@ -85,8 +96,14 @@ class _CustomInputState extends State<CustomInput> {
         bottom: widget.marginBottom!,
       ),
       decoration: BoxDecoration(
-        color: widget.backgroundColor!,
+        color: getBackgroundColor(),
         borderRadius: BorderRadius.circular(widget.borderRadius!),
+        boxShadow: [
+          BoxShadow(
+              color: colorScheme.shadow.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2)),
+        ],
       ),
       child: TextFormField(
         controller: widget.controller,
@@ -96,59 +113,78 @@ class _CustomInputState extends State<CustomInput> {
         maxLines: widget.maxLines!,
         maxLength: widget.maxLenght,
         expands: widget.expands!,
-        style: GoogleFonts.inter(
-          color: widget.fontColor!,
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-        ),
+        style: textTheme.bodyMedium?.copyWith(
+              color: getFontColor(),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ) ??
+            GoogleFonts.inter(
+              color: getFontColor(),
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+            ),
         autocorrect: false,
         keyboardType: widget.textInputType,
-        obscureText: (widget.obscureText! && passwordObscure) ? true : false,
+        obscureText: (widget.obscureText! && passwordObscure),
         enabled: widget.enabledInputInteraction,
         textCapitalization: widget.textCapitalization!,
-        inputFormatters:
-            widget.isNumeric
-                ? <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*$')),
-                ]
-                : null,
+        inputFormatters: widget.isNumeric
+            ? <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(RegExp(r'^-?\d*\.?\d*$')),
+              ]
+            : null,
         decoration: InputDecoration(
           isCollapsed: true,
-          prefixIcon: Icon(widget.icon, color: widget.borderColor, size: 20),
-          suffixIcon:
-              widget.passwordVisibility!
-                  ? IconButton(
-                    color: widget.borderColor,
-                    iconSize: 20,
-                    icon: Icon(
-                      passwordObscure ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed:
-                        () => setState(() {
-                          passwordObscure = !passwordObscure;
-                        }),
-                  )
-                  : null,
-          contentPadding: EdgeInsets.symmetric(vertical: widget.contentPadding),
+          prefixIcon: widget.icon != null
+              ? Icon(widget.icon, color: getIconColor(), size: 20)
+              : null,
+          suffixIcon: widget.passwordVisibility!
+              ? IconButton(
+                  color: getIconColor(),
+                  iconSize: 20,
+                  icon: Icon(
+                    passwordObscure ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () => setState(() {
+                    passwordObscure = !passwordObscure;
+                  }),
+                )
+              : null,
+          contentPadding: EdgeInsets.symmetric(
+            vertical: widget.contentPadding,
+            horizontal: 12,
+          ),
           focusedBorder: getBorder(
-            borderColor: widget.borderColor!,
-            borderWidth: 1.2,
+            borderColor: getBorderColor().withOpacity(0.8),
+            borderWidth: 1.5,
           ),
           border: getBorder(
-            borderColor: widget.borderColor ?? CustomTheme.primaryColor,
-            borderWidth: 0.75,
+            borderColor: getBorderColor().withOpacity(0.4),
+            borderWidth: 1.0,
+          ),
+          enabledBorder: getBorder(
+            borderColor: getBorderColor().withOpacity(0.4),
+            borderWidth: 1.0,
           ),
           errorBorder: getBorder(
-            borderColor: Colors.red.shade800,
-            borderWidth: 0.75,
-          ),
-          focusedErrorBorder: getBorder(
-            borderColor: Colors.red.shade800,
+            borderColor: colorScheme.error,
             borderWidth: 1.2,
           ),
+          focusedErrorBorder: getBorder(
+            borderColor: colorScheme.error,
+            borderWidth: 1.5,
+          ),
           labelText: widget.hintText,
-          labelStyle: TextStyle(color: widget.fontColor!, fontSize: 12),
+          labelStyle: textTheme.bodySmall?.copyWith(
+            color: getFontColor().withOpacity(0.6),
+          ),
+          floatingLabelStyle: TextStyle(color: getBorderColor()),
+          hintStyle: textTheme.bodySmall?.copyWith(
+            color: getFontColor().withOpacity(0.4),
+          ),
           counterText: '',
+          fillColor: getBackgroundColor(),
+          filled: true,
         ),
       ),
     );

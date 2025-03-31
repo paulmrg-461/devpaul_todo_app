@@ -12,9 +12,8 @@ class AuthLoginEvent extends AuthEvent {
 class AuthLogoutEvent extends AuthEvent {}
 
 class AuthRegisterEvent extends AuthEvent {
-  final String email;
-  final String password;
-  AuthRegisterEvent(this.email, this.password);
+  final UserModel userModel;
+  AuthRegisterEvent(this.userModel);
 }
 
 class AuthCheckUserEvent extends AuthEvent {}

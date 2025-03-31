@@ -1,6 +1,7 @@
 import 'package:devpaul_todo_app/config/global/environment.dart';
-import 'package:devpaul_todo_app/domain/entities/user_entity.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/theme_bloc/theme_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/widgets/bottom_bar_item.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/screens.dart';
 import 'package:flutter/material.dart';
@@ -38,23 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           return Scaffold(
             appBar: AppBar(
-              actions: [
-                if ((isAdmin) &&
-                    (currentPageIndex == 0 || currentPageIndex == 1))
-                  IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () {
-                      // TODO: add search functionality
-                    },
-                    tooltip: 'Buscar...',
-                  ),
-                if (currentPageIndex == 1)
-                  IconButton(
-                    icon: const Icon(Icons.date_range),
-                    onPressed: _selectDateRange,
-                    tooltip: 'Seleccionar Rango de Fechas',
-                  ),
-              ],
+              title: const Text('DevPaul To Do'),
             ),
             drawer: Drawer(
               child: _buildDrawerContent(
@@ -82,18 +67,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   )
                   .toList(),
             ),
-            floatingActionButton: currentPageIndex == 0 || currentPageIndex == 2
-                ? FloatingActionButton(
-                    onPressed: () => currentPageIndex == 0
-                        ? context.pushNamed(
-                            UserRegisterScreen.name,
-                          )
-                        : context.pushNamed(
-                            UserRegisterScreen.name,
-                          ),
-                    child: const Icon(Icons.add),
-                  )
-                : null,
           );
         } else if (state is AuthLoading) {
           return const Scaffold(
@@ -108,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildDrawerContent(
     BuildContext context,
-    UserEntity user,
+    UserModel user,
     bool isAdmin,
   ) {
     return ListView(
@@ -125,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   Container(
                     margin: const EdgeInsets.only(right: 8, bottom: 6),
-                    width: 60,
+                    width: 46,
                     child: Image.asset(
                       'assets/logo.png',
                       fit: BoxFit.fitWidth,
@@ -151,6 +124,26 @@ class _HomeScreenState extends State<HomeScreen> {
         // Drawer Items
         ..._buildDrawerItems(context, isAdmin),
         const Divider(),
+        BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, state) {
+            return ListTile(
+              leading: Icon(
+                state.isDarkMode ? Icons.light_mode : Icons.dark_mode_outlined,
+                // color: Theme.of(context)
+                //     .colorScheme
+                //     .primary, // Color del tema actual
+              ),
+              title: Text(state.isDarkMode ? 'Tema claro' : 'Tema oscuro'),
+              onTap: () {
+                context.read<ThemeBloc>().add(ThemeChanged(!state.isDarkMode));
+              },
+              tileColor:
+                  Theme.of(context).colorScheme.surface, // Fondo según tema
+              iconColor: Theme.of(context).colorScheme.onSurface,
+              textColor: Theme.of(context).colorScheme.onSurface,
+            );
+          },
+        ),
         ListTile(
           leading: const Icon(Icons.developer_mode_rounded),
           title: const Text('Acerca de'),
@@ -185,48 +178,5 @@ class _HomeScreenState extends State<HomeScreen> {
         },
       );
     });
-  }
-
-  Future<void> _selectDateRange() async {
-    final DateTime now = DateTime.now();
-    final DateTime firstDate = now.subtract(const Duration(days: 15));
-    final DateTime lastDate = now;
-
-    final DateTimeRange? picked = await showDateRangePicker(
-      context: context,
-      initialDateRange: DateTimeRange(
-        start: DateTime(now.year, now.month, now.day, 0, 0, 0),
-        end: DateTime(now.year, now.month, now.day, 23, 59, 59, 999),
-      ),
-      firstDate: firstDate,
-      lastDate: lastDate,
-      builder: (BuildContext context, Widget? child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Theme.of(context).primaryColor, // Color del encabezado
-              onPrimary: Colors.white, // Color del texto en el encabezado
-              onSurface: Colors.black87, // Color del texto en el cuerpo
-            ),
-            dialogBackgroundColor: Colors.white, // Color de fondo del diálogo
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked != null) {
-      final difference = picked.end.difference(picked.start).inDays;
-      if (difference > 15) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('El rango de fechas no puede exceder los 15 días.'),
-          ),
-        );
-        return;
-      }
-
-      // TODO: Emitir el evento con el rango de fechas seleccionado
-    }
   }
 }

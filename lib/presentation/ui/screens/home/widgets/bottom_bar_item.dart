@@ -23,9 +23,9 @@ const List<BottomBarItem> bottombarListAdmin = [
     widget: OperatorsTab(),
   ),
   BottomBarItem(
-    label: 'Perfil',
-    icon: Icons.person_outline_rounded,
-    widget: ProfileTab(),
+    label: 'Tasks',
+    icon: Icons.checklist_outlined,
+    widget: TaskManagementTab(),
   ),
   BottomBarItem(
     label: 'Perfil',
@@ -41,9 +41,9 @@ const List<BottomBarItem> bottombarList = [
     widget: ProfileTab(),
   ),
   BottomBarItem(
-    label: 'Perfil',
-    icon: Icons.person_outline_rounded,
-    widget: ProfileTab(),
+    label: 'Tasks',
+    icon: Icons.checklist_outlined,
+    widget: TaskManagementTab(),
   ),
   BottomBarItem(
     label: 'Perfil',

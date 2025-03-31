@@ -1,23 +1,20 @@
-import 'package:devpaul_todo_app/data/datasources/firebase_storage_data_source.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:devpaul_todo_app/data/datasources/user_data_source.dart';
-import 'package:devpaul_todo_app/data/repositories/user_repository_impl.dart';
-import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
-import 'package:devpaul_todo_app/domain/usecases/users/user_use_cases.dart';
-import 'package:devpaul_todo_app/presentation/blocs/user_bloc/user_bloc.dart';
-import 'package:devpaul_todo_app/data/datasources/auth_storage.dart';
-import 'package:devpaul_todo_app/data/datasources/firebase_auth_data_source.dart';
-import 'package:devpaul_todo_app/data/repositories/auth_repository_impl.dart';
-import 'package:devpaul_todo_app/domain/repositories/auth_repository.dart';
-import 'package:devpaul_todo_app/domain/usecases/authentication/authentication_use_cases.dart';
-import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:devpaul_todo_app/domain/repositories/domain_repositories.dart';
+import 'package:devpaul_todo_app/domain/usecases/use_cases.dart';
+import 'package:devpaul_todo_app/data/datasources/data_datasources.dart';
+import 'package:devpaul_todo_app/data/repositories/data_repositories.dart';
+import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
+  // Shared Preferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
   // Firebase
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);
@@ -33,6 +30,9 @@ Future<void> init() async {
   sl.registerLazySingleton<UserDataSource>(
     () => UserDataSourceImpl(sl<FirebaseFirestore>()),
   );
+  sl.registerLazySingleton<TaskDataSource>(
+    () => TaskDataSourceImpl(sl<FirebaseFirestore>()),
+  );
 
   // Repositorios
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -41,6 +41,10 @@ Future<void> init() async {
       dataSource: sl<UserDataSource>(),
       storageDataSource: sl<FirebaseStorageDataSource>(),
     ),
+  );
+  sl.registerLazySingleton<ThemeRepository>(() => ThemeRepositoryImpl(sl()));
+  sl.registerLazySingleton<TaskRepository>(
+    () => TaskRepositoryImpl(sl<TaskDataSource>()),
   );
 
   // Casos de Uso
@@ -58,6 +62,15 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => DeleteUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => UploadFile(sl()));
+  // Theme Use Cases
+  sl.registerLazySingleton(() => GetThemeModeUseCase(sl()));
+  sl.registerLazySingleton(() => SaveThemeModeUseCase(sl()));
+
+  // Tasks Use Cases
+  sl.registerLazySingleton(() => GetTasks(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => UpdateTask(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => DeleteTask(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => CreateTask(sl<TaskRepository>()));
 
   // Bloc
   sl.registerFactory(
@@ -77,6 +90,24 @@ Future<void> init() async {
       updateUserUseCase: sl<UpdateUser>(),
       deleteUserUseCase: sl<DeleteUser>(),
       uploadFileUseCase: sl<UploadFile>(),
+    ),
+  );
+
+  // Theme Bloc
+  sl.registerFactory(
+    () => ThemeBloc(
+      getThemeModeUseCase: sl(),
+      saveThemeModeUseCase: sl(),
+    ),
+  );
+
+  // Task Bloc
+  sl.registerFactory(
+    () => TaskBloc(
+      createTaskUseCase: sl<CreateTask>(),
+      getTasksUseCase: sl<GetTasks>(),
+      updateTaskUseCase: sl<UpdateTask>(),
+      deleteTaskUseCase: sl<DeleteTask>(),
     ),
   );
 

@@ -1,5 +1,5 @@
 import 'package:devpaul_todo_app/data/datasources/firebase_auth_data_source.dart';
-import 'package:devpaul_todo_app/domain/entities/user_entity.dart';
+import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -8,16 +8,16 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this.dataSource);
 
   @override
-  Future<UserEntity?> login(String email, String password) =>
+  Future<UserModel?> login(String email, String password) =>
       dataSource.login(email, password);
 
   @override
-  Future<UserEntity?> register(String email, String password) =>
-      dataSource.register(email, password);
+  Future<UserModel?> register(UserModel userModel) =>
+      dataSource.register(userModel);
 
   @override
   Future<void> logout() => dataSource.logout();
 
   @override
-  Future<UserEntity?> getCurrentUser() => dataSource.getCurrentUser();
+  Future<UserModel?> getCurrentUser() => dataSource.getCurrentUser();
 }

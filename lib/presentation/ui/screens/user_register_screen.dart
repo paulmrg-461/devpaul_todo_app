@@ -38,7 +38,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     super.dispose();
   }
 
-  /// Selecciona la imagen de perfil desde cámara o galería.
   Future<void> _pickImage(ImageSource source) async {
     final pickedFile =
         await _picker.pickImage(source: source, imageQuality: 75);
@@ -50,7 +49,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     }
   }
 
-  /// Muestra las opciones para seleccionar imagen.
   void _showImageSourceActionSheet() {
     showModalBottomSheet(
       context: context,
@@ -81,7 +79,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
     );
   }
 
-  /// Valida el formulario y dispara el evento de registro en AuthBloc.
   void _onSubmit() {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -95,16 +92,21 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
       );
       return;
     }
-    // Dispara el evento para registrar al usuario (sólo se usan email y password).
     context.read<AuthBloc>().add(
           AuthRegisterEvent(
-            _emailController.text.trim(),
-            _passwordController.text.trim(),
+            UserModel(
+              name: _nameController.text.trim(),
+              photoUrl: '',
+              uid: '',
+              email: _emailController.text.trim(),
+              token: '',
+              password: _passwordController.text.trim(),
+              id: '',
+            ),
           ),
         );
   }
 
-  /// Reinicia el formulario.
   void _resetForm() {
     setState(() {
       _nameController.clear();
@@ -118,7 +120,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
-        // Listener para AuthBloc: al autenticarse correctamente, se crea el registro en Firestore.
         BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthAuthenticated) {
@@ -129,12 +130,12 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                   name: _nameController.text.trim(),
                   email: _emailController.text.trim(),
                   password: _passwordController.text.trim(),
-                  id: authUser.id, // O usa authUser.uid, según tu lógica.
-                  photoUrl: '', // Se actualizará tras la subida de la imagen.
-                  uid: authUser.uid, // Este valor ya no estará vacío.
+                  id: authUser.id,
+                  photoUrl: '',
+                  uid: authUser.uid,
                   token: authUser.token,
                 );
-                // Llama al UserBloc para subir la foto y crear el registro en Firestore.
+
                 context
                     .read<UserBloc>()
                     .add(CreateUserEvent(newUser, _profileImageBytes!));
@@ -144,7 +145,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                           Text("User ${newUser.name} created successfully")),
                 );
               }
-              // Una vez completado el proceso, navega a la pantalla Home.
               context.go('/');
             } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -153,7 +153,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
             }
           },
         ),
-        // Listener para UserBloc: muestra errores al crear el registro en Firestore.
         BlocListener<UserBloc, UserState>(
           listener: (context, state) {
             if (state is OperatorFailure) {
@@ -172,7 +171,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
             key: _formKey,
             child: ListView(
               children: [
-                // Selector de foto de perfil.
                 Center(
                   child: GestureDetector(
                     onTap: _showImageSourceActionSheet,
@@ -189,7 +187,6 @@ class _UserRegisterScreenState extends State<UserRegisterScreen> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 36),
                 CustomInput(
                   width: _inputsWidth,

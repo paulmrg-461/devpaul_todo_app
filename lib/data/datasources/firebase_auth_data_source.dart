@@ -3,7 +3,7 @@ import 'package:devpaul_todo_app/data/models/user_model.dart';
 
 abstract class FirebaseAuthDataSource {
   Future<UserModel?> login(String email, String password);
-  Future<UserModel?> register(String email, String password);
+  Future<UserModel?> register(UserModel userModel);
   Future<void> logout();
   Future<UserModel?> getCurrentUser();
 }
@@ -27,14 +27,17 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
   }
 
   @override
-  Future<UserModel?> register(String email, String password) async {
+  Future<UserModel?> register(UserModel userModel) async {
     firebase_auth.UserCredential userCredential =
         await auth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
+      email: userModel.email,
+      password: userModel.password,
     );
 
     String token = await userCredential.user?.getIdToken() ?? '';
+
+    await userCredential.user?.updateDisplayName(userModel.name);
+    await userCredential.user?.updatePhotoURL(userModel.photoUrl);
 
     return UserModel.fromFirebaseUser(userCredential.user!, token);
   }
