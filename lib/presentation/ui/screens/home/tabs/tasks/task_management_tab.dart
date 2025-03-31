@@ -13,11 +13,27 @@ class TaskManagementTab extends StatefulWidget {
   _TaskManagementTabState createState() => _TaskManagementTabState();
 }
 
-class _TaskManagementTabState extends State<TaskManagementTab> {
+class _TaskManagementTabState extends State<TaskManagementTab>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _currentTabIndex = 0;
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {
+        _currentTabIndex = _tabController.index;
+      });
+    });
     _loadTasks();
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   void _loadTasks() {
@@ -33,6 +49,16 @@ class _TaskManagementTabState extends State<TaskManagementTab> {
       builder: (context, authState) {
         if (authState is AuthAuthenticated) {
           return Scaffold(
+            appBar: AppBar(
+              title: const Text('Tareas'),
+              bottom: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(text: 'Pendientes'),
+                  Tab(text: 'Completadas'),
+                ],
+              ),
+            ),
             body: BlocBuilder<TaskBloc, TaskState>(
               builder: (context, state) {
                 if (state is TaskLoading) {
@@ -42,14 +68,30 @@ class _TaskManagementTabState extends State<TaskManagementTab> {
                   return Center(child: Text(state.message));
                 }
                 if (state is TaskLoaded) {
+                  final tasks = state.tasks
+                      .where((task) => _currentTabIndex == 0
+                          ? !task.isCompleted
+                          : task.isCompleted)
+                      .toList();
+
+                  if (tasks.isEmpty) {
+                    return Center(
+                      child: Text(_currentTabIndex == 0
+                          ? 'No hay tareas pendientes'
+                          : 'No hay tareas completadas'),
+                    );
+                  }
+
                   return ListView.builder(
-                    itemCount: state.tasks.length,
+                    itemCount: tasks.length,
                     itemBuilder: (context, index) {
-                      final task = state.tasks[index];
+                      final task = tasks[index];
                       return TaskCard(
                         task: task,
                         onEdit: () => _showTaskFormDialog(context, task),
                         onDelete: () => _deleteTask(context, task.id),
+                        onToggleComplete: () =>
+                            _toggleTaskComplete(context, task),
                       );
                     },
                   );
@@ -57,10 +99,12 @@ class _TaskManagementTabState extends State<TaskManagementTab> {
                 return const Center(child: Text('No hay tareas'));
               },
             ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () => _showTaskFormDialog(context, null),
-              child: const Icon(Icons.add),
-            ),
+            floatingActionButton: _currentTabIndex == 0
+                ? FloatingActionButton(
+                    onPressed: () => _showTaskFormDialog(context, null),
+                    child: const Icon(Icons.add),
+                  )
+                : null,
           );
         }
         return const Center(child: Text('Usuario no autenticado'));
@@ -95,5 +139,20 @@ class _TaskManagementTabState extends State<TaskManagementTab> {
           .read<TaskBloc>()
           .add(DeleteTaskEvent(taskId, userId: authState.user.uid));
     }
+  }
+
+  void _toggleTaskComplete(BuildContext context, Task task) {
+    final updatedTask = Task(
+      id: task.id,
+      name: task.name,
+      description: task.description,
+      priority: task.priority,
+      type: task.type,
+      startDate: task.startDate,
+      dueDate: task.dueDate,
+      userId: task.userId,
+      isCompleted: !task.isCompleted,
+    );
+    context.read<TaskBloc>().add(UpdateTaskEvent(updatedTask));
   }
 }
