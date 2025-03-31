@@ -1,5 +1,6 @@
 // lib/presentation/blocs/task_bloc/task_bloc.dart
 import 'package:bloc/bloc.dart';
+import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/domain/usecases/tasks/tasks_use_cases.dart';
 import 'package:equatable/equatable.dart';
 

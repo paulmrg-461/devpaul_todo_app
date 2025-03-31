@@ -1,9 +1,9 @@
-import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 import 'package:devpaul_todo_app/config/routes/app_routes.dart';
 import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:devpaul_todo_app/core/firebase/firebase_options.dart';
@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (context) => sl<UserBloc>()),
         BlocProvider(create: (context) => sl<ThemeBloc>()),
+        BlocProvider(create: (context) => sl<TaskBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {

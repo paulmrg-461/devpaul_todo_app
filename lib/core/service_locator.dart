@@ -30,6 +30,9 @@ Future<void> init() async {
   sl.registerLazySingleton<UserDataSource>(
     () => UserDataSourceImpl(sl<FirebaseFirestore>()),
   );
+  sl.registerLazySingleton<TaskDataSource>(
+    () => TaskDataSourceImpl(sl<FirebaseFirestore>()),
+  );
 
   // Repositorios
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -40,6 +43,9 @@ Future<void> init() async {
     ),
   );
   sl.registerLazySingleton<ThemeRepository>(() => ThemeRepositoryImpl(sl()));
+  sl.registerLazySingleton<TaskRepository>(
+    () => TaskRepositoryImpl(sl<TaskDataSource>()),
+  );
 
   // Casos de Uso
   sl.registerLazySingleton(() => Login(sl()));
@@ -59,6 +65,12 @@ Future<void> init() async {
   // Theme Use Cases
   sl.registerLazySingleton(() => GetThemeModeUseCase(sl()));
   sl.registerLazySingleton(() => SaveThemeModeUseCase(sl()));
+
+  // Tasks Use Cases
+  sl.registerLazySingleton(() => GetTasks(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => UpdateTask(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => DeleteTask(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => CreateTask(sl<TaskRepository>()));
 
   // Bloc
   sl.registerFactory(
@@ -86,6 +98,16 @@ Future<void> init() async {
     () => ThemeBloc(
       getThemeModeUseCase: sl(),
       saveThemeModeUseCase: sl(),
+    ),
+  );
+
+  // Task Bloc
+  sl.registerFactory(
+    () => TaskBloc(
+      createTaskUseCase: sl<CreateTask>(),
+      getTasksUseCase: sl<GetTasks>(),
+      updateTaskUseCase: sl<UpdateTask>(),
+      deleteTaskUseCase: sl<DeleteTask>(),
     ),
   );
 
