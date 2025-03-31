@@ -122,6 +122,10 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                 validator: (value) => InputValidator.emptyValidator(
                     value: value, minCharacters: 3),
               ),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: Divider(),
+              ),
               CustomDropdownPriority(
                 labelText: 'Priority',
                 priorities: TaskPriority.values,
@@ -146,21 +150,32 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                 },
                 width: _inputsWidth,
               ),
-              const SizedBox(height: 8),
-              CustomInput(
-                hintText: 'Start Date',
-                controller: _startDateController,
-                // readOnly: true,
-                // onTap: () => _selectDate(context, true),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 6),
+                child: Divider(),
               ),
-              const SizedBox(height: 8),
-              CustomInput(
+              CustomDateTimePicker(
+                hintText: 'Initial Date',
+                initialDateTime: _startDate, // variable definida en tu State
+                width: _inputsWidth,
+                icon: Icons.access_time, // opcional, puede ser cualquier icono
+                onDateTimeChanged: (newDateTime) {
+                  setState(() {
+                    _startDate = newDateTime;
+                  });
+                },
+              ),
+              CustomDateTimePicker(
                 hintText: 'Due Date',
-                controller: _dueDateController,
-                // readOnly: true,
-                // onTap: () => _selectDate(context, false),
+                initialDateTime: _dueDate, // variable definida en tu State
+                width: _inputsWidth,
+                icon: Icons.access_time, // opcional, puede ser cualquier icono
+                onDateTimeChanged: (newDateTime) {
+                  setState(() {
+                    _dueDate = newDateTime;
+                  });
+                },
               ),
-              const SizedBox(height: 8),
               CheckboxListTile(
                 title: const Text('Completed'),
                 value: _isCompleted,

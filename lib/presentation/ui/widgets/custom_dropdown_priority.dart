@@ -131,13 +131,13 @@ class CustomDropdownPriority extends StatelessWidget {
                   priority.toString().split('.').last.capitalize(),
                   style: textTheme.bodySmall?.copyWith(
                         color: getFontColor(),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        // fontWeight: FontWeight.w400,
                       ) ??
                       GoogleFonts.inter(
                         color: getFontColor(),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        // fontWeight: FontWeight.w400,
                       ),
                 ),
               ],

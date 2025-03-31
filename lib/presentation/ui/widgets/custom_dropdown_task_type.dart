@@ -94,20 +94,20 @@ class CustomDropdownType extends StatelessWidget {
           labelText: labelText,
           labelStyle: theme.textTheme.bodySmall?.copyWith(
                 color: effectiveTextColor.withOpacity(0.6),
-                fontSize: 14,
+                fontSize: 12,
               ) ??
               GoogleFonts.inter(
                 color: effectiveTextColor.withOpacity(0.6),
-                fontSize: 14,
+                fontSize: 12,
               ),
           floatingLabelStyle: TextStyle(color: effectiveBorderColor),
           hintStyle: theme.textTheme.bodySmall?.copyWith(
                 color: effectiveTextColor.withOpacity(0.4),
-                fontSize: 14,
+                fontSize: 12,
               ) ??
               GoogleFonts.inter(
                 color: effectiveTextColor.withOpacity(0.4),
-                fontSize: 14,
+                fontSize: 12,
               ),
           counterText: '',
           fillColor: effectiveBackgroundColor,
@@ -119,11 +119,11 @@ class CustomDropdownType extends StatelessWidget {
             child: Text(
               type.toString().split('.').last.capitalize(),
               style: theme.textTheme.bodyMedium?.copyWith(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: effectiveTextColor,
                   ) ??
                   GoogleFonts.inter(
-                    fontSize: 14,
+                    fontSize: 12,
                     color: effectiveTextColor,
                   ),
             ),
