@@ -36,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, state) {
         if (state is AuthAuthenticated) {
           final isAdmin = Environment.adminEmails.contains(state.user.email);
+          final bottomBarItems =
+              isAdmin ? getBottombarListAdmin() : getBottombarList();
 
           return Scaffold(
             appBar: AppBar(
@@ -45,12 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _buildDrawerContent(
                 context,
                 state.user,
-                isAdmin, // Se pasa la condición si el usuario es admin
+                isAdmin,
               ),
             ),
-            body: isAdmin
-                ? bottombarListAdmin[currentPageIndex].widget
-                : bottombarList[currentPageIndex].widget,
+            body: bottomBarItems[currentPageIndex].widget,
             bottomNavigationBar: NavigationBar(
               onDestinationSelected: (int index) {
                 setState(() {
@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               selectedIndex: currentPageIndex,
-              destinations: (isAdmin ? bottombarListAdmin : bottombarList)
+              destinations: bottomBarItems
                   .map(
                     (e) => NavigationDestination(
                       icon: Icon(e.icon),
@@ -129,16 +129,12 @@ class _HomeScreenState extends State<HomeScreen> {
             return ListTile(
               leading: Icon(
                 state.isDarkMode ? Icons.light_mode : Icons.dark_mode_outlined,
-                // color: Theme.of(context)
-                //     .colorScheme
-                //     .primary, // Color del tema actual
               ),
               title: Text(state.isDarkMode ? 'Tema claro' : 'Tema oscuro'),
               onTap: () {
                 context.read<ThemeBloc>().add(ThemeChanged(!state.isDarkMode));
               },
-              tileColor:
-                  Theme.of(context).colorScheme.surface, // Fondo según tema
+              tileColor: Theme.of(context).colorScheme.surface,
               iconColor: Theme.of(context).colorScheme.onSurface,
               textColor: Theme.of(context).colorScheme.onSurface,
             );
@@ -153,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
           leading: const Icon(Icons.logout),
           title: const Text('Cerrar sesión'),
           onTap: () {
-            Navigator.pop(context); // Cerrar el Drawer
+            Navigator.pop(context);
             context.read<AuthBloc>().add(AuthLogoutEvent());
           },
         ),
@@ -162,10 +158,11 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Widget> _buildDrawerItems(BuildContext context, bool isAdmin) {
-    List<BottomBarItem> items = isAdmin ? bottombarListAdmin : bottombarList;
+    final bottomBarItems =
+        isAdmin ? getBottombarListAdmin() : getBottombarList();
 
-    return List.generate(items.length, (index) {
-      final item = items[index];
+    return List.generate(bottomBarItems.length, (index) {
+      final item = bottomBarItems[index];
       return ListTile(
         leading: Icon(item.icon),
         title: Text(item.label),

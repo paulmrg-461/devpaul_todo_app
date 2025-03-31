@@ -16,38 +16,38 @@ class BottomBarItem {
       NavigationDestination(icon: Icon(icon), label: label);
 }
 
-const List<BottomBarItem> bottombarListAdmin = [
-  BottomBarItem(
-    label: 'Users',
-    icon: Icons.engineering_outlined,
-    widget: OperatorsTab(),
-  ),
-  BottomBarItem(
-    label: 'Tasks',
-    icon: Icons.checklist_outlined,
-    widget: TaskManagementTab(),
-  ),
-  BottomBarItem(
-    label: 'Perfil',
-    icon: Icons.person_outline_rounded,
-    widget: ProfileTab(),
-  ),
-];
+List<BottomBarItem> getBottombarListAdmin() => [
+      BottomBarItem(
+        label: 'Users',
+        icon: Icons.engineering_outlined,
+        widget: OperatorsTab(),
+      ),
+      BottomBarItem(
+        label: 'Tasks',
+        icon: Icons.checklist_outlined,
+        widget: TaskManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Perfil',
+        icon: Icons.person_outline_rounded,
+        widget: ProfileTab(),
+      ),
+    ];
 
-const List<BottomBarItem> bottombarList = [
-  BottomBarItem(
-    label: 'Perfil',
-    icon: Icons.person_outline_rounded,
-    widget: ProfileTab(),
-  ),
-  BottomBarItem(
-    label: 'Tasks',
-    icon: Icons.checklist_outlined,
-    widget: TaskManagementTab(),
-  ),
-  BottomBarItem(
-    label: 'Perfil',
-    icon: Icons.person_outline_rounded,
-    widget: ProfileTab(),
-  ),
-];
+List<BottomBarItem> getBottombarList() => [
+      BottomBarItem(
+        label: 'Perfil',
+        icon: Icons.person_outline_rounded,
+        widget: ProfileTab(),
+      ),
+      BottomBarItem(
+        label: 'Tasks',
+        icon: Icons.checklist_outlined,
+        widget: TaskManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Perfil',
+        icon: Icons.person_outline_rounded,
+        widget: ProfileTab(),
+      ),
+    ];

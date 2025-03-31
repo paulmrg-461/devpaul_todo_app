@@ -4,12 +4,19 @@ import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
+import 'package:uuid/uuid.dart';
 
 class TaskFormDialog extends StatefulWidget {
   final Task? task;
+  final String userId;
   final Function(Task) onSave;
 
-  const TaskFormDialog({super.key, this.task, required this.onSave});
+  const TaskFormDialog({
+    Key? key,
+    this.task,
+    required this.userId,
+    required this.onSave,
+  }) : super(key: key);
 
   @override
   _TaskFormDialogState createState() => _TaskFormDialogState();
@@ -48,8 +55,9 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     _selectedPriority = widget.task?.priority ?? TaskPriority.medium;
     _selectedType = widget.task?.type ?? TaskType.work;
     _isCompleted = widget.task?.isCompleted ?? false;
-    _startDate = widget.task?.startDate;
-    _dueDate = widget.task?.dueDate;
+    _startDate = widget.task?.startDate ?? DateTime.now();
+    _dueDate =
+        widget.task?.dueDate ?? DateTime.now().add(const Duration(days: 1));
   }
 
   Future<void> _selectDate(BuildContext context, bool isStartDate) async {
@@ -83,13 +91,14 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
       return;
     }
     final task = Task(
-      id: widget.task?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.task?.id ?? const Uuid().v4(),
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
       priority: _selectedPriority,
       type: _selectedType,
       startDate: _startDate!,
       dueDate: _dueDate!,
+      userId: widget.userId,
       isCompleted: _isCompleted,
     );
     widget.onSave(task);
@@ -156,9 +165,9 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
               ),
               CustomDateTimePicker(
                 hintText: 'Initial Date',
-                initialDateTime: _startDate, // variable definida en tu State
+                initialDateTime: _startDate,
                 width: _inputsWidth,
-                icon: Icons.access_time, // opcional, puede ser cualquier icono
+                icon: Icons.access_time,
                 onDateTimeChanged: (newDateTime) {
                   setState(() {
                     _startDate = newDateTime;
@@ -167,9 +176,9 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
               ),
               CustomDateTimePicker(
                 hintText: 'Due Date',
-                initialDateTime: _dueDate, // variable definida en tu State
+                initialDateTime: _dueDate,
                 width: _inputsWidth,
-                icon: Icons.access_time, // opcional, puede ser cualquier icono
+                icon: Icons.access_time,
                 onDateTimeChanged: (newDateTime) {
                   setState(() {
                     _dueDate = newDateTime;

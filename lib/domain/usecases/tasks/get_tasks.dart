@@ -7,7 +7,7 @@ class GetTasks {
   final TaskRepository repository;
   GetTasks(this.repository);
 
-  Future<List<Task>> call() async {
-    return repository.getTasks();
+  Future<List<Task>> call(String userId) async {
+    return repository.getTasks(userId);
   }
 }

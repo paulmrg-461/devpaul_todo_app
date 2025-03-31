@@ -14,8 +14,8 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<List<Task>> getTasks() async {
-    return dataSource.getTasks();
+  Future<List<Task>> getTasks(String userId) async {
+    return dataSource.getTasks(userId);
   }
 
   @override

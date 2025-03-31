@@ -30,7 +30,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(TaskLoading());
     try {
       await createTaskUseCase(event.task);
-      add(GetTasksEvent());
+      add(GetTasksEvent(event.task.userId));
     } catch (e) {
       emit(TaskError('Error creating task: $e'));
     }
@@ -39,7 +39,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   Future<void> _onGetTasks(GetTasksEvent event, Emitter<TaskState> emit) async {
     emit(TaskLoading());
     try {
-      final tasks = await getTasksUseCase();
+      final tasks = await getTasksUseCase(event.userId);
       emit(TaskLoaded(tasks));
     } catch (e) {
       emit(TaskError('Error getting tasks: $e'));
@@ -51,7 +51,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(TaskLoading());
     try {
       await updateTaskUseCase(event.task);
-      add(GetTasksEvent());
+      add(GetTasksEvent(event.task.userId));
     } catch (e) {
       emit(TaskError('Error updating task: $e'));
     }
@@ -62,7 +62,9 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     emit(TaskLoading());
     try {
       await deleteTaskUseCase(event.taskId);
-      add(GetTasksEvent());
+      if (event.userId != null) {
+        add(GetTasksEvent(event.userId!));
+      }
     } catch (e) {
       emit(TaskError('Error deleting task: $e'));
     }

@@ -11,6 +11,7 @@ class TaskModel extends Task {
     required super.type,
     required super.startDate,
     required super.dueDate,
+    required super.userId,
     super.isCompleted,
   });
 
@@ -24,6 +25,7 @@ class TaskModel extends Task {
       type: _mapStringToType(data['type']),
       startDate: (data['startDate'] as Timestamp).toDate(),
       dueDate: (data['dueDate'] as Timestamp).toDate(),
+      userId: data['userId'] ?? '',
       isCompleted: data['isCompleted'] ?? false,
     );
   }
@@ -36,6 +38,7 @@ class TaskModel extends Task {
       'type': _mapTypeToString(type),
       'startDate': Timestamp.fromDate(startDate),
       'dueDate': Timestamp.fromDate(dueDate),
+      'userId': userId,
       'isCompleted': isCompleted,
     };
   }
