@@ -50,7 +50,7 @@ class CustomInput extends StatefulWidget {
     this.maxLenght,
     this.expands = false,
     this.width,
-    this.marginBottom = 4,
+    this.marginBottom = 8,
     this.marginTop = 4,
     this.marginLeft = 4,
     this.marginRight = 4,

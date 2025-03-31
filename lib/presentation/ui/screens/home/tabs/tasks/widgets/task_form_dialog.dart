@@ -1,16 +1,15 @@
 // lib/presentation/ui/tabs/tasks/widgets/task_form_dialog.dart
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_card.dart';
+import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
-import 'package:devpaul_todo_app/presentation/ui/widgets/custom_input.dart';
 
 class TaskFormDialog extends StatefulWidget {
   final Task? task;
   final Function(Task) onSave;
 
-  const TaskFormDialog({Key? key, this.task, required this.onSave})
-      : super(key: key);
+  const TaskFormDialog({super.key, this.task, required this.onSave});
 
   @override
   _TaskFormDialogState createState() => _TaskFormDialogState();
@@ -110,50 +109,42 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
               CustomInput(
                 width: _inputsWidth,
                 hintText: "Task Name",
+                icon: Icons.task,
                 controller: _nameController,
                 validator: (value) => InputValidator.emptyValidator(
                     value: value, minCharacters: 3),
               ),
-              const SizedBox(height: 8),
               CustomInput(
                 width: _inputsWidth,
                 hintText: "Description",
+                icon: Icons.description,
                 controller: _descriptionController,
                 validator: (value) => InputValidator.emptyValidator(
                     value: value, minCharacters: 3),
               ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<TaskPriority>(
+              CustomDropdownPriority(
+                labelText: 'Priority',
+                priorities: TaskPriority.values,
                 value: _selectedPriority,
-                decoration: const InputDecoration(labelText: 'Priority'),
-                items: TaskPriority.values.map((priority) {
-                  return DropdownMenuItem(
-                    value: priority,
-                    child:
-                        Text(priority.toString().split('.').last.capitalize()),
-                  );
-                }).toList(),
-                onChanged: (value) {
+                width: _inputsWidth,
+                icon: Icons.priority_high_rounded,
+                onChanged: (priority) {
                   setState(() {
-                    _selectedPriority = value!;
+                    _selectedPriority = priority!;
                   });
                 },
               ),
-              const SizedBox(height: 8),
-              DropdownButtonFormField<TaskType>(
+              CustomDropdownType(
+                labelText: 'Type',
+                types: TaskType.values,
                 value: _selectedType,
-                decoration: const InputDecoration(labelText: 'Type'),
-                items: TaskType.values.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(type.toString().split('.').last.capitalize()),
-                  );
-                }).toList(),
+                icon: Icons.category,
                 onChanged: (value) {
                   setState(() {
                     _selectedType = value!;
                   });
                 },
+                width: _inputsWidth,
               ),
               const SizedBox(height: 8),
               CustomInput(
