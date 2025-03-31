@@ -1,72 +1,146 @@
 // lib/presentation/blocs/task_bloc/task_bloc.dart
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
-import 'package:devpaul_todo_app/domain/usecases/tasks/tasks_use_cases.dart';
+import 'package:devpaul_todo_app/domain/usecases/tasks/create_task.dart';
+import 'package:devpaul_todo_app/domain/usecases/tasks/delete_task.dart';
+import 'package:devpaul_todo_app/domain/usecases/tasks/get_tasks.dart';
+import 'package:devpaul_todo_app/domain/usecases/tasks/update_task.dart';
 import 'package:equatable/equatable.dart';
 
-part 'task_event.dart';
-part 'task_state.dart';
+// Eventos
+abstract class TaskEvent extends Equatable {
+  const TaskEvent();
 
+  @override
+  List<Object?> get props => [];
+}
+
+class GetTasksEvent extends TaskEvent {
+  const GetTasksEvent();
+}
+
+class CreateTaskEvent extends TaskEvent {
+  final Task task;
+
+  const CreateTaskEvent(this.task);
+
+  @override
+  List<Object?> get props => [task];
+}
+
+class UpdateTaskEvent extends TaskEvent {
+  final Task task;
+
+  const UpdateTaskEvent(this.task);
+
+  @override
+  List<Object?> get props => [task];
+}
+
+class DeleteTaskEvent extends TaskEvent {
+  final Task task;
+
+  const DeleteTaskEvent(this.task);
+
+  @override
+  List<Object?> get props => [task];
+}
+
+// Estados
+abstract class TaskState extends Equatable {
+  const TaskState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class TaskInitial extends TaskState {}
+
+class TaskLoading extends TaskState {}
+
+class TaskLoaded extends TaskState {
+  final List<Task> tasks;
+
+  const TaskLoaded(this.tasks);
+
+  @override
+  List<Object?> get props => [tasks];
+}
+
+class TaskError extends TaskState {
+  final String message;
+
+  const TaskError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+// Bloc
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
-  final CreateTask createTaskUseCase;
   final GetTasks getTasksUseCase;
+  final CreateTask createTaskUseCase;
   final UpdateTask updateTaskUseCase;
   final DeleteTask deleteTaskUseCase;
 
   TaskBloc({
-    required this.createTaskUseCase,
     required this.getTasksUseCase,
+    required this.createTaskUseCase,
     required this.updateTaskUseCase,
     required this.deleteTaskUseCase,
   }) : super(TaskInitial()) {
-    on<CreateTaskEvent>(_onCreateTask);
     on<GetTasksEvent>(_onGetTasks);
+    on<CreateTaskEvent>(_onCreateTask);
     on<UpdateTaskEvent>(_onUpdateTask);
     on<DeleteTaskEvent>(_onDeleteTask);
   }
 
-  Future<void> _onCreateTask(
-      CreateTaskEvent event, Emitter<TaskState> emit) async {
+  Future<void> _onGetTasks(
+    GetTasksEvent event,
+    Emitter<TaskState> emit,
+  ) async {
     emit(TaskLoading());
     try {
-      await createTaskUseCase(event.task);
-      add(GetTasksEvent(event.task.userId));
+      final tasks = await getTasksUseCase();
+      emit(TaskLoaded(tasks));
     } catch (e) {
-      emit(TaskError('Error creating task: $e'));
+      emit(TaskError(e.toString()));
     }
   }
 
-  Future<void> _onGetTasks(GetTasksEvent event, Emitter<TaskState> emit) async {
-    emit(TaskLoading());
+  Future<void> _onCreateTask(
+    CreateTaskEvent event,
+    Emitter<TaskState> emit,
+  ) async {
     try {
-      final tasks = await getTasksUseCase(event.userId);
-      emit(TaskLoaded(tasks));
+      await createTaskUseCase(event.task);
+      add(GetTasksEvent());
     } catch (e) {
-      emit(TaskError('Error getting tasks: $e'));
+      emit(TaskError(e.toString()));
     }
   }
 
   Future<void> _onUpdateTask(
-      UpdateTaskEvent event, Emitter<TaskState> emit) async {
-    emit(TaskLoading());
+    UpdateTaskEvent event,
+    Emitter<TaskState> emit,
+  ) async {
     try {
       await updateTaskUseCase(event.task);
-      add(GetTasksEvent(event.task.userId));
+      add(GetTasksEvent());
     } catch (e) {
-      emit(TaskError('Error updating task: $e'));
+      emit(TaskError(e.toString()));
     }
   }
 
   Future<void> _onDeleteTask(
-      DeleteTaskEvent event, Emitter<TaskState> emit) async {
-    emit(TaskLoading());
+    DeleteTaskEvent event,
+    Emitter<TaskState> emit,
+  ) async {
     try {
-      await deleteTaskUseCase(event.taskId);
-      if (event.userId != null) {
-        add(GetTasksEvent(event.userId!));
-      }
+      await deleteTaskUseCase(event.task.id);
+      add(GetTasksEvent());
     } catch (e) {
-      emit(TaskError('Error deleting task: $e'));
+      emit(TaskError(e.toString()));
     }
   }
 }

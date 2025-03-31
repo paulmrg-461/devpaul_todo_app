@@ -6,42 +6,90 @@ class TaskDetailScreen extends StatelessWidget {
   final Task task;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final VoidCallback? onToggleComplete;
+  final Function(TaskStatus) onStatusChanged;
 
   const TaskDetailScreen({
     Key? key,
     required this.task,
     required this.onEdit,
     required this.onDelete,
-    this.onToggleComplete,
+    required this.onStatusChanged,
   }) : super(key: key);
 
-  String get formattedStartDate =>
-      "${task.startDate.day}/${task.startDate.month}/${task.startDate.year}";
   String get formattedDueDate =>
       "${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}";
 
+  Color _getStatusColor() {
+    switch (task.status) {
+      case TaskStatus.pending:
+        return Colors.orange;
+      case TaskStatus.inProgress:
+        return Colors.blue;
+      case TaskStatus.completed:
+        return Colors.green;
+    }
+  }
+
+  IconData _getStatusIcon() {
+    switch (task.status) {
+      case TaskStatus.pending:
+        return Icons.pending;
+      case TaskStatus.inProgress:
+        return Icons.play_circle;
+      case TaskStatus.completed:
+        return Icons.check_circle;
+    }
+  }
+
+  String _getStatusText(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return 'Pendiente';
+      case TaskStatus.inProgress:
+        return 'En Progreso';
+      case TaskStatus.completed:
+        return 'Realizada';
+    }
+  }
+
+  String _getPriorityText(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return 'Baja';
+      case TaskPriority.medium:
+        return 'Media';
+      case TaskPriority.high:
+        return 'Alta';
+    }
+  }
+
+  String _getTypeText(TaskType type) {
+    switch (type) {
+      case TaskType.work:
+        return 'Trabajo';
+      case TaskType.personal:
+        return 'Personal';
+      case TaskType.academic:
+        return 'Académico';
+      case TaskType.leisure:
+        return 'Ocio';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalle de Tarea'),
+        title: const Text('Detalles de la Tarea'),
         actions: [
-          if (onToggleComplete != null)
-            IconButton(
-              icon: Icon(
-                task.isCompleted
-                    ? Icons.check_circle
-                    : Icons.check_circle_outline,
-                color: task.isCompleted ? Colors.green : null,
-              ),
-              onPressed: onToggleComplete,
-            ),
-          IconButton(icon: const Icon(Icons.edit), onPressed: onEdit),
-          IconButton(icon: const Icon(Icons.delete), onPressed: onDelete),
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: onEdit,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: onDelete,
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -53,10 +101,14 @@ class TaskDetailScreen extends StatelessWidget {
               title: 'Título',
               content: Text(
                 task.name,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  decoration:
-                      task.isCompleted ? TextDecoration.lineThrough : null,
-                  color: task.isCompleted ? Colors.grey : null,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  decoration: task.status == TaskStatus.completed
+                      ? TextDecoration.lineThrough
+                      : null,
+                  color:
+                      task.status == TaskStatus.completed ? Colors.grey : null,
                 ),
               ),
             ),
@@ -65,33 +117,71 @@ class TaskDetailScreen extends StatelessWidget {
               title: 'Descripción',
               content: Text(
                 task.description,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  decoration:
-                      task.isCompleted ? TextDecoration.lineThrough : null,
-                  color: task.isCompleted ? Colors.grey : null,
+                style: TextStyle(
+                  decoration: task.status == TaskStatus.completed
+                      ? TextDecoration.lineThrough
+                      : null,
+                  color:
+                      task.status == TaskStatus.completed ? Colors.grey : null,
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildSection(
               title: 'Estado',
-              content: Row(
-                children: [
-                  Icon(
-                    task.isCompleted ? Icons.check_circle : Icons.pending,
-                    color: task.isCompleted ? Colors.green : Colors.orange,
+              content: PopupMenuButton<TaskStatus>(
+                child: Row(
+                  children: [
+                    Icon(
+                      _getStatusIcon(),
+                      color: _getStatusColor(),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _getStatusText(task.status),
+                      style: TextStyle(
+                        color: _getStatusColor(),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                onSelected: onStatusChanged,
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: TaskStatus.pending,
+                    child: Row(
+                      children: [
+                        Icon(Icons.pending, color: Colors.orange),
+                        const SizedBox(width: 8),
+                        const Text('Pendiente'),
+                      ],
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    task.isCompleted ? 'Completada' : 'Pendiente',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: task.isCompleted ? Colors.green : Colors.orange,
+                  PopupMenuItem(
+                    value: TaskStatus.inProgress,
+                    child: Row(
+                      children: [
+                        Icon(Icons.play_circle, color: Colors.blue),
+                        const SizedBox(width: 8),
+                        const Text('En Progreso'),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: TaskStatus.completed,
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green),
+                        const SizedBox(width: 8),
+                        const Text('Realizada'),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildSection(
               title: 'Prioridad',
               content: Row(
@@ -102,49 +192,49 @@ class TaskDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    task.priority.toString().split('.').last.capitalize(),
-                    style: theme.textTheme.bodyLarge?.copyWith(
+                    _getPriorityText(task.priority),
+                    style: TextStyle(
                       color: _getPriorityColor(),
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildSection(
               title: 'Tipo',
               content: Row(
                 children: [
                   Icon(
                     _getTypeIcon(),
-                    color: colorScheme.primary,
+                    color: Colors.grey,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    task.type.toString().split('.').last.capitalize(),
-                    style: theme.textTheme.bodyLarge,
+                    _getTypeText(task.type),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildSection(
-              title: 'Fechas',
-              content: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              title: 'Fecha de Vencimiento',
+              content: Row(
                 children: [
-                  _buildDateRow(
-                    context,
-                    'Fecha de inicio',
-                    formattedStartDate,
-                    Icons.calendar_today,
-                  ),
-                  const SizedBox(height: 8),
-                  _buildDateRow(
-                    context,
-                    'Fecha límite',
+                  Icon(Icons.calendar_today, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Text(
                     formattedDueDate,
-                    Icons.event,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: task.status == TaskStatus.completed
+                          ? Colors.grey
+                          : null,
+                    ),
                   ),
                 ],
               ),
@@ -165,38 +255,13 @@ class TaskDetailScreen extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.grey,
           ),
         ),
         const SizedBox(height: 8),
         content,
-      ],
-    );
-  }
-
-  Widget _buildDateRow(
-    BuildContext context,
-    String label,
-    String date,
-    IconData icon,
-  ) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.grey),
-        const SizedBox(width: 8),
-        Text(
-          '$label: ',
-          style: const TextStyle(
-            color: Colors.grey,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Text(
-          date,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
       ],
     );
   }
