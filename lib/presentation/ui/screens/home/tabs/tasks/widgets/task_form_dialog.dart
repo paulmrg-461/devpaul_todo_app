@@ -1,34 +1,37 @@
 // lib/presentation/ui/tabs/tasks/widgets/task_form_dialog.dart
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
-import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_card.dart';
+import 'package:devpaul_todo_app/data/models/task_model.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
-import 'package:uuid/uuid.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 
 class TaskFormDialog extends StatefulWidget {
   final Task? task;
   final Function(Task) onSave;
 
-  const TaskFormDialog({
-    Key? key,
-    this.task,
-    required this.onSave,
-  }) : super(key: key);
+  const TaskFormDialog({super.key, this.task, required this.onSave});
 
   @override
-  State<TaskFormDialog> createState() => _TaskFormDialogState();
+  _TaskFormDialogState createState() => _TaskFormDialogState();
 }
 
 class _TaskFormDialogState extends State<TaskFormDialog> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
-  late DateTime _startDate;
-  late DateTime _dueDate;
-  late TaskPriority _priority;
-  late TaskType _type;
-  late TaskStatus _status;
+  late TextEditingController _startDateController;
+  late TextEditingController _dueDateController;
+
+  TaskPriority _selectedPriority = TaskPriority.medium;
+  TaskType _selectedType = TaskType.work;
+  TaskStatus _selectedStatus = TaskStatus.pending;
+
+  DateTime? _startDate;
+  DateTime? _dueDate;
+
+  static const double _inputsWidth = 420;
 
   @override
   void initState() {
@@ -36,225 +39,194 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     _nameController = TextEditingController(text: widget.task?.name ?? '');
     _descriptionController =
         TextEditingController(text: widget.task?.description ?? '');
-    _startDate = widget.task?.startDate ?? DateTime.now();
-    _dueDate =
-        widget.task?.dueDate ?? DateTime.now().add(const Duration(days: 1));
-    _priority = widget.task?.priority ?? TaskPriority.medium;
-    _type = widget.task?.type ?? TaskType.personal;
-    _status = widget.task?.status ?? TaskStatus.pending;
+    _startDateController = TextEditingController(
+        text: widget.task != null
+            ? widget.task!.startDate.toLocal().toString().split(' ')[0]
+            : '');
+    _dueDateController = TextEditingController(
+        text: widget.task != null
+            ? widget.task!.dueDate.toLocal().toString().split(' ')[0]
+            : '');
+    _selectedPriority = widget.task?.priority ?? TaskPriority.medium;
+    _selectedType = widget.task?.type ?? TaskType.work;
+    _selectedStatus = widget.task?.status ?? TaskStatus.pending;
+    _startDate = widget.task?.startDate;
+    _dueDate = widget.task?.dueDate;
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
+  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
+    final initialDate = DateTime.now();
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: initialDate.subtract(const Duration(days: 365)),
+      lastDate: initialDate.add(const Duration(days: 365)),
+    );
+    if (pickedDate != null) {
+      setState(() {
+        if (isStartDate) {
+          _startDate = pickedDate;
+          _startDateController.text =
+              pickedDate.toLocal().toString().split(' ')[0];
+        } else {
+          _dueDate = pickedDate;
+          _dueDateController.text =
+              pickedDate.toLocal().toString().split(' ')[0];
+        }
+      });
+    }
+  }
+
+  void _saveForm() {
+    if (!_formKey.currentState!.validate()) return;
+
+    if (_startDate == null || _dueDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Por favor, selecciona las fechas de inicio y fin'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final task = TaskModel(
+      id: widget.task?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim(),
+      priority: _selectedPriority,
+      type: _selectedType,
+      startDate: _startDate!,
+      dueDate: _dueDate!,
+      status: _selectedStatus,
+    );
+
+    if (widget.task == null) {
+      context.read<TaskBloc>().add(CreateTaskEvent(task));
+    } else {
+      context.read<TaskBloc>().add(UpdateTaskEvent(task));
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.task == null ? 'Nueva Tarea' : 'Editar Tarea'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
+              CustomInput(
+                width: _inputsWidth,
+                hintText: "Nombre de la tarea",
+                icon: Icons.task,
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa un nombre';
-                  }
-                  return null;
-                },
+                validator: (value) => InputValidator.emptyValidator(
+                    value: value, minCharacters: 3),
               ),
-              const SizedBox(height: 16),
-              TextFormField(
+              CustomInput(
+                width: _inputsWidth,
+                hintText: "Descripción",
+                icon: Icons.description,
                 controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Descripción',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
+                validator: (value) => InputValidator.emptyValidator(
+                    value: value, minCharacters: 3),
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<TaskPriority>(
-                value: _priority,
-                decoration: const InputDecoration(
-                  labelText: 'Prioridad',
-                  border: OutlineInputBorder(),
-                ),
-                items: TaskPriority.values.map((priority) {
-                  return DropdownMenuItem(
-                    value: priority,
-                    child: Text(_getPriorityText(priority)),
-                  );
-                }).toList(),
-                onChanged: (value) {
+              const Padding(
+                padding: EdgeInsets.only(bottom: 4),
+                child: Divider(),
+              ),
+              CustomDropdownPriority(
+                labelText: 'Prioridad',
+                priorities: TaskPriority.values,
+                value: _selectedPriority,
+                width: _inputsWidth,
+                icon: Icons.priority_high_rounded,
+                onChanged: (priority) {
                   setState(() {
-                    _priority = value!;
+                    _selectedPriority = priority!;
                   });
                 },
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<TaskType>(
-                value: _type,
-                decoration: const InputDecoration(
-                  labelText: 'Tipo',
-                  border: OutlineInputBorder(),
-                ),
-                items: TaskType.values.map((type) {
-                  return DropdownMenuItem(
-                    value: type,
-                    child: Text(_getTypeText(type)),
-                  );
-                }).toList(),
+              CustomDropdownType(
+                labelText: 'Tipo',
+                types: TaskType.values,
+                value: _selectedType,
+                icon: Icons.category,
                 onChanged: (value) {
                   setState(() {
-                    _type = value!;
+                    _selectedType = value!;
+                  });
+                },
+                width: _inputsWidth,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 6),
+                child: Divider(),
+              ),
+              CustomDateTimePicker(
+                hintText: 'Fecha de inicio',
+                initialDateTime: _startDate,
+                width: _inputsWidth,
+                icon: Icons.calendar_today,
+                onDateTimeChanged: (newDateTime) {
+                  setState(() {
+                    _startDate = newDateTime;
                   });
                 },
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<TaskStatus>(
-                value: _status,
-                decoration: const InputDecoration(
+              CustomDateTimePicker(
+                hintText: 'Fecha de vencimiento',
+                initialDateTime: _dueDate,
+                width: _inputsWidth,
+                icon: Icons.event,
+                onDateTimeChanged: (newDateTime) {
+                  setState(() {
+                    _dueDate = newDateTime;
+                  });
+                },
+              ),
+              if (widget.task != null)
+                CustomDropdownStatus(
                   labelText: 'Estado',
-                  border: OutlineInputBorder(),
+                  statuses: TaskStatus.values,
+                  value: _selectedStatus,
+                  width: _inputsWidth,
+                  icon: Icons.check_circle_outline,
+                  onChanged: (status) {
+                    setState(() {
+                      _selectedStatus = status!;
+                    });
+                  },
                 ),
-                items: TaskStatus.values.map((status) {
-                  return DropdownMenuItem(
-                    value: status,
-                    child: Text(_getStatusText(status)),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _status = value!;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ListTile(
-                      title: const Text('Fecha de inicio'),
-                      subtitle: Text(
-                        '${_startDate.day}/${_startDate.month}/${_startDate.year}',
-                      ),
-                      onTap: () async {
-                        final date = await showDatePicker(
-                          context: context,
-                          initialDate: _startDate,
-                          firstDate: DateTime.now(),
-                          lastDate:
-                              DateTime.now().add(const Duration(days: 365)),
-                        );
-                        if (date != null) {
-                          setState(() {
-                            _startDate = date;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    child: ListTile(
-                      title: const Text('Fecha límite'),
-                      subtitle: Text(
-                        '${_dueDate.day}/${_dueDate.month}/${_dueDate.year}',
-                      ),
-                      onTap: () async {
-                        final date = await showDatePicker(
-                          context: context,
-                          initialDate: _dueDate,
-                          firstDate: _startDate,
-                          lastDate:
-                              DateTime.now().add(const Duration(days: 365)),
-                        );
-                        if (date != null) {
-                          setState(() {
-                            _dueDate = date;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancelar'),
         ),
-        ElevatedButton(
-          onPressed: _saveTask,
-          child: const Text('Guardar'),
+        FilledButton.icon(
+          onPressed: _saveForm,
+          label: const Text('Guardar'),
+          icon: const Icon(Icons.save),
         ),
       ],
     );
   }
 
-  String _getPriorityText(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.low:
-        return 'Baja';
-      case TaskPriority.medium:
-        return 'Media';
-      case TaskPriority.high:
-        return 'Alta';
-    }
-  }
-
-  String _getTypeText(TaskType type) {
-    switch (type) {
-      case TaskType.work:
-        return 'Trabajo';
-      case TaskType.personal:
-        return 'Personal';
-      case TaskType.academic:
-        return 'Académico';
-      case TaskType.leisure:
-        return 'Ocio';
-    }
-  }
-
-  String _getStatusText(TaskStatus status) {
-    switch (status) {
-      case TaskStatus.pending:
-        return 'Pendiente';
-      case TaskStatus.inProgress:
-        return 'En Progreso';
-      case TaskStatus.completed:
-        return 'Realizada';
-    }
-  }
-
-  void _saveTask() {
-    if (_formKey.currentState!.validate()) {
-      final task = Task(
-        id: widget.task?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text,
-        description: _descriptionController.text,
-        priority: _priority,
-        type: _type,
-        startDate: _startDate,
-        dueDate: _dueDate,
-        status: _status,
-      );
-      widget.onSave(task);
-      Navigator.pop(context);
-    }
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _startDateController.dispose();
+    _dueDateController.dispose();
+    super.dispose();
   }
 }

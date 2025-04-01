@@ -1,5 +1,4 @@
 // lib/presentation/ui/tabs/tasks/widgets/task_card.dart
-import 'package:devpaul_todo_app/core/extensions/string_extension.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_detail_screen.dart';
 import 'package:flutter/material.dart';
@@ -98,33 +97,33 @@ class TaskCard extends StatelessWidget {
                     ),
                     onSelected: onStatusChanged,
                     itemBuilder: (context) => [
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: TaskStatus.pending,
                         child: Row(
                           children: [
                             Icon(Icons.pending, color: Colors.orange),
-                            const SizedBox(width: 8),
-                            const Text('Pendiente'),
+                            SizedBox(width: 8),
+                            Text('Pendiente'),
                           ],
                         ),
                       ),
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: TaskStatus.inProgress,
                         child: Row(
                           children: [
                             Icon(Icons.play_circle, color: Colors.blue),
-                            const SizedBox(width: 8),
-                            const Text('En Progreso'),
+                            SizedBox(width: 8),
+                            Text('En Progreso'),
                           ],
                         ),
                       ),
-                      PopupMenuItem(
+                      const PopupMenuItem(
                         value: TaskStatus.completed,
                         child: Row(
                           children: [
                             Icon(Icons.check_circle, color: Colors.green),
-                            const SizedBox(width: 8),
-                            const Text('Realizada'),
+                            SizedBox(width: 8),
+                            Text('Realizada'),
                           ],
                         ),
                       ),
@@ -146,7 +145,8 @@ class TaskCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                  const Icon(Icons.calendar_today,
+                      size: 16, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text(
                     "Due: $formattedDueDate",
@@ -224,9 +224,6 @@ class TaskCard extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => TaskDetailScreen(
           task: task,
-          onEdit: onEdit,
-          onDelete: onDelete,
-          onStatusChanged: onStatusChanged,
         ),
       ),
     );

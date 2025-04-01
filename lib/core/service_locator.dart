@@ -31,7 +31,7 @@ Future<void> init() async {
     () => UserDataSourceImpl(sl<FirebaseFirestore>()),
   );
   sl.registerLazySingleton<TaskDataSource>(
-    () => TaskDataSourceImpl(sl<FirebaseFirestore>()),
+    () => TaskDataSourceImpl(sl<FirebaseFirestore>(), sl<FirebaseAuth>()),
   );
 
   // Repositorios
@@ -113,4 +113,17 @@ Future<void> init() async {
 
   // Data storage
   sl.registerLazySingleton<AuthStorage>(() => AuthStorage());
+
+  // New additions
+  sl.registerFactory(
+    () => AiSuggestionBloc(
+      getTaskSuggestionUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(() => GetTaskSuggestion(sl()));
+
+  sl.registerLazySingleton<AiSuggestionRepository>(
+    () => AiSuggestionRepositoryImpl(),
+  );
 }

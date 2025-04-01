@@ -44,7 +44,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     try {
       await createTaskUseCase(event.task);
-      add(GetTasksEvent());
+      add(const GetTasksEvent());
     } catch (e) {
       emit(TaskError(e.toString()));
     }
@@ -56,7 +56,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     try {
       await updateTaskUseCase(event.task);
-      add(GetTasksEvent());
+      add(const GetTasksEvent());
     } catch (e) {
       emit(TaskError(e.toString()));
     }
@@ -68,7 +68,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   ) async {
     try {
       await deleteTaskUseCase(event.task.id);
-      add(GetTasksEvent());
+      add(const GetTasksEvent());
     } catch (e) {
       emit(TaskError(e.toString()));
     }

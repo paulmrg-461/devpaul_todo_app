@@ -1,4 +1,5 @@
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
+import 'package:devpaul_todo_app/data/models/task_model.dart';
 import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_card.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_form_dialog.dart';
@@ -168,12 +169,16 @@ class _TaskManagementTabState extends State<TaskManagementTab>
       builder: (context) => TaskFormDialog(
         task: task,
         onSave: (task) {
-          if (task == null) {
-            context.read<TaskBloc>().add(CreateTaskEvent(task));
-          } else {
-            context.read<TaskBloc>().add(UpdateTaskEvent(task));
+          if (task != null) {
+            if (task is TaskModel) {
+              if (task.id.isEmpty) {
+                context.read<TaskBloc>().add(CreateTaskEvent(task));
+              } else {
+                context.read<TaskBloc>().add(UpdateTaskEvent(task));
+              }
+            }
           }
-          Navigator.pop(context);
+          Navigator.of(context).pop();
         },
       ),
     );
@@ -187,13 +192,13 @@ class _TaskManagementTabState extends State<TaskManagementTab>
         content: const Text('¿Estás seguro de que deseas eliminar esta tarea?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancelar'),
           ),
           TextButton(
             onPressed: () {
               context.read<TaskBloc>().add(DeleteTaskEvent(task));
-              Navigator.pop(context);
+              Navigator.of(context).pop();
             },
             child: const Text('Eliminar'),
           ),
