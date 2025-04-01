@@ -35,8 +35,7 @@ class _TaskManagementTabState extends State<TaskManagementTab>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tareas'),
-        bottom: TabBar(
+        title: TabBar(
           controller: _tabController,
           tabs: const [
             Tab(text: 'Pendientes'),
@@ -190,7 +189,7 @@ class _TaskManagementTabState extends State<TaskManagementTab>
               context.read<TaskBloc>().add(UpdateTaskEvent(task));
             }
           }
-                  Navigator.of(context).pop();
+          Navigator.of(context).pop();
         },
       ),
     );
