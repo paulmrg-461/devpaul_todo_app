@@ -22,7 +22,7 @@ class CustomDropdownPriority extends StatelessWidget {
   final IconData? icon;
 
   const CustomDropdownPriority({
-    Key? key,
+    super.key,
     required this.labelText,
     required this.priorities,
     this.value,
@@ -38,7 +38,7 @@ class CustomDropdownPriority extends StatelessWidget {
     this.marginRight = 4,
     this.marginBottom = 12,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

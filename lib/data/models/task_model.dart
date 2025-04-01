@@ -5,26 +5,17 @@ import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 class TaskModel extends Task {
   final String? aiSuggestion;
 
-  TaskModel({
-    required String id,
-    required String name,
-    required String description,
-    required TaskPriority priority,
-    required TaskType type,
-    required DateTime startDate,
-    required DateTime dueDate,
-    required TaskStatus status,
+  const TaskModel({
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.priority,
+    required super.type,
+    required super.startDate,
+    required super.dueDate,
+    required super.status,
     this.aiSuggestion,
-  }) : super(
-          id: id,
-          name: name,
-          description: description,
-          priority: priority,
-          type: type,
-          startDate: startDate,
-          dueDate: dueDate,
-          status: status,
-        );
+  });
 
   factory TaskModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

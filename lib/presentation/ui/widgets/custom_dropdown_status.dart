@@ -10,14 +10,14 @@ class CustomDropdownStatus extends StatelessWidget {
   final Function(TaskStatus?) onChanged;
 
   const CustomDropdownStatus({
-    Key? key,
+    super.key,
     required this.labelText,
     required this.statuses,
     required this.value,
     required this.width,
     required this.icon,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   String _getStatusText(TaskStatus status) {
     switch (status) {

@@ -88,21 +88,21 @@ class SideMenu extends StatelessWidget {
           padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
           child: Divider(),
         ),
-        NavigationDrawerDestination(
-          icon: const Icon(Icons.task_alt),
-          label: const Text('Tareas'),
-          selectedIcon: const Icon(Icons.task_alt),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.task_alt),
+          label: Text('Tareas'),
+          selectedIcon: Icon(Icons.task_alt),
         ),
         if (isAdmin)
-          NavigationDrawerDestination(
-            icon: const Icon(Icons.people_outline_rounded),
-            label: const Text('Usuarios'),
-            selectedIcon: const Icon(Icons.people),
+          const NavigationDrawerDestination(
+            icon: Icon(Icons.people_outline_rounded),
+            label: Text('Usuarios'),
+            selectedIcon: Icon(Icons.people),
           ),
-        NavigationDrawerDestination(
-          icon: const Icon(Icons.person_outline_rounded),
-          label: const Text('Perfil'),
-          selectedIcon: const Icon(Icons.person),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.person_outline_rounded),
+          label: Text('Perfil'),
+          selectedIcon: Icon(Icons.person),
         ),
         const Spacer(),
         Padding(

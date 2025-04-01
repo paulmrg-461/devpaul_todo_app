@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TaskManagementTab extends StatefulWidget {
-  const TaskManagementTab({Key? key}) : super(key: key);
+  const TaskManagementTab({super.key});
 
   @override
   State<TaskManagementTab> createState() => _TaskManagementTabState();
@@ -22,7 +22,7 @@ class _TaskManagementTabState extends State<TaskManagementTab>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    context.read<TaskBloc>().add(GetTasksEvent());
+    context.read<TaskBloc>().add(const GetTasksEvent());
   }
 
   @override
@@ -79,7 +79,7 @@ class _TaskManagementTabState extends State<TaskManagementTab>
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
-                    context.read<TaskBloc>().add(GetTasksEvent());
+                    context.read<TaskBloc>().add(const GetTasksEvent());
                   },
                   child: const Text('Reintentar'),
                 ),
@@ -128,7 +128,7 @@ class _TaskManagementTabState extends State<TaskManagementTab>
                   if (task is TaskModel) {
                     context.read<TaskBloc>().add(
                           UpdateTaskEvent(
-                            task.copyWith(status: newStatus) as TaskModel,
+                            task.copyWith(status: newStatus),
                           ),
                         );
                   } else {
@@ -183,16 +183,14 @@ class _TaskManagementTabState extends State<TaskManagementTab>
       builder: (context) => TaskFormDialog(
         task: task,
         onSave: (task) {
-          if (task != null) {
-            if (task is TaskModel) {
-              if (task.id.isEmpty) {
-                context.read<TaskBloc>().add(CreateTaskEvent(task));
-              } else {
-                context.read<TaskBloc>().add(UpdateTaskEvent(task));
-              }
+          if (task is TaskModel) {
+            if (task.id.isEmpty) {
+              context.read<TaskBloc>().add(CreateTaskEvent(task));
+            } else {
+              context.read<TaskBloc>().add(UpdateTaskEvent(task));
             }
           }
-          Navigator.of(context).pop();
+                  Navigator.of(context).pop();
         },
       ),
     );
