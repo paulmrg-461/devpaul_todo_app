@@ -61,7 +61,7 @@ class UserCard extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: colorScheme.surfaceVariant,
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
           ),
           child:
@@ -165,7 +165,7 @@ class UserCard extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: colorScheme.surfaceVariant,
+        backgroundColor: colorScheme.surfaceContainerHighest,
         content: Text(
           'Usuario eliminado: ${user.name}',
           style: TextStyle(color: colorScheme.onSurfaceVariant),

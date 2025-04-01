@@ -10,12 +10,12 @@ class TaskCard extends StatelessWidget {
   final Function(TaskStatus) onStatusChanged;
 
   const TaskCard({
-    Key? key,
+    super.key,
     required this.task,
     required this.onEdit,
     required this.onDelete,
     required this.onStatusChanged,
-  }) : super(key: key);
+  });
 
   String get formattedDueDate =>
       "${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}";

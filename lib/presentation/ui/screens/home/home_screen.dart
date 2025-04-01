@@ -7,6 +7,7 @@ import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/theme_bloc/theme_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/widgets/bottom_bar_item.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/screens.dart';
+import 'package:devpaul_todo_app/presentation/ui/widgets/side_menu.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String name = 'home_screen';
@@ -14,19 +15,16 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int currentPageIndex = 0;
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final isLargeScreen = MediaQuery.of(context).size.width >= 1200;
+
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
@@ -36,6 +34,34 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (context, state) {
         if (state is AuthAuthenticated) {
           final isAdmin = Environment.adminEmails.contains(state.user.email);
+
+          if (isLargeScreen) {
+            return Scaffold(
+              body: Row(
+                children: [
+                  SizedBox(
+                    width: 280,
+                    child: SideMenu(
+                      selectedIndex: currentPageIndex,
+                      onDestinationSelected: (index) {
+                        setState(() {
+                          currentPageIndex = index;
+                        });
+                      },
+                      onAboutTap: () =>
+                          context.pushNamed(DeveloperInformationScreen.name),
+                      isAdmin: isAdmin,
+                    ),
+                  ),
+                  const VerticalDivider(thickness: 1, width: 1),
+                  Expanded(
+                    child: _getSelectedScreen(isAdmin),
+                  ),
+                ],
+              ),
+            );
+          }
+
           final bottomBarItems =
               isAdmin ? getBottombarListAdmin() : getBottombarList();
 
@@ -79,6 +105,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _getSelectedScreen(bool isAdmin) {
+    final screens = isAdmin ? getBottombarListAdmin() : getBottombarList();
+    return screens[currentPageIndex].widget;
+  }
+
   Widget _buildDrawerContent(
     BuildContext context,
     UserModel user,
@@ -87,7 +118,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        // Drawer Header
         DrawerHeader(
           decoration: BoxDecoration(color: Theme.of(context).primaryColor),
           child: Column(
@@ -106,22 +136,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Text(
                     'DevPaul ToDo',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.white),
                   ),
                 ],
               ),
               Text(
                 user.email,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.white),
               ),
             ],
           ),
         ),
-        // Drawer Items
         ..._buildDrawerItems(context, isAdmin),
         const Divider(),
         BlocBuilder<ThemeBloc, ThemeState>(

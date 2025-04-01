@@ -10,7 +10,7 @@ import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets
 class TaskDetailScreen extends StatefulWidget {
   final Task task;
 
-  const TaskDetailScreen({Key? key, required this.task}) : super(key: key);
+  const TaskDetailScreen({super.key, required this.task});
 
   @override
   State<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -280,10 +280,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       builder: (context) => TaskFormDialog(
         task: widget.task,
         onSave: (task) {
-          if (task != null) {
-            context.read<TaskBloc>().add(UpdateTaskEvent(task));
-          }
-          Navigator.pop(context);
+          context.read<TaskBloc>().add(UpdateTaskEvent(task));
+                  Navigator.pop(context);
         },
       ),
     );
