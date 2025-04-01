@@ -1,9 +1,9 @@
 // lib/domain/repositories/task_repository.dart
-import '../entities/task_entity.dart';
+import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 
 abstract class TaskRepository {
+  Future<List<Task>> getTasks();
   Future<void> createTask(Task task);
-  Future<List<Task>> getTasks(String userId);
   Future<void> updateTask(Task task);
-  Future<void> deleteTask(String id);
+  Future<void> deleteTask(String taskId);
 }

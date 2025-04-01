@@ -11,8 +11,7 @@ class TaskModel extends Task {
     required super.type,
     required super.startDate,
     required super.dueDate,
-    required super.userId,
-    super.isCompleted,
+    required super.status,
   });
 
   factory TaskModel.fromSnapshot(DocumentSnapshot doc) {
@@ -21,12 +20,33 @@ class TaskModel extends Task {
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
-      priority: _mapStringToPriority(data['priority']),
-      type: _mapStringToType(data['type']),
+      priority: TaskPriority.values.firstWhere(
+        (e) => e.toString() == data['priority'],
+        orElse: () => TaskPriority.medium,
+      ),
+      type: TaskType.values.firstWhere(
+        (e) => e.toString() == data['type'],
+        orElse: () => TaskType.personal,
+      ),
       startDate: (data['startDate'] as Timestamp).toDate(),
       dueDate: (data['dueDate'] as Timestamp).toDate(),
-      userId: data['userId'] ?? '',
-      isCompleted: data['isCompleted'] ?? false,
+      status: TaskStatus.values.firstWhere(
+        (e) => e.toString() == data['status'],
+        orElse: () => TaskStatus.pending,
+      ),
+    );
+  }
+
+  factory TaskModel.fromEntity(Task task) {
+    return TaskModel(
+      id: task.id,
+      name: task.name,
+      description: task.description,
+      priority: task.priority,
+      type: task.type,
+      startDate: task.startDate,
+      dueDate: task.dueDate,
+      status: task.status,
     );
   }
 
@@ -34,64 +54,11 @@ class TaskModel extends Task {
     return {
       'name': name,
       'description': description,
-      'priority': _mapPriorityToString(priority),
-      'type': _mapTypeToString(type),
+      'priority': priority.toString(),
+      'type': type.toString(),
       'startDate': Timestamp.fromDate(startDate),
       'dueDate': Timestamp.fromDate(dueDate),
-      'userId': userId,
-      'isCompleted': isCompleted,
+      'status': status.toString(),
     };
-  }
-
-  static TaskPriority _mapStringToPriority(String priority) {
-    switch (priority) {
-      case 'low':
-        return TaskPriority.low;
-      case 'medium':
-        return TaskPriority.medium;
-      case 'high':
-        return TaskPriority.high;
-      default:
-        return TaskPriority.low;
-    }
-  }
-
-  static String _mapPriorityToString(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.low:
-        return 'low';
-      case TaskPriority.medium:
-        return 'medium';
-      case TaskPriority.high:
-        return 'high';
-    }
-  }
-
-  static TaskType _mapStringToType(String type) {
-    switch (type) {
-      case 'work':
-        return TaskType.work;
-      case 'personal':
-        return TaskType.personal;
-      case 'academic':
-        return TaskType.academic;
-      case 'leisure':
-        return TaskType.leisure;
-      default:
-        return TaskType.personal;
-    }
-  }
-
-  static String _mapTypeToString(TaskType type) {
-    switch (type) {
-      case TaskType.work:
-        return 'work';
-      case TaskType.personal:
-        return 'personal';
-      case TaskType.academic:
-        return 'academic';
-      case TaskType.leisure:
-        return 'leisure';
-    }
   }
 }

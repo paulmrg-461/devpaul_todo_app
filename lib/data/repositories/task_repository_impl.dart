@@ -1,7 +1,7 @@
 // lib/data/repositories/task_repository_impl.dart
+import 'package:devpaul_todo_app/data/datasources/task_datasource.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/domain/repositories/task_repository.dart';
-import 'package:devpaul_todo_app/data/datasources/task_datasource.dart';
 
 class TaskRepositoryImpl implements TaskRepository {
   final TaskDataSource dataSource;
@@ -9,22 +9,22 @@ class TaskRepositoryImpl implements TaskRepository {
   TaskRepositoryImpl(this.dataSource);
 
   @override
-  Future<void> createTask(Task task) async {
-    return dataSource.createTask(task);
+  Future<List<Task>> getTasks() async {
+    return await dataSource.getTasks();
   }
 
   @override
-  Future<List<Task>> getTasks(String userId) async {
-    return dataSource.getTasks(userId);
+  Future<void> createTask(Task task) async {
+    await dataSource.createTask(task);
   }
 
   @override
   Future<void> updateTask(Task task) async {
-    return dataSource.updateTask(task);
+    await dataSource.updateTask(task);
   }
 
   @override
-  Future<void> deleteTask(String id) async {
-    return dataSource.deleteTask(id);
+  Future<void> deleteTask(String taskId) async {
+    await dataSource.deleteTask(taskId);
   }
 }

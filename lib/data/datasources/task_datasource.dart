@@ -4,71 +4,40 @@ import 'package:devpaul_todo_app/data/models/task_model.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 
 abstract class TaskDataSource {
+  Future<List<Task>> getTasks();
   Future<void> createTask(Task task);
-  Future<List<Task>> getTasks(String userId);
   Future<void> updateTask(Task task);
-  Future<void> deleteTask(String id);
+  Future<void> deleteTask(String taskId);
 }
 
 class TaskDataSourceImpl implements TaskDataSource {
-  final FirebaseFirestore firestore;
+  final FirebaseFirestore _firestore;
+  final String _collection = 'tasks';
 
-  TaskDataSourceImpl(this.firestore);
+  TaskDataSourceImpl(this._firestore);
 
   @override
-  Future<void> createTask(Task task) async {
-    final taskModel = task is TaskModel
-        ? task
-        : TaskModel(
-            id: task.id,
-            name: task.name,
-            description: task.description,
-            priority: task.priority,
-            type: task.type,
-            startDate: task.startDate,
-            dueDate: task.dueDate,
-            userId: task.userId,
-          );
-    // Usamos el id del task (puedes generar un id único con UUID o usar Firestore autoID)
-    await firestore
-        .collection('tasks')
-        .doc(taskModel.id)
-        .set(taskModel.toMap());
+  Future<List<Task>> getTasks() async {
+    final snapshot = await _firestore.collection(_collection).get();
+    return snapshot.docs.map((doc) => TaskModel.fromSnapshot(doc)).toList();
   }
 
   @override
-  Future<List<Task>> getTasks(String userId) async {
-    final querySnapshot = await firestore
-        .collection('tasks')
-        .where('userId', isEqualTo: userId)
-        .get();
-    return querySnapshot.docs
-        .map((doc) => TaskModel.fromSnapshot(doc))
-        .toList();
+  Future<void> createTask(Task task) async {
+    await _firestore.collection(_collection).doc(task.id).set(
+          TaskModel.fromEntity(task).toMap(),
+        );
   }
 
   @override
   Future<void> updateTask(Task task) async {
-    final taskModel = task is TaskModel
-        ? task
-        : TaskModel(
-            id: task.id,
-            name: task.name,
-            description: task.description,
-            priority: task.priority,
-            type: task.type,
-            startDate: task.startDate,
-            dueDate: task.dueDate,
-            userId: task.userId,
-          );
-    await firestore
-        .collection('tasks')
-        .doc(taskModel.id)
-        .update(taskModel.toMap());
+    await _firestore.collection(_collection).doc(task.id).update(
+          TaskModel.fromEntity(task).toMap(),
+        );
   }
 
   @override
-  Future<void> deleteTask(String id) async {
-    await firestore.collection('tasks').doc(id).delete();
+  Future<void> deleteTask(String taskId) async {
+    await _firestore.collection(_collection).doc(taskId).delete();
   }
 }
