@@ -1,94 +1,45 @@
 import 'package:devpaul_todo_app/core/extensions/string_extension.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
+import 'package:devpaul_todo_app/data/models/task_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/ai_suggestion_bloc/ai_suggestion_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
+import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_form_dialog.dart';
 
-class TaskDetailScreen extends StatelessWidget {
+class TaskDetailScreen extends StatefulWidget {
   final Task task;
-  final VoidCallback onEdit;
-  final VoidCallback onDelete;
-  final Function(TaskStatus) onStatusChanged;
 
-  const TaskDetailScreen({
-    Key? key,
-    required this.task,
-    required this.onEdit,
-    required this.onDelete,
-    required this.onStatusChanged,
-  }) : super(key: key);
+  const TaskDetailScreen({Key? key, required this.task}) : super(key: key);
 
-  String get formattedDueDate =>
-      "${task.dueDate.day}/${task.dueDate.month}/${task.dueDate.year}";
+  @override
+  State<TaskDetailScreen> createState() => _TaskDetailScreenState();
+}
 
-  Color _getStatusColor() {
-    switch (task.status) {
-      case TaskStatus.pending:
-        return Colors.orange;
-      case TaskStatus.inProgress:
-        return Colors.blue;
-      case TaskStatus.completed:
-        return Colors.green;
-    }
-  }
-
-  IconData _getStatusIcon() {
-    switch (task.status) {
-      case TaskStatus.pending:
-        return Icons.pending;
-      case TaskStatus.inProgress:
-        return Icons.play_circle;
-      case TaskStatus.completed:
-        return Icons.check_circle;
-    }
-  }
-
-  String _getStatusText(TaskStatus status) {
-    switch (status) {
-      case TaskStatus.pending:
-        return 'Pendiente';
-      case TaskStatus.inProgress:
-        return 'En Progreso';
-      case TaskStatus.completed:
-        return 'Realizada';
-    }
-  }
-
-  String _getPriorityText(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.low:
-        return 'Baja';
-      case TaskPriority.medium:
-        return 'Media';
-      case TaskPriority.high:
-        return 'Alta';
-    }
-  }
-
-  String _getTypeText(TaskType type) {
-    switch (type) {
-      case TaskType.work:
-        return 'Trabajo';
-      case TaskType.personal:
-        return 'Personal';
-      case TaskType.academic:
-        return 'Académico';
-      case TaskType.leisure:
-        return 'Ocio';
+class _TaskDetailScreenState extends State<TaskDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final taskModel = widget.task as TaskModel;
+    if (taskModel.aiSuggestion == null) {
+      context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(widget.task));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final taskModel = widget.task as TaskModel;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalles de la Tarea'),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: onEdit,
+            onPressed: () => _showTaskFormDialog(context),
           ),
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: onDelete,
+            onPressed: () => _deleteTask(context),
           ),
         ],
       ),
@@ -98,143 +49,110 @@ class TaskDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSection(
-              title: 'Título',
-              content: Text(
-                task.name,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  decoration: task.status == TaskStatus.completed
-                      ? TextDecoration.lineThrough
-                      : null,
-                  color:
-                      task.status == TaskStatus.completed ? Colors.grey : null,
-                ),
-              ),
+              title: 'Nombre',
+              content: Text(widget.task.name),
             ),
-            const SizedBox(height: 16),
             _buildSection(
               title: 'Descripción',
-              content: Text(
-                task.description,
-                style: TextStyle(
-                  decoration: task.status == TaskStatus.completed
-                      ? TextDecoration.lineThrough
-                      : null,
-                  color:
-                      task.status == TaskStatus.completed ? Colors.grey : null,
-                ),
-              ),
+              content: Text(widget.task.description),
             ),
-            const SizedBox(height: 16),
             _buildSection(
               title: 'Estado',
-              content: PopupMenuButton<TaskStatus>(
-                child: Row(
-                  children: [
-                    Icon(
-                      _getStatusIcon(),
-                      color: _getStatusColor(),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _getStatusText(task.status),
-                      style: TextStyle(
-                        color: _getStatusColor(),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                onSelected: onStatusChanged,
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: TaskStatus.pending,
-                    child: Row(
-                      children: [
-                        Icon(Icons.pending, color: Colors.orange),
-                        const SizedBox(width: 8),
-                        const Text('Pendiente'),
-                      ],
-                    ),
+              content: Row(
+                children: [
+                  Icon(
+                    _getStatusIcon(widget.task.status),
+                    color: _getStatusColor(widget.task.status),
                   ),
-                  PopupMenuItem(
-                    value: TaskStatus.inProgress,
-                    child: Row(
-                      children: [
-                        Icon(Icons.play_circle, color: Colors.blue),
-                        const SizedBox(width: 8),
-                        const Text('En Progreso'),
-                      ],
-                    ),
-                  ),
-                  PopupMenuItem(
-                    value: TaskStatus.completed,
-                    child: Row(
-                      children: [
-                        Icon(Icons.check_circle, color: Colors.green),
-                        const SizedBox(width: 8),
-                        const Text('Realizada'),
-                      ],
-                    ),
-                  ),
+                  const SizedBox(width: 8),
+                  Text(_getStatusText(widget.task.status)),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
             _buildSection(
               title: 'Prioridad',
               content: Row(
                 children: [
                   Icon(
-                    _getPriorityIcon(),
-                    color: _getPriorityColor(),
+                    _getPriorityIcon(widget.task.priority),
+                    color: _getPriorityColor(widget.task.priority),
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    _getPriorityText(task.priority),
-                    style: TextStyle(
-                      color: _getPriorityColor(),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(_getPriorityText(widget.task.priority)),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
             _buildSection(
               title: 'Tipo',
               content: Row(
                 children: [
                   Icon(
-                    _getTypeIcon(),
-                    color: Colors.grey,
+                    _getTypeIcon(widget.task.type),
+                    color: _getTypeColor(widget.task.type),
                   ),
                   const SizedBox(width: 8),
+                  Text(_getTypeText(widget.task.type)),
+                ],
+              ),
+            ),
+            _buildSection(
+              title: 'Fechas',
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    _getTypeText(task.type),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    'Inicio: ${widget.task.startDate.day}/${widget.task.startDate.month}/${widget.task.startDate.year}',
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Vencimiento: ${widget.task.dueDate.day}/${widget.task.dueDate.month}/${widget.task.dueDate.year}',
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
             _buildSection(
-              title: 'Fecha de Vencimiento',
-              content: Row(
+              title: 'Sugerencia AI',
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.calendar_today, color: Colors.grey),
-                  const SizedBox(width: 8),
-                  Text(
-                    formattedDueDate,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: task.status == TaskStatus.completed
-                          ? Colors.grey
-                          : null,
+                  if (taskModel.aiSuggestion != null)
+                    Text(taskModel.aiSuggestion!)
+                  else
+                    BlocBuilder<AiSuggestionBloc, AiSuggestionState>(
+                      builder: (context, state) {
+                        if (state is AiSuggestionLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          );
+                        }
+                        if (state is AiSuggestionLoaded) {
+                          // Actualizar la tarea con la sugerencia
+                          final updatedTask = taskModel.copyWith(
+                            aiSuggestion: state.suggestion.suggestion,
+                          );
+                          context
+                              .read<TaskBloc>()
+                              .add(UpdateTaskEvent(updatedTask));
+                          return Text(state.suggestion.suggestion);
+                        }
+                        if (state is AiSuggestionError) {
+                          return Text(
+                            'Error: ${state.message}',
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        }
+                        return const Text('Generando sugerencia...');
+                      },
                     ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      context
+                          .read<AiSuggestionBloc>()
+                          .add(GetTaskSuggestionEvent(widget.task));
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Regenerar Sugerencia'),
                   ),
                 ],
               ),
@@ -249,25 +167,56 @@ class TaskDetailScreen extends StatelessWidget {
     required String title,
     required Widget content,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-        ),
-        const SizedBox(height: 8),
-        content,
-      ],
+          const SizedBox(height: 8),
+          content,
+        ],
+      ),
     );
   }
 
-  IconData _getPriorityIcon() {
-    switch (task.priority) {
+  String _getStatusText(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return 'Pendiente';
+      case TaskStatus.inProgress:
+        return 'En Progreso';
+      case TaskStatus.completed:
+        return 'Realizada';
+    }
+  }
+
+  String _getPriorityText(TaskPriority priority) {
+    return priority.toString().split('.').last.capitalize();
+  }
+
+  String _getTypeText(TaskType type) {
+    return type.toString().split('.').last.capitalize();
+  }
+
+  IconData _getStatusIcon(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return Icons.pending;
+      case TaskStatus.inProgress:
+        return Icons.play_circle;
+      case TaskStatus.completed:
+        return Icons.check_circle;
+    }
+  }
+
+  IconData _getPriorityIcon(TaskPriority priority) {
+    switch (priority) {
       case TaskPriority.low:
         return Icons.arrow_downward;
       case TaskPriority.medium:
@@ -277,8 +226,32 @@ class TaskDetailScreen extends StatelessWidget {
     }
   }
 
-  Color _getPriorityColor() {
-    switch (task.priority) {
+  IconData _getTypeIcon(TaskType type) {
+    switch (type) {
+      case TaskType.personal:
+        return Icons.person;
+      case TaskType.work:
+        return Icons.work;
+      case TaskType.academic:
+        return Icons.school;
+      case TaskType.leisure:
+        return Icons.sports_esports;
+    }
+  }
+
+  Color _getStatusColor(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return Colors.orange;
+      case TaskStatus.inProgress:
+        return Colors.blue;
+      case TaskStatus.completed:
+        return Colors.green;
+    }
+  }
+
+  Color _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
       case TaskPriority.low:
         return Colors.green;
       case TaskPriority.medium:
@@ -288,16 +261,55 @@ class TaskDetailScreen extends StatelessWidget {
     }
   }
 
-  IconData _getTypeIcon() {
-    switch (task.type) {
-      case TaskType.work:
-        return Icons.work;
+  Color _getTypeColor(TaskType type) {
+    switch (type) {
       case TaskType.personal:
-        return Icons.person;
+        return Colors.purple;
+      case TaskType.work:
+        return Colors.blue;
       case TaskType.academic:
-        return Icons.school;
+        return Colors.green;
       case TaskType.leisure:
-        return Icons.sports_esports;
+        return Colors.orange;
     }
+  }
+
+  void _showTaskFormDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => TaskFormDialog(
+        task: widget.task,
+        onSave: (task) {
+          if (task != null) {
+            context.read<TaskBloc>().add(UpdateTaskEvent(task));
+          }
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+
+  void _deleteTask(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar Tarea'),
+        content: const Text('¿Estás seguro de que deseas eliminar esta tarea?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<TaskBloc>().add(DeleteTaskEvent(widget.task));
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
   }
 }

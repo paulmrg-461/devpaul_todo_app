@@ -8,11 +8,13 @@ import 'package:devpaul_todo_app/config/routes/app_routes.dart';
 import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:devpaul_todo_app/core/firebase/firebase_options.dart';
 import 'package:devpaul_todo_app/core/service_locator.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/service_locator.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await dotenv.load(fileName: '.env');
   await di.init();
 
   if (!kIsWeb) {
@@ -37,6 +39,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<UserBloc>()),
         BlocProvider(create: (context) => sl<ThemeBloc>()),
         BlocProvider(create: (context) => sl<TaskBloc>()),
+        BlocProvider(create: (context) => sl<AiSuggestionBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {

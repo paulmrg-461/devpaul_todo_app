@@ -3,16 +3,28 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 
 class TaskModel extends Task {
-  const TaskModel({
-    required super.id,
-    required super.name,
-    required super.description,
-    required super.priority,
-    required super.type,
-    required super.startDate,
-    required super.dueDate,
-    required super.status,
-  });
+  final String? aiSuggestion;
+
+  TaskModel({
+    required String id,
+    required String name,
+    required String description,
+    required TaskPriority priority,
+    required TaskType type,
+    required DateTime startDate,
+    required DateTime dueDate,
+    required TaskStatus status,
+    this.aiSuggestion,
+  }) : super(
+          id: id,
+          name: name,
+          description: description,
+          priority: priority,
+          type: type,
+          startDate: startDate,
+          dueDate: dueDate,
+          status: status,
+        );
 
   factory TaskModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -20,20 +32,12 @@ class TaskModel extends Task {
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
-      priority: TaskPriority.values.firstWhere(
-        (e) => e.toString() == data['priority'],
-        orElse: () => TaskPriority.medium,
-      ),
-      type: TaskType.values.firstWhere(
-        (e) => e.toString() == data['type'],
-        orElse: () => TaskType.personal,
-      ),
+      priority: _getPriorityFromString(data['priority'] ?? 'medium'),
+      type: _getTypeFromString(data['type'] ?? 'work'),
       startDate: (data['startDate'] as Timestamp).toDate(),
       dueDate: (data['dueDate'] as Timestamp).toDate(),
-      status: TaskStatus.values.firstWhere(
-        (e) => e.toString() == data['status'],
-        orElse: () => TaskStatus.pending,
-      ),
+      status: _getStatusFromString(data['status'] ?? 'pending'),
+      aiSuggestion: data['aiSuggestion'],
     );
   }
 
@@ -47,6 +51,7 @@ class TaskModel extends Task {
       startDate: task.startDate,
       dueDate: task.dueDate,
       status: task.status,
+      aiSuggestion: task is TaskModel ? task.aiSuggestion : null,
     );
   }
 
@@ -54,11 +59,72 @@ class TaskModel extends Task {
     return {
       'name': name,
       'description': description,
-      'priority': priority.toString(),
-      'type': type.toString(),
+      'priority': priority.toString().split('.').last,
+      'type': type.toString().split('.').last,
       'startDate': Timestamp.fromDate(startDate),
       'dueDate': Timestamp.fromDate(dueDate),
-      'status': status.toString(),
+      'status': status.toString().split('.').last,
+      if (aiSuggestion != null) 'aiSuggestion': aiSuggestion,
     };
+  }
+
+  static TaskPriority _getPriorityFromString(String priority) {
+    switch (priority) {
+      case 'low':
+        return TaskPriority.low;
+      case 'high':
+        return TaskPriority.high;
+      default:
+        return TaskPriority.medium;
+    }
+  }
+
+  static TaskType _getTypeFromString(String type) {
+    switch (type) {
+      case 'personal':
+        return TaskType.personal;
+      case 'academic':
+        return TaskType.academic;
+      case 'leisure':
+        return TaskType.leisure;
+      default:
+        return TaskType.work;
+    }
+  }
+
+  static TaskStatus _getStatusFromString(String status) {
+    switch (status) {
+      case 'inProgress':
+        return TaskStatus.inProgress;
+      case 'completed':
+        return TaskStatus.completed;
+      default:
+        return TaskStatus.pending;
+    }
+  }
+
+  @override
+  TaskModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    TaskPriority? priority,
+    TaskType? type,
+    DateTime? startDate,
+    DateTime? dueDate,
+    TaskStatus? status,
+    String? aiSuggestion,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      priority: priority ?? this.priority,
+      type: type ?? this.type,
+      startDate: startDate ?? this.startDate,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+      aiSuggestion: aiSuggestion ?? this.aiSuggestion,
+    );
   }
 }
