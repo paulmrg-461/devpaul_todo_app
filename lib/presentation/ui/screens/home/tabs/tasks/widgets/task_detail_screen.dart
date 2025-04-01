@@ -105,6 +105,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 ],
               ),
             ),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16),
+              child: Divider(),
+            ),
             _buildSection(
               title: 'Sugerencias de IA',
               content: BlocBuilder<AiSuggestionBloc, AiSuggestionState>(

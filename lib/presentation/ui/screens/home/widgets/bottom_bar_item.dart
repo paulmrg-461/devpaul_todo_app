@@ -17,17 +17,17 @@ class BottomBarItem {
 }
 
 List<BottomBarItem> getBottombarListAdmin() => [
-      BottomBarItem(
-        label: 'Users',
-        icon: Icons.engineering_outlined,
-        widget: OperatorsTab(),
-      ),
-      BottomBarItem(
+      const BottomBarItem(
         label: 'Tasks',
         icon: Icons.checklist_outlined,
         widget: TaskManagementTab(),
       ),
-      BottomBarItem(
+      const BottomBarItem(
+        label: 'Users',
+        icon: Icons.people_outline_rounded,
+        widget: OperatorsTab(),
+      ),
+      const BottomBarItem(
         label: 'Perfil',
         icon: Icons.person_outline_rounded,
         widget: ProfileTab(),
@@ -35,17 +35,17 @@ List<BottomBarItem> getBottombarListAdmin() => [
     ];
 
 List<BottomBarItem> getBottombarList() => [
-      BottomBarItem(
-        label: 'Perfil',
-        icon: Icons.person_outline_rounded,
-        widget: ProfileTab(),
-      ),
-      BottomBarItem(
+      const BottomBarItem(
         label: 'Tasks',
         icon: Icons.checklist_outlined,
         widget: TaskManagementTab(),
       ),
-      BottomBarItem(
+      const BottomBarItem(
+        label: 'Perfil',
+        icon: Icons.person_outline_rounded,
+        widget: ProfileTab(),
+      ),
+      const BottomBarItem(
         label: 'Perfil',
         icon: Icons.person_outline_rounded,
         widget: ProfileTab(),
