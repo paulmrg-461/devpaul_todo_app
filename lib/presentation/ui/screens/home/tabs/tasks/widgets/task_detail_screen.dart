@@ -1,5 +1,6 @@
 import 'package:devpaul_todo_app/core/extensions/string_extension.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
+import 'package:devpaul_todo_app/data/models/task_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/ai_suggestion_bloc/ai_suggestion_bloc.dart';
@@ -19,14 +20,18 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(widget.task));
+    final taskModel = widget.task as TaskModel;
+    if (taskModel.aiSuggestion == null) {
+      context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(widget.task));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final taskModel = widget.task as TaskModel;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalle de Tarea'),
+        title: const Text('Detalles de la Tarea'),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -44,11 +49,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSection(
-              title: 'Título',
-              content: Text(
-                widget.task.name,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              title: 'Nombre',
+              content: Text(widget.task.name),
             ),
             _buildSection(
               title: 'Descripción',
@@ -99,37 +101,60 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      'Inicio: ${widget.task.startDate.toString().split(' ')[0]}'),
+                    'Inicio: ${widget.task.startDate.day}/${widget.task.startDate.month}/${widget.task.startDate.year}',
+                  ),
+                  const SizedBox(height: 4),
                   Text(
-                      'Vencimiento: ${widget.task.dueDate.toString().split(' ')[0]}'),
+                    'Vencimiento: ${widget.task.dueDate.day}/${widget.task.dueDate.month}/${widget.task.dueDate.year}',
+                  ),
                 ],
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.only(bottom: 16),
-              child: Divider(),
-            ),
             _buildSection(
-              title: 'Sugerencias de IA',
-              content: BlocBuilder<AiSuggestionBloc, AiSuggestionState>(
-                builder: (context, state) {
-                  if (state is AiSuggestionLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (state is AiSuggestionError) {
-                    return Text(
-                      'Error: ${state.message}',
-                      style: const TextStyle(color: Colors.red),
-                    );
-                  }
-
-                  if (state is AiSuggestionLoaded) {
-                    return Text(state.suggestion.suggestion);
-                  }
-
-                  return const Text('No hay sugerencias disponibles');
-                },
+              title: 'Sugerencia AI',
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (taskModel.aiSuggestion != null)
+                    Text(taskModel.aiSuggestion!)
+                  else
+                    BlocBuilder<AiSuggestionBloc, AiSuggestionState>(
+                      builder: (context, state) {
+                        if (state is AiSuggestionLoading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                        if (state is AiSuggestionLoaded) {
+                          // Actualizar la tarea con la sugerencia
+                          final updatedTask = taskModel.copyWith(
+                            aiSuggestion: state.suggestion.suggestion,
+                          );
+                          context
+                              .read<TaskBloc>()
+                              .add(UpdateTaskEvent(updatedTask));
+                          return Text(state.suggestion.suggestion);
+                        }
+                        if (state is AiSuggestionError) {
+                          return Text(
+                            'Error: ${state.message}',
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        }
+                        return const Text('Generando sugerencia...');
+                      },
+                    ),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      context
+                          .read<AiSuggestionBloc>()
+                          .add(GetTaskSuggestionEvent(widget.task));
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Regenerar Sugerencia'),
+                  ),
+                ],
               ),
             ),
           ],

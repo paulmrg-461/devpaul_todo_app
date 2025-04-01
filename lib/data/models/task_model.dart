@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 
 class TaskModel extends Task {
+  final String? aiSuggestion;
+
   TaskModel({
     required String id,
     required String name,
@@ -12,6 +14,7 @@ class TaskModel extends Task {
     required DateTime startDate,
     required DateTime dueDate,
     required TaskStatus status,
+    this.aiSuggestion,
   }) : super(
           id: id,
           name: name,
@@ -34,6 +37,7 @@ class TaskModel extends Task {
       startDate: (data['startDate'] as Timestamp).toDate(),
       dueDate: (data['dueDate'] as Timestamp).toDate(),
       status: _getStatusFromString(data['status'] ?? 'pending'),
+      aiSuggestion: data['aiSuggestion'],
     );
   }
 
@@ -47,6 +51,7 @@ class TaskModel extends Task {
       startDate: task.startDate,
       dueDate: task.dueDate,
       status: task.status,
+      aiSuggestion: task is TaskModel ? task.aiSuggestion : null,
     );
   }
 
@@ -59,6 +64,7 @@ class TaskModel extends Task {
       'startDate': Timestamp.fromDate(startDate),
       'dueDate': Timestamp.fromDate(dueDate),
       'status': status.toString().split('.').last,
+      if (aiSuggestion != null) 'aiSuggestion': aiSuggestion,
     };
   }
 
@@ -107,6 +113,7 @@ class TaskModel extends Task {
     DateTime? startDate,
     DateTime? dueDate,
     TaskStatus? status,
+    String? aiSuggestion,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -117,6 +124,7 @@ class TaskModel extends Task {
       startDate: startDate ?? this.startDate,
       dueDate: dueDate ?? this.dueDate,
       status: status ?? this.status,
+      aiSuggestion: aiSuggestion ?? this.aiSuggestion,
     );
   }
 }

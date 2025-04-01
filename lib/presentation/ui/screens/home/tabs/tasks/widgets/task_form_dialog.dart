@@ -133,6 +133,8 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                 hintText: "Descripción",
                 icon: Icons.description,
                 controller: _descriptionController,
+                minLines: 3,
+                maxLines: 5,
                 validator: (value) => InputValidator.emptyValidator(
                     value: value, minCharacters: 3),
               ),
