@@ -18,12 +18,12 @@ class BottomBarItem {
 
 List<BottomBarItem> getBottombarListAdmin() => [
       const BottomBarItem(
-        label: 'Tasks',
+        label: 'Tareas',
         icon: Icons.checklist_outlined,
         widget: TaskManagementTab(),
       ),
       const BottomBarItem(
-        label: 'Users',
+        label: 'Usuarios',
         icon: Icons.people_outline_rounded,
         widget: OperatorsTab(),
       ),
@@ -36,14 +36,9 @@ List<BottomBarItem> getBottombarListAdmin() => [
 
 List<BottomBarItem> getBottombarList() => [
       const BottomBarItem(
-        label: 'Tasks',
+        label: 'Tareas',
         icon: Icons.checklist_outlined,
         widget: TaskManagementTab(),
-      ),
-      const BottomBarItem(
-        label: 'Perfil',
-        icon: Icons.person_outline_rounded,
-        widget: ProfileTab(),
       ),
       const BottomBarItem(
         label: 'Perfil',

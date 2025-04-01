@@ -104,7 +104,10 @@ class SideMenu extends StatelessWidget {
           label: Text('Perfil'),
           selectedIcon: Icon(Icons.person),
         ),
-        const Spacer(),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(28, 16, 28, 10),
+          child: Divider(),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: ListTile(
@@ -112,6 +115,29 @@ class SideMenu extends StatelessWidget {
             title: const Text('Acerca de'),
             onTap: onAboutTap,
           ),
+        ),
+        BlocBuilder<ThemeBloc, ThemeState>(
+          builder: (context, state) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListTile(
+                leading: Icon(
+                  state.isDarkMode
+                      ? Icons.light_mode
+                      : Icons.dark_mode_outlined,
+                ),
+                title: Text(state.isDarkMode ? 'Tema claro' : 'Tema oscuro'),
+                onTap: () {
+                  context
+                      .read<ThemeBloc>()
+                      .add(ThemeChanged(!state.isDarkMode));
+                },
+                // tileColor: Theme.of(context).colorScheme.surface,
+                // iconColor: Theme.of(context).colorScheme.onSurface,
+                // textColor: Theme.of(context).colorScheme.onSurface,
+              ),
+            );
+          },
         ),
         Padding(
           padding: const EdgeInsets.all(16),
