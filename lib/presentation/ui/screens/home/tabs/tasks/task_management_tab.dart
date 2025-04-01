@@ -125,11 +125,25 @@ class _TaskManagementTabState extends State<TaskManagementTab>
                 onEdit: () => _showTaskFormDialog(context, task: task),
                 onDelete: () => _deleteTask(context, task),
                 onStatusChanged: (newStatus) {
-                  context.read<TaskBloc>().add(
-                        UpdateTaskEvent(
-                          task.copyWith(status: newStatus),
-                        ),
-                      );
+                  if (task is TaskModel) {
+                    context.read<TaskBloc>().add(
+                          UpdateTaskEvent(
+                            task.copyWith(status: newStatus) as TaskModel,
+                          ),
+                        );
+                  } else {
+                    final taskModel = TaskModel(
+                      id: task.id,
+                      name: task.name,
+                      description: task.description,
+                      priority: task.priority,
+                      type: task.type,
+                      startDate: task.startDate,
+                      dueDate: task.dueDate,
+                      status: newStatus,
+                    );
+                    context.read<TaskBloc>().add(UpdateTaskEvent(taskModel));
+                  }
                 },
               );
             },

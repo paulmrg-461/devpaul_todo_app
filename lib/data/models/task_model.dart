@@ -96,4 +96,27 @@ class TaskModel extends Task {
         return TaskStatus.pending;
     }
   }
+
+  @override
+  TaskModel copyWith({
+    String? id,
+    String? name,
+    String? description,
+    TaskPriority? priority,
+    TaskType? type,
+    DateTime? startDate,
+    DateTime? dueDate,
+    TaskStatus? status,
+  }) {
+    return TaskModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      priority: priority ?? this.priority,
+      type: type ?? this.type,
+      startDate: startDate ?? this.startDate,
+      dueDate: dueDate ?? this.dueDate,
+      status: status ?? this.status,
+    );
+  }
 }
