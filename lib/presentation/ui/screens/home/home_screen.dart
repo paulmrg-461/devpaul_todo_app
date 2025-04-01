@@ -7,6 +7,9 @@ import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/theme_bloc/theme_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/widgets/bottom_bar_item.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/screens.dart';
+import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/task_management_tab.dart';
+import 'package:devpaul_todo_app/presentation/ui/screens/settings/settings_screen.dart';
+import 'package:devpaul_todo_app/presentation/ui/widgets/side_menu.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String name = 'home_screen';
@@ -14,11 +17,16 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int currentPageIndex = 0;
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    const TaskManagementTab(),
+    const SettingsScreen(),
+  ];
 
   @override
   void initState() {
@@ -27,55 +35,52 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
-      listener: (context, state) {
-        if (state is AuthUnauthenticated) {
-          context.go('/login');
-        }
-      },
-      builder: (context, state) {
-        if (state is AuthAuthenticated) {
-          final isAdmin = Environment.adminEmails.contains(state.user.email);
-          final bottomBarItems =
-              isAdmin ? getBottombarListAdmin() : getBottombarList();
+    final isLargeScreen = MediaQuery.of(context).size.width >= 1200;
 
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('DevPaul To Do'),
-            ),
-            drawer: Drawer(
-              child: _buildDrawerContent(
-                context,
-                state.user,
-                isAdmin,
+    if (isLargeScreen) {
+      return Scaffold(
+        body: Row(
+          children: [
+            SizedBox(
+              width: 280,
+              child: SideMenu(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: (index) {
+                  setState(() {
+                    _selectedIndex = index;
+                  });
+                },
               ),
             ),
-            body: bottomBarItems[currentPageIndex].widget,
-            bottomNavigationBar: NavigationBar(
-              onDestinationSelected: (int index) {
-                setState(() {
-                  currentPageIndex = index;
-                });
-              },
-              selectedIndex: currentPageIndex,
-              destinations: bottomBarItems
-                  .map(
-                    (e) => NavigationDestination(
-                      icon: Icon(e.icon),
-                      label: e.label,
-                    ),
-                  )
-                  .toList(),
+            const VerticalDivider(thickness: 1, width: 1),
+            Expanded(
+              child: _screens[_selectedIndex],
             ),
-          );
-        } else if (state is AuthLoading) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        } else {
-          return const Scaffold(body: Center(child: Text('Algo salió mal')));
-        }
-      },
+          ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.task_alt),
+            label: 'Tareas',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings),
+            label: 'Configuración',
+          ),
+        ],
+      ),
     );
   }
 
@@ -166,10 +171,10 @@ class _HomeScreenState extends State<HomeScreen> {
       return ListTile(
         leading: Icon(item.icon),
         title: Text(item.label),
-        selected: currentPageIndex == index,
+        selected: _selectedIndex == index,
         onTap: () {
           setState(() {
-            currentPageIndex = index;
+            _selectedIndex = index;
           });
           Navigator.pop(context);
         },
