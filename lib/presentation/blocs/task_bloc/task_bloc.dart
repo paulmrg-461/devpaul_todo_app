@@ -1,80 +1,10 @@
 // lib/presentation/blocs/task_bloc/task_bloc.dart
+import 'package:devpaul_todo_app/domain/usecases/tasks/tasks_use_cases.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
-import 'package:devpaul_todo_app/domain/usecases/tasks/create_task.dart';
-import 'package:devpaul_todo_app/domain/usecases/tasks/delete_task.dart';
-import 'package:devpaul_todo_app/domain/usecases/tasks/get_tasks.dart';
-import 'package:devpaul_todo_app/domain/usecases/tasks/update_task.dart';
 import 'package:equatable/equatable.dart';
-
-// Eventos
-abstract class TaskEvent extends Equatable {
-  const TaskEvent();
-
-  @override
-  List<Object?> get props => [];
-}
-
-class GetTasksEvent extends TaskEvent {
-  const GetTasksEvent();
-}
-
-class CreateTaskEvent extends TaskEvent {
-  final Task task;
-
-  const CreateTaskEvent(this.task);
-
-  @override
-  List<Object?> get props => [task];
-}
-
-class UpdateTaskEvent extends TaskEvent {
-  final Task task;
-
-  const UpdateTaskEvent(this.task);
-
-  @override
-  List<Object?> get props => [task];
-}
-
-class DeleteTaskEvent extends TaskEvent {
-  final Task task;
-
-  const DeleteTaskEvent(this.task);
-
-  @override
-  List<Object?> get props => [task];
-}
-
-// Estados
-abstract class TaskState extends Equatable {
-  const TaskState();
-
-  @override
-  List<Object?> get props => [];
-}
-
-class TaskInitial extends TaskState {}
-
-class TaskLoading extends TaskState {}
-
-class TaskLoaded extends TaskState {
-  final List<Task> tasks;
-
-  const TaskLoaded(this.tasks);
-
-  @override
-  List<Object?> get props => [tasks];
-}
-
-class TaskError extends TaskState {
-  final String message;
-
-  const TaskError(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}
+part 'task_event.dart';
+part 'task_state.dart';
 
 // Bloc
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
