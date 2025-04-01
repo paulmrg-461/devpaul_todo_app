@@ -132,9 +132,6 @@ class SideMenu extends StatelessWidget {
                       .read<ThemeBloc>()
                       .add(ThemeChanged(!state.isDarkMode));
                 },
-                // tileColor: Theme.of(context).colorScheme.surface,
-                // iconColor: Theme.of(context).colorScheme.onSurface,
-                // textColor: Theme.of(context).colorScheme.onSurface,
               ),
             );
           },
