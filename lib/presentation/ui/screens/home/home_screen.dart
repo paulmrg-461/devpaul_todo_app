@@ -21,67 +21,95 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _screens = [
-    const TaskManagementTab(),
-    const SettingsScreen(),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  int currentPageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final isLargeScreen = MediaQuery.of(context).size.width >= 1200;
 
-    if (isLargeScreen) {
-      return Scaffold(
-        body: Row(
-          children: [
-            SizedBox(
-              width: 280,
-              child: SideMenu(
-                selectedIndex: _selectedIndex,
-                onDestinationSelected: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthUnauthenticated) {
+          context.go('/login');
+        }
+      },
+      builder: (context, state) {
+        if (state is AuthAuthenticated) {
+          final isAdmin = Environment.adminEmails.contains(state.user.email);
+
+          if (isLargeScreen) {
+            return Scaffold(
+              body: Row(
+                children: [
+                  SizedBox(
+                    width: 280,
+                    child: SideMenu(
+                      selectedIndex: currentPageIndex,
+                      onDestinationSelected: (index) {
+                        setState(() {
+                          currentPageIndex = index;
+                        });
+                      },
+                      onAboutTap: () =>
+                          context.pushNamed(DeveloperInformationScreen.name),
+                      isAdmin: isAdmin,
+                    ),
+                  ),
+                  const VerticalDivider(thickness: 1, width: 1),
+                  Expanded(
+                    child: _getSelectedScreen(isAdmin),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final bottomBarItems =
+              isAdmin ? getBottombarListAdmin() : getBottombarList();
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('DevPaul To Do'),
+            ),
+            drawer: Drawer(
+              child: _buildDrawerContent(
+                context,
+                state.user,
+                isAdmin,
               ),
             ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: _screens[_selectedIndex],
+            body: bottomBarItems[currentPageIndex].widget,
+            bottomNavigationBar: NavigationBar(
+              onDestinationSelected: (int index) {
+                setState(() {
+                  currentPageIndex = index;
+                });
+              },
+              selectedIndex: currentPageIndex,
+              destinations: bottomBarItems
+                  .map(
+                    (e) => NavigationDestination(
+                      icon: Icon(e.icon),
+                      label: e.label,
+                    ),
+                  )
+                  .toList(),
             ),
-          ],
-        ),
-      );
-    }
-
-    return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.task_alt),
-            label: 'Tareas',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings),
-            label: 'Configuración',
-          ),
-        ],
-      ),
+          );
+        } else if (state is AuthLoading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        } else {
+          return const Scaffold(body: Center(child: Text('Algo salió mal')));
+        }
+      },
     );
+  }
+
+  Widget _getSelectedScreen(bool isAdmin) {
+    final screens = isAdmin ? getBottombarListAdmin() : getBottombarList();
+    return screens[currentPageIndex].widget;
   }
 
   Widget _buildDrawerContent(
@@ -92,7 +120,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        // Drawer Header
         DrawerHeader(
           decoration: BoxDecoration(color: Theme.of(context).primaryColor),
           child: Column(
@@ -111,22 +138,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   Text(
                     'DevPaul ToDo',
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleLarge?.copyWith(color: Colors.white),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.white),
                   ),
                 ],
               ),
               Text(
                 user.email,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: Colors.white),
               ),
             ],
           ),
         ),
-        // Drawer Items
         ..._buildDrawerItems(context, isAdmin),
         const Divider(),
         BlocBuilder<ThemeBloc, ThemeState>(
@@ -171,10 +199,10 @@ class _HomeScreenState extends State<HomeScreen> {
       return ListTile(
         leading: Icon(item.icon),
         title: Text(item.label),
-        selected: _selectedIndex == index,
+        selected: currentPageIndex == index,
         onTap: () {
           setState(() {
-            _selectedIndex = index;
+            currentPageIndex = index;
           });
           Navigator.pop(context);
         },

@@ -5,11 +5,15 @@ import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 class SideMenu extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onDestinationSelected;
+  final VoidCallback onAboutTap;
+  final bool isAdmin;
 
   const SideMenu({
     super.key,
     required this.selectedIndex,
     required this.onDestinationSelected,
+    required this.onAboutTap,
+    required this.isAdmin,
   });
 
   @override
@@ -89,12 +93,26 @@ class SideMenu extends StatelessWidget {
           label: const Text('Tareas'),
           selectedIcon: const Icon(Icons.task_alt),
         ),
+        if (isAdmin)
+          NavigationDrawerDestination(
+            icon: const Icon(Icons.people_outline_rounded),
+            label: const Text('Usuarios'),
+            selectedIcon: const Icon(Icons.people),
+          ),
         NavigationDrawerDestination(
-          icon: const Icon(Icons.settings),
-          label: const Text('Configuración'),
-          selectedIcon: const Icon(Icons.settings),
+          icon: const Icon(Icons.person_outline_rounded),
+          label: const Text('Perfil'),
+          selectedIcon: const Icon(Icons.person),
         ),
         const Spacer(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListTile(
+            leading: const Icon(Icons.developer_mode_rounded),
+            title: const Text('Acerca de'),
+            onTap: onAboutTap,
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.all(16),
           child: OutlinedButton.icon(
