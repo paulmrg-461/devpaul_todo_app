@@ -122,7 +122,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       builder: (context, state) {
                         if (state is AiSuggestionLoading) {
                           return const Center(
-                            child: CircularProgressIndicator(),
+                            child: CircularProgressIndicator.adaptive(),
                           );
                         }
                         if (state is AiSuggestionLoaded) {
@@ -145,7 +145,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       },
                     ),
                   const SizedBox(height: 8),
-                  ElevatedButton.icon(
+                  OutlinedButton.icon(
                     onPressed: () {
                       context
                           .read<AiSuggestionBloc>()
