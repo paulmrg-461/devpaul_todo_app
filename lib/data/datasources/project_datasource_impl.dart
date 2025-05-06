@@ -56,6 +56,7 @@ class ProjectDataSourceImpl implements ProjectDataSource {
         userIds: project.userIds,
         taskIds: project.taskIds,
         createdAt: project.createdAt,
+        status: project.status,
       );
       await _projectsCollection.add(projectModel.toMap());
     } catch (e) {
@@ -73,6 +74,7 @@ class ProjectDataSourceImpl implements ProjectDataSource {
         userIds: project.userIds,
         taskIds: project.taskIds,
         createdAt: project.createdAt,
+        status: project.status,
       );
       await _projectsCollection.doc(project.id).update(projectModel.toMap());
     } catch (e) {

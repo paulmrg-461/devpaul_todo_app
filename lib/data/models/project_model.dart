@@ -1,23 +1,18 @@
 // lib/data/models/project_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
+import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 
 class ProjectModel extends Project {
   const ProjectModel({
-    required String id,
-    required String name,
-    required String description,
-    required List<String> userIds,
-    required List<String> taskIds,
-    required DateTime createdAt,
-  }) : super(
-          id: id,
-          name: name,
-          description: description,
-          userIds: userIds,
-          taskIds: taskIds,
-          createdAt: createdAt,
-        );
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.userIds,
+    required super.taskIds,
+    required super.createdAt,
+    required super.status,
+  });
 
   factory ProjectModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -28,6 +23,7 @@ class ProjectModel extends Project {
       userIds: List<String>.from(data['userIds'] ?? []),
       taskIds: List<String>.from(data['taskIds'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      status: TaskStatus.values[data['status'] ?? 0],
     );
   }
 
@@ -38,6 +34,7 @@ class ProjectModel extends Project {
       'userIds': userIds,
       'taskIds': taskIds,
       'createdAt': Timestamp.fromDate(createdAt),
+      'status': status.index,
     };
   }
 }
