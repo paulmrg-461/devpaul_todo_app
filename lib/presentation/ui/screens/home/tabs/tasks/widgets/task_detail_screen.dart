@@ -3,6 +3,7 @@ import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/data/models/task_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_markdown/flutter_markdown.dart'; // Importar flutter_markdown
 import 'package:devpaul_todo_app/presentation/blocs/ai_suggestion_bloc/ai_suggestion_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_form_dialog.dart';
@@ -116,7 +117,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (taskModel.aiSuggestion != null)
-                    Text(taskModel.aiSuggestion!)
+                    MarkdownBody(data: taskModel.aiSuggestion!) // Usar MarkdownBody
                   else
                     BlocBuilder<AiSuggestionBloc, AiSuggestionState>(
                       builder: (context, state) {
@@ -133,7 +134,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           context
                               .read<TaskBloc>()
                               .add(UpdateTaskEvent(updatedTask));
-                          return Text(state.suggestion.suggestion);
+                          return MarkdownBody(data: state.suggestion.suggestion); // Usar MarkdownBody
                         }
                         if (state is AiSuggestionError) {
                           return Text(
