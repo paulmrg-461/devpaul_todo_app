@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         builder: (context, state) {
           return MaterialApp.router(
             routerConfig: appRouter,
-            title: 'DevPaul Todo App',
+            title: 'DevPaul Todo Apps',
             theme: CustomTheme.getThemeData(state.isDarkMode),
           );
         },
