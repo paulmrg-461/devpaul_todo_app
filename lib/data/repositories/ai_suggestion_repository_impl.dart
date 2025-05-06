@@ -36,14 +36,15 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
                 Descripción: ${task.description}
                 Prioridad: ${task.priority}
                 Tipo: ${task.type}
+                Fecha límite: ${task.dueDate}
                 
                 Por favor, proporciona 3 sugerencias prácticas y específicas para resolver esta tarea.
-                Asegúrate de que las sugerencias estén numeradas y sean fáciles de entender.
+                Asegúrate de que las sugerencias estén numeradas y sean fáciles de entender y en formato MarkDown.
               ''',
             },
           ],
           'temperature': 0.7,
-          'max_tokens': 500,
+          'max_tokens': 1000,
         })),
       );
 
