@@ -54,6 +54,15 @@ This repository contains a cross-platform application (Web & Android) developed 
    flutter run -d chrome
    ```
 
+5. **Deployment**
+- Android:
+   ```bash
+   flutter build apk --release --dart-define=FLUTTER_WEB_USE_SKIA=true
+   ```
+- Web:
+   ```bash
+   flutter build web --release --dart-define=FLUTTER_WEB_USE_SKIA=true
+   ```
 ---
 ## Application Usage
 
