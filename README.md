@@ -61,7 +61,7 @@ This repository contains a cross-platform application (Web & Android) developed 
    ```
 - Web:
    ```bash
-   flutter build web --release --dart-define=FLUTTER_WEB_USE_SKIA=true
+   flutter build web --dart-define=DEEPSEEK_API_KEY=YOUR_API_KEY --dart-define=DEEPSEEK_API_URL=YOUR_DEEPSEEK_API_URL --dart-define=FLUTTER_WEB_USE_SKIA=true
    ```
 ---
 ## Application Usage
