@@ -53,7 +53,7 @@ class ProjectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: InkWell(
         // onTap: () => _showProjectDetail(context), // Detail screen not implemented for projects yet
         child: Padding(

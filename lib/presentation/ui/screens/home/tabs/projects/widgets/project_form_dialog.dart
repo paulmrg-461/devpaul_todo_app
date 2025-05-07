@@ -41,8 +41,7 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
 
     final projectToSave = ProjectModel(
       // Changed to ProjectModel
-      id: widget.project?.id ??
-          DateTime.now().millisecondsSinceEpoch.toString(),
+      id: widget.project?.id ?? '',
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
       status: _selectedStatus,

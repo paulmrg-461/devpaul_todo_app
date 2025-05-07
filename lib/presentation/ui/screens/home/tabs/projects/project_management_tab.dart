@@ -75,7 +75,7 @@ class ProjectManagementTab extends StatelessWidget {
                       project: project,
                       onEdit: () =>
                           _showProjectFormDialog(context, project: project),
-                      onDelete: () => {},
+                      onDelete: () => _deleteProject(context, project),
                       onStatusChanged: (status) => print(status));
                 },
               ),
@@ -97,14 +97,39 @@ class ProjectManagementTab extends StatelessWidget {
         project: project,
         onSave: (project) {
           if (project is ProjectModel) {
-            // if (project.id.isEmpty) {
-            context.read<ProjectBloc>().add(CreateProjectEvent(project));
-            // } else {
-            //   context.read<ProjectBloc>().add(UpdateProjectEvent(project));
-            // }
+            print('ID: ${project.id}');
+            if (project.id == '') {
+              context.read<ProjectBloc>().add(CreateProjectEvent(project));
+            } else {
+              context.read<ProjectBloc>().add(UpdateProjectEvent(project));
+            }
           }
           Navigator.of(context).pop();
         },
+      ),
+    );
+  }
+
+  void _deleteProject(BuildContext context, Project project) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog.adaptive(
+        title: const Text('Eliminar proyecto'),
+        content:
+            const Text('¿Estás seguro de que deseas eliminar este proyecto?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () {
+              context.read<ProjectBloc>().add(DeleteProjectEvent(project.id));
+              Navigator.of(context).pop();
+            },
+            child: const Text('Eliminar'),
+          ),
+        ],
       ),
     );
   }
