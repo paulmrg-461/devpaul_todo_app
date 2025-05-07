@@ -1,6 +1,8 @@
+import 'package:devpaul_todo_app/data/models/project_model.dart';
 import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
 import 'package:devpaul_todo_app/presentation/blocs/project_bloc/project_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/projects/widgets/project_card.dart';
+import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/projects/widgets/project_form_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -51,20 +53,59 @@ class ProjectManagementTab extends StatelessWidget {
           }
 
           if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No hay proyectos disponibles'));
+            return Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('No hay proyectos disponibles'),
+                TextButton(
+                    onPressed: () => _showProjectFormDialog(context),
+                    child: Text('Crear proyecto'))
+              ],
+            ));
           }
 
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final project = snapshot.data![index];
-              return ProjectCard(
-                  project: project,
-                  onEdit: () => {},
-                  onDelete: () => {},
-                  onStatusChanged: (status) => print(status));
-            },
+          return Stack(
+            children: [
+              ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final project = snapshot.data![index];
+                  return ProjectCard(
+                      project: project,
+                      onEdit: () =>
+                          _showProjectFormDialog(context, project: project),
+                      onDelete: () => {},
+                      onStatusChanged: (status) => print(status));
+                },
+              ),
+              Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: FloatingActionButton(
+                      onPressed: () => _showProjectFormDialog(context),
+                      child: const Icon(Icons.add)))
+            ],
           );
         });
+  }
+
+  void _showProjectFormDialog(BuildContext context, {Project? project}) {
+    showDialog(
+      context: context,
+      builder: (context) => ProjectFormDialog(
+        project: project,
+        onSave: (project) {
+          if (project is ProjectModel) {
+            // if (project.id.isEmpty) {
+            context.read<ProjectBloc>().add(CreateProjectEvent(project));
+            // } else {
+            //   context.read<ProjectBloc>().add(UpdateProjectEvent(project));
+            // }
+          }
+          Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 }
