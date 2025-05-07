@@ -8,60 +8,54 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ProjectDataSourceImpl implements ProjectDataSource {
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
+  final CollectionReference _projectsCollection;
+  final CollectionReference _tasksCollection;
 
-  ProjectDataSourceImpl(this._firestore, this._auth);
-
-  // Asumiendo que los proyectos se almacenan por usuario, similar a las tareas.
-  // Si los proyectos son compartidos, la estructura de la colección podría variar.
-  CollectionReference get _projectsCollection {
-    final user = _auth.currentUser;
-    if (user == null) throw Exception('Usuario no autenticado');
-    // Podría ser una colección raíz 'projects' o anidada bajo 'users'
-    // Por simplicidad, la anidaremos bajo el usuario por ahora.
-    return _firestore.collection('users').doc(user.uid).collection('projects');
-  }
+  ProjectDataSourceImpl(this._firestore, this._auth)
+      : _projectsCollection = _firestore.collection('projects'),
+        _tasksCollection = _firestore.collection('tasks');
 
   @override
-  Future<List<Project>> getProjects() async {
-    try {
-      final querySnapshot = await _projectsCollection.get();
-      return querySnapshot.docs
-          .map((doc) => ProjectModel.fromSnapshot(doc))
-          .toList();
-    } catch (e) {
-      throw Exception('Error al obtener los proyectos: $e');
-    }
-  }
+  Stream<List<Project>> getProjects() =>
+      _projectsCollection.snapshots().map((snapshot) =>
+          snapshot.docs.map((doc) => ProjectModel.fromSnapshot(doc)).toList());
 
   @override
-  Future<Project?> getProjectById(String projectId) async {
+  Stream<List<Project>> getProjectsByUser(String userId) => _projectsCollection
+      .where('userIds', arrayContains: userId)
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => ProjectModel.fromSnapshot(doc)).toList());
+
+  @override
+  Future<Project> getProjectById(String projectId) async {
     try {
-      final docSnapshot = await _projectsCollection.doc(projectId).get();
-      if (docSnapshot.exists) {
-        return ProjectModel.fromSnapshot(docSnapshot);
+      final doc = await _projectsCollection.doc(projectId).get();
+      if (!doc.exists) {
+        throw Exception('Proyecto no encontrado');
       }
-      return null;
+      return ProjectModel.fromSnapshot(doc);
     } catch (e) {
-      throw Exception('Error al obtener el proyecto por ID: $e');
+      throw Exception('Error al obtener el proyecto: $e');
     }
   }
 
   @override
-  Future<void> createProject(Project project) async {
+  Future<void> shareProjectWithUser(String projectId, String userId) async {
     try {
-      final projectModel = ProjectModel(
-        id: '', // Firestore generará el ID
-        name: project.name,
-        description: project.description,
-        userIds: project.userIds,
-        taskIds: project.taskIds,
-        createdAt: project.createdAt,
-        status: project.status,
-      );
-      await _projectsCollection.add(projectModel.toMap());
+      await _projectsCollection.doc(projectId).update({
+        'userIds': FieldValue.arrayUnion([userId])
+      });
     } catch (e) {
-      throw Exception('Error al crear el proyecto: $e');
+      throw Exception('Error al compartir el proyecto: $e');
     }
+  }
+
+  @override
+  Future<String> createProject(Project project) async {
+    final docRef =
+        await _projectsCollection.add(ProjectModel.fromEntity(project).toMap());
+    return docRef.id;
   }
 
   @override
@@ -115,6 +109,15 @@ class ProjectDataSourceImpl implements ProjectDataSource {
 
   @override
   Future<void> addTaskToProject(String projectId, String taskId) async {
+    final batch = _firestore.batch();
+
+    batch.update(_projectsCollection.doc(projectId), {
+      'taskIds': FieldValue.arrayUnion([taskId])
+    });
+
+    batch.update(_tasksCollection.doc(taskId), {'projectId': projectId});
+
+    await batch.commit();
     try {
       await _projectsCollection.doc(projectId).update({
         'taskIds': FieldValue.arrayUnion([taskId])

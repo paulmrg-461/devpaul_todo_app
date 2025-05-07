@@ -9,8 +9,8 @@ class ProjectRepositoryImpl implements ProjectRepository {
   ProjectRepositoryImpl(this.dataSource);
 
   @override
-  Future<List<Project>> getProjects() async {
-    return await dataSource.getProjects();
+  Stream<List<Project>> getProjects() {
+    return dataSource.getProjects();
   }
 
   @override
@@ -51,5 +51,15 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<void> removeTaskFromProject(String projectId, String taskId) async {
     await dataSource.removeTaskFromProject(projectId, taskId);
+  }
+
+  @override
+  Stream<List<Project>> getProjectsByUser(String userId) {
+    return dataSource.getProjectsByUser(userId);
+  }
+
+  @override
+  Future<void> shareProjectWithUser(String projectId, String userId) async {
+    await dataSource.shareProjectWithUser(projectId, userId);
   }
 }

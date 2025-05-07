@@ -9,3 +9,5 @@ export 'get_projects.dart';
 export 'remove_task_from_project.dart';
 export 'remove_user_from_project.dart';
 export 'update_project.dart';
+export 'share_project_with_user.dart';
+export 'get_projects_by_user.dart';

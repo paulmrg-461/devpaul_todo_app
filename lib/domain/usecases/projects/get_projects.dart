@@ -7,7 +7,7 @@ class GetProjects {
 
   GetProjects(this.repository);
 
-  Future<List<Project>> call() async {
-    return await repository.getProjects();
+  Stream<List<Project>> call() {
+    return repository.getProjects();
   }
 }

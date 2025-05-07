@@ -88,6 +88,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateProject(sl<ProjectRepository>()));
   sl.registerLazySingleton(
       () => RemoveTaskFromProject(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => GetProjectsByUser(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => ShareProjectWithUser(sl<ProjectRepository>()));
   sl.registerLazySingleton(
       () => RemoveUserFromProject(sl<ProjectRepository>()));
 
@@ -141,6 +143,8 @@ Future<void> init() async {
         removeTaskFromProjectUseCase: sl<RemoveTaskFromProject>(),
         removeUserFromProjectUseCase: sl<RemoveUserFromProject>(),
         getProjectByIdUseCase: sl<GetProjectById>(),
+        getProjectsByUserUseCase: sl<GetProjectsByUser>(),
+        shareProjectWithUserUseCase: sl<ShareProjectWithUser>(),
       ));
 
   // Data storage

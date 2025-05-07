@@ -19,7 +19,10 @@ class Project extends Equatable {
     required this.taskIds,
     required this.createdAt,
     required this.status,
+    this.ownerId,
   });
+
+  final String? ownerId;
 
   Project copyWith({
     String? id,
@@ -50,5 +53,6 @@ class Project extends Equatable {
         taskIds,
         createdAt,
         status,
+        ownerId,
       ];
 }

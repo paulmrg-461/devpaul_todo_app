@@ -17,6 +17,8 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   final RemoveUserFromProject removeUserFromProjectUseCase;
   final AddTaskToProject addTaskToProjectUseCase;
   final RemoveTaskFromProject removeTaskFromProjectUseCase;
+  final ShareProjectWithUser shareProjectWithUserUseCase;
+  final GetProjectsByUser getProjectsByUserUseCase;
 
   ProjectBloc({
     required this.getProjectsUseCase,
@@ -28,6 +30,8 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     required this.removeUserFromProjectUseCase,
     required this.addTaskToProjectUseCase,
     required this.removeTaskFromProjectUseCase,
+    required this.shareProjectWithUserUseCase,
+    required this.getProjectsByUserUseCase,
   }) : super(ProjectInitial()) {
     on<GetProjectsEvent>(_onGetProjects);
     on<GetProjectByIdEvent>(_onGetProjectById);
@@ -38,15 +42,30 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
     on<RemoveUserFromProjectEvent>(_onRemoveUserFromProject);
     on<AddTaskToProjectEvent>(_onAddTaskToProject);
     on<RemoveTaskFromProjectEvent>(_onRemoveTaskFromProject);
+    on<ShareProjectWithUserEvent>(_onShareProjectWithUser);
+    on<GetProjectsByUserEvent>(_onGetProjectsByUser);
   }
 
-  Future<void> _onGetProjects(
+  void _onGetProjects(
     GetProjectsEvent event,
     Emitter<ProjectState> emit,
   ) async {
     emit(ProjectLoading());
     try {
       final projects = await getProjectsUseCase();
+      emit(ProjectLoaded(projects));
+    } catch (e) {
+      emit(ProjectError(e.toString()));
+    }
+  }
+
+  void _onGetProjectsByUser(
+    GetProjectsByUserEvent event,
+    Emitter<ProjectState> emit,
+  ) async {
+    emit(ProjectLoading());
+    try {
+      final projects = getProjectsByUserUseCase(event.userId);
       emit(ProjectLoaded(projects));
     } catch (e) {
       emit(ProjectError(e.toString()));
@@ -158,6 +177,18 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
       await removeTaskFromProjectUseCase(event.projectId, event.taskId);
       emit(const ProjectOperationSuccess('Tarea eliminada del proyecto'));
       add(GetProjectByIdEvent(event.projectId));
+    } catch (e) {
+      emit(ProjectError(e.toString()));
+    }
+  }
+
+  Future<void> _onShareProjectWithUser(
+    ShareProjectWithUserEvent event,
+    Emitter<ProjectState> emit,
+  ) async {
+    try {
+      await shareProjectWithUserUseCase(event.projectId, event.userId);
+      emit(const ProjectOperationSuccess('Proyecto compartido con éxito'));
     } catch (e) {
       emit(ProjectError(e.toString()));
     }

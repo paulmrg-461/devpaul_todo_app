@@ -71,3 +71,18 @@ class RemoveTaskFromProjectEvent extends ProjectEvent {
   @override
   List<Object> get props => [projectId, taskId];
 }
+
+class GetProjectsByUserEvent extends ProjectEvent {
+  final String userId;
+  const GetProjectsByUserEvent(this.userId);
+  @override
+  List<Object> get props => [userId];
+}
+
+class ShareProjectWithUserEvent extends ProjectEvent {
+  final String projectId;
+  final String userId;
+  const ShareProjectWithUserEvent(this.projectId, this.userId);
+  @override
+  List<Object> get props => [projectId, userId];
+}

@@ -12,6 +12,7 @@ class ProjectModel extends Project {
     required super.taskIds,
     required super.createdAt,
     required super.status,
+    super.ownerId,
   });
 
   factory ProjectModel.fromSnapshot(DocumentSnapshot doc) {
@@ -27,6 +28,19 @@ class ProjectModel extends Project {
     );
   }
 
+  factory ProjectModel.fromEntity(Project project) {
+    return ProjectModel(
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      userIds: project.userIds,
+      taskIds: project.taskIds,
+      createdAt: project.createdAt,
+      status: project.status,
+      ownerId: project.ownerId,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -35,6 +49,7 @@ class ProjectModel extends Project {
       'taskIds': taskIds,
       'createdAt': Timestamp.fromDate(createdAt),
       'status': status.index,
+      if (ownerId != null) 'ownerId': ownerId,
     };
   }
 }
