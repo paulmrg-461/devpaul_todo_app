@@ -28,3 +28,9 @@ class TaskError extends TaskState {
   @override
   List<Object?> get props => [message];
 }
+
+class TasksByProjectLoaded extends TaskState {
+  final Stream<List<Task>> tasks;
+
+  const TasksByProjectLoaded(this.tasks);
+}

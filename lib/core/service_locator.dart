@@ -77,6 +77,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateTask(sl<TaskRepository>()));
   sl.registerLazySingleton(() => DeleteTask(sl<TaskRepository>()));
   sl.registerLazySingleton(() => CreateTask(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => GetTasksByProject(sl<TaskRepository>()));
 
   // Project Use Cases
   sl.registerLazySingleton(() => AddTaskToProject(sl<ProjectRepository>()));
@@ -129,6 +130,7 @@ Future<void> init() async {
       getTasksUseCase: sl<GetTasks>(),
       updateTaskUseCase: sl<UpdateTask>(),
       deleteTaskUseCase: sl<DeleteTask>(),
+      getTasksByProjectUseCase: sl<GetTasksByProject>(),
     ),
   );
 
