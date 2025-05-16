@@ -27,4 +27,8 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<void> deleteTask(String taskId) async {
     await dataSource.deleteTask(taskId);
   }
+
+  @override
+  Stream<List<Task>> getTasksByProject(String projectId) =>
+      dataSource.getTasksByProject(projectId);
 }

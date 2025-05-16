@@ -33,6 +33,9 @@ Future<void> init() async {
   sl.registerLazySingleton<TaskDataSource>(
     () => TaskDataSourceImpl(sl<FirebaseFirestore>(), sl<FirebaseAuth>()),
   );
+  sl.registerLazySingleton<ProjectDataSource>(
+    () => ProjectDataSourceImpl(sl<FirebaseFirestore>(), sl<FirebaseAuth>()),
+  );
 
   // Repositorios
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
@@ -45,6 +48,9 @@ Future<void> init() async {
   sl.registerLazySingleton<ThemeRepository>(() => ThemeRepositoryImpl(sl()));
   sl.registerLazySingleton<TaskRepository>(
     () => TaskRepositoryImpl(sl<TaskDataSource>()),
+  );
+  sl.registerLazySingleton<ProjectRepository>(
+    () => ProjectRepositoryImpl(sl<ProjectDataSource>()),
   );
 
   // Casos de Uso
@@ -71,6 +77,22 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateTask(sl<TaskRepository>()));
   sl.registerLazySingleton(() => DeleteTask(sl<TaskRepository>()));
   sl.registerLazySingleton(() => CreateTask(sl<TaskRepository>()));
+  sl.registerLazySingleton(() => GetTasksByProject(sl<TaskRepository>()));
+
+  // Project Use Cases
+  sl.registerLazySingleton(() => AddTaskToProject(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => AddUserToProject(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => CreateProject(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => DeleteProject(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => GetProjectById(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => GetProjects(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => UpdateProject(sl<ProjectRepository>()));
+  sl.registerLazySingleton(
+      () => RemoveTaskFromProject(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => GetProjectsByUser(sl<ProjectRepository>()));
+  sl.registerLazySingleton(() => ShareProjectWithUser(sl<ProjectRepository>()));
+  sl.registerLazySingleton(
+      () => RemoveUserFromProject(sl<ProjectRepository>()));
 
   // Bloc
   sl.registerFactory(
@@ -108,8 +130,24 @@ Future<void> init() async {
       getTasksUseCase: sl<GetTasks>(),
       updateTaskUseCase: sl<UpdateTask>(),
       deleteTaskUseCase: sl<DeleteTask>(),
+      getTasksByProjectUseCase: sl<GetTasksByProject>(),
     ),
   );
+
+  // Project Bloc
+  sl.registerFactory(() => ProjectBloc(
+        createProjectUseCase: sl<CreateProject>(),
+        getProjectsUseCase: sl<GetProjects>(),
+        updateProjectUseCase: sl<UpdateProject>(),
+        deleteProjectUseCase: sl<DeleteProject>(),
+        addTaskToProjectUseCase: sl<AddTaskToProject>(),
+        addUserToProjectUseCase: sl<AddUserToProject>(),
+        removeTaskFromProjectUseCase: sl<RemoveTaskFromProject>(),
+        removeUserFromProjectUseCase: sl<RemoveUserFromProject>(),
+        getProjectByIdUseCase: sl<GetProjectById>(),
+        getProjectsByUserUseCase: sl<GetProjectsByUser>(),
+        shareProjectWithUserUseCase: sl<ShareProjectWithUser>(),
+      ));
 
   // Data storage
   sl.registerLazySingleton<AuthStorage>(() => AuthStorage());

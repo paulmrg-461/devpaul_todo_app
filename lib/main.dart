@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => sl<ThemeBloc>()),
         BlocProvider(create: (context) => sl<TaskBloc>()),
         BlocProvider(create: (context) => sl<AiSuggestionBloc>()),
+        BlocProvider(create: (context) => sl<ProjectBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
