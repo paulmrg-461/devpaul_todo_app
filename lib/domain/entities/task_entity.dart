@@ -16,6 +16,8 @@ class Task extends Equatable {
   final DateTime startDate;
   final DateTime dueDate;
   final TaskStatus status;
+  final String?
+      projectId; // Nuevo campo para el ID del proyecto al que pertenece la tarea
 
   const Task({
     required this.id,
@@ -26,6 +28,7 @@ class Task extends Equatable {
     required this.startDate,
     required this.dueDate,
     required this.status,
+    this.projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
   });
 
   Task copyWith({
@@ -37,6 +40,8 @@ class Task extends Equatable {
     DateTime? startDate,
     DateTime? dueDate,
     TaskStatus? status,
+    String?
+        projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
   }) {
     return Task(
       id: id ?? this.id,
@@ -47,6 +52,8 @@ class Task extends Equatable {
       startDate: startDate ?? this.startDate,
       dueDate: dueDate ?? this.dueDate,
       status: status ?? this.status,
+      projectId: projectId ??
+          this.projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
     );
   }
 
@@ -60,5 +67,6 @@ class Task extends Equatable {
         startDate,
         dueDate,
         status,
+        projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
       ];
 }

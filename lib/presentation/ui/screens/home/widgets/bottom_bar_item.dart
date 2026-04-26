@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tabs.dart';
+import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/projects/project_management_tab.dart';
 
 class BottomBarItem {
   final String label;
@@ -23,6 +24,11 @@ List<BottomBarItem> getBottombarListAdmin() => [
         widget: TaskManagementTab(),
       ),
       const BottomBarItem(
+        label: 'Proyectos',
+        icon: Icons.assignment_outlined, // Or any other suitable icon
+        widget: ProjectManagementTab(),
+      ),
+      const BottomBarItem(
         label: 'Usuarios',
         icon: Icons.people_outline_rounded,
         widget: OperatorsTab(),
@@ -39,6 +45,11 @@ List<BottomBarItem> getBottombarList() => [
         label: 'Tareas',
         icon: Icons.checklist_outlined,
         widget: TaskManagementTab(),
+      ),
+      const BottomBarItem(
+        label: 'Proyectos',
+        icon: Icons.assignment_outlined, // Or any other suitable icon
+        widget: ProjectManagementTab(),
       ),
       const BottomBarItem(
         label: 'Perfil',

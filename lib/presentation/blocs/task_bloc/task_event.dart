@@ -37,3 +37,12 @@ class DeleteTaskEvent extends TaskEvent {
   @override
   List<Object?> get props => [task];
 }
+
+class GetTasksByProjectEvent extends TaskEvent {
+  final String projectId;
+
+  const GetTasksByProjectEvent(this.projectId);
+
+  @override
+  List<Object?> get props => [projectId];
+}

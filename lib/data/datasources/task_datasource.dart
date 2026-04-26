@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class TaskDataSource {
   Future<List<Task>> getTasks();
+  Stream<List<Task>> getTasksByProject(String projectId);
   Future<void> createTask(Task task);
   Future<void> updateTask(Task task);
   Future<void> deleteTask(String id);
@@ -34,6 +35,13 @@ class TaskDataSourceImpl implements TaskDataSource {
       throw Exception('Error al obtener las tareas: $e');
     }
   }
+
+  @override
+  Stream<List<Task>> getTasksByProject(String projectId) => _tasksCollection
+      .where('projectId', isEqualTo: projectId)
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => TaskModel.fromSnapshot(doc)).toList());
 
   @override
   Future<void> createTask(Task task) async {

@@ -12,17 +12,20 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final CreateTask createTaskUseCase;
   final UpdateTask updateTaskUseCase;
   final DeleteTask deleteTaskUseCase;
+  final GetTasksByProject getTasksByProjectUseCase;
 
   TaskBloc({
     required this.getTasksUseCase,
     required this.createTaskUseCase,
     required this.updateTaskUseCase,
     required this.deleteTaskUseCase,
+    required this.getTasksByProjectUseCase,
   }) : super(TaskInitial()) {
     on<GetTasksEvent>(_onGetTasks);
     on<CreateTaskEvent>(_onCreateTask);
     on<UpdateTaskEvent>(_onUpdateTask);
     on<DeleteTaskEvent>(_onDeleteTask);
+    on<GetTasksByProjectEvent>(_onGetTasksByProject);
   }
 
   Future<void> _onGetTasks(
@@ -33,6 +36,19 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     try {
       final tasks = await getTasksUseCase();
       emit(TaskLoaded(tasks));
+    } catch (e) {
+      emit(TaskError(e.toString()));
+    }
+  }
+
+  void _onGetTasksByProject(
+    GetTasksByProjectEvent event,
+    Emitter<TaskState> emit,
+  ) async {
+    emit(TaskLoading());
+    try {
+      final tasks = getTasksByProjectUseCase(event.projectId);
+      emit(TasksByProjectLoaded(tasks));
     } catch (e) {
       emit(TaskError(e.toString()));
     }

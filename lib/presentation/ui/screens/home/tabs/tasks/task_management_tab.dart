@@ -198,7 +198,7 @@ class _TaskManagementTabState extends State<TaskManagementTab>
   void _deleteTask(BuildContext context, Task task) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context) => AlertDialog.adaptive(
         title: const Text('Eliminar Tarea'),
         content: const Text('¿Estás seguro de que deseas eliminar esta tarea?'),
         actions: [

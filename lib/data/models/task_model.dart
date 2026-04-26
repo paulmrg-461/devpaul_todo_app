@@ -15,6 +15,7 @@ class TaskModel extends Task {
     required super.dueDate,
     required super.status,
     this.aiSuggestion,
+    super.projectId,
   });
 
   factory TaskModel.fromSnapshot(DocumentSnapshot doc) {
@@ -29,6 +30,7 @@ class TaskModel extends Task {
       dueDate: (data['dueDate'] as Timestamp).toDate(),
       status: _getStatusFromString(data['status'] ?? 'pending'),
       aiSuggestion: data['aiSuggestion'],
+      projectId: data['projectId'],
     );
   }
 
@@ -43,6 +45,7 @@ class TaskModel extends Task {
       dueDate: task.dueDate,
       status: task.status,
       aiSuggestion: task is TaskModel ? task.aiSuggestion : null,
+      projectId: task.projectId,
     );
   }
 
@@ -56,6 +59,7 @@ class TaskModel extends Task {
       'dueDate': Timestamp.fromDate(dueDate),
       'status': status.toString().split('.').last,
       if (aiSuggestion != null) 'aiSuggestion': aiSuggestion,
+      if (projectId != null) 'projectId': projectId,
     };
   }
 
@@ -105,6 +109,7 @@ class TaskModel extends Task {
     DateTime? dueDate,
     TaskStatus? status,
     String? aiSuggestion,
+    String? projectId,
   }) {
     return TaskModel(
       id: id ?? this.id,
@@ -116,6 +121,7 @@ class TaskModel extends Task {
       dueDate: dueDate ?? this.dueDate,
       status: status ?? this.status,
       aiSuggestion: aiSuggestion ?? this.aiSuggestion,
+      projectId: projectId ?? this.projectId,
     );
   }
 }
