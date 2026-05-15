@@ -100,7 +100,7 @@ class _CustomInputState extends State<CustomInput> {
         borderRadius: BorderRadius.circular(widget.borderRadius!),
         boxShadow: [
           BoxShadow(
-              color: colorScheme.shadow.withOpacity(0.1),
+              color: colorScheme.shadow.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2)),
         ],
@@ -155,15 +155,15 @@ class _CustomInputState extends State<CustomInput> {
             horizontal: 12,
           ),
           focusedBorder: getBorder(
-            borderColor: getBorderColor().withOpacity(0.8),
+            borderColor: getBorderColor().withValues(alpha: 0.8),
             borderWidth: 1.5,
           ),
           border: getBorder(
-            borderColor: getBorderColor().withOpacity(0.4),
+            borderColor: getBorderColor().withValues(alpha: 0.4),
             borderWidth: 1.0,
           ),
           enabledBorder: getBorder(
-            borderColor: getBorderColor().withOpacity(0.4),
+            borderColor: getBorderColor().withValues(alpha: 0.4),
             borderWidth: 1.0,
           ),
           errorBorder: getBorder(
@@ -176,11 +176,11 @@ class _CustomInputState extends State<CustomInput> {
           ),
           labelText: widget.hintText,
           labelStyle: textTheme.bodySmall?.copyWith(
-            color: getFontColor().withOpacity(0.6),
+            color: getFontColor().withValues(alpha: 0.6),
           ),
           floatingLabelStyle: TextStyle(color: getBorderColor()),
           hintStyle: textTheme.bodySmall?.copyWith(
-            color: getFontColor().withOpacity(0.4),
+            color: getFontColor().withValues(alpha: 0.4),
           ),
           counterText: '',
           fillColor: getBackgroundColor(),

@@ -34,7 +34,7 @@ class CustomIcon extends StatelessWidget {
       height: height,
       margin: const EdgeInsets.symmetric(horizontal: 6),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 13, 143, 218).withOpacity(0.25),
+        color: const Color.fromARGB(255, 13, 143, 218).withValues(alpha: 0.25),
         borderRadius: BorderRadius.circular(6),
       ),
       child: InkWell(

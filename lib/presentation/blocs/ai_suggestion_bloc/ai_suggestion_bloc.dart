@@ -1,13 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:devpaul_todo_app/data/models/ai_suggestion_model.dart';
+import 'package:devpaul_todo_app/domain/entities/ai_suggestion_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/domain/usecases/ai/get_task_suggestion.dart';
 
 part 'ai_suggestion_event.dart';
 part 'ai_suggestion_state.dart';
 
-// Bloc
 class AiSuggestionBloc extends Bloc<AiSuggestionEvent, AiSuggestionState> {
   final GetTaskSuggestion getTaskSuggestionUseCase;
 

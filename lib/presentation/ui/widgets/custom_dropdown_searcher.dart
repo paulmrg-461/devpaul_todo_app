@@ -27,7 +27,7 @@ class CustomDropdownSearcher extends StatefulWidget {
     required this.hintText,
     required this.optionList,
     this.icon,
-    this.iconColor = CustomTheme.primaryColor,
+    this.iconColor = AppColors.primary,
     this.backgroundColor = Colors.white,
     this.textColor = Colors.black87,
     required this.action,
@@ -191,7 +191,7 @@ class _CustomDropdownSearcherState extends State<CustomDropdownSearcher> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final effectiveBorderColor =
-        widget.borderColor ?? colorScheme.primary.withOpacity(0.4);
+        widget.borderColor ?? colorScheme.primary.withValues(alpha: 0.4);
     return Stack(
       children: [
         Tooltip(
@@ -217,7 +217,7 @@ class _CustomDropdownSearcherState extends State<CustomDropdownSearcher> {
                 border: Border.all(color: effectiveBorderColor, width: 1.2),
                 boxShadow: [
                   BoxShadow(
-                      color: colorScheme.shadow.withOpacity(0.1),
+                      color: colorScheme.shadow.withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2)),
                 ],

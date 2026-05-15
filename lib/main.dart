@@ -7,14 +7,26 @@ import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 import 'package:devpaul_todo_app/config/routes/app_routes.dart';
 import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:devpaul_todo_app/core/firebase/firebase_options.dart';
-import 'package:devpaul_todo_app/core/service_locator.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'core/service_locator.dart' as di;
+import 'package:devpaul_todo_app/core/service_locator.dart' as di;
+
+class AppBlocObserver extends BlocObserver {
+  @override
+  void onChange(BlocBase bloc, Change change) {
+    super.onChange(bloc, change);
+    debugPrint('[BLoC] ${bloc.runtimeType} $change');
+  }
+
+  @override
+  void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
+    super.onError(bloc, error, stackTrace);
+    debugPrint('[BLoC Error] ${bloc.runtimeType}: $error');
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer = AppBlocObserver();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await dotenv.load(fileName: '.env');
   await di.init();
 
   if (!kIsWeb) {
@@ -34,13 +46,14 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => sl<AuthBloc>()..add(AuthCheckUserEvent()),
+          create: (context) => di.sl<AuthBloc>()..add(AuthCheckUserEvent()),
         ),
-        BlocProvider(create: (context) => sl<UserBloc>()),
-        BlocProvider(create: (context) => sl<ThemeBloc>()),
-        BlocProvider(create: (context) => sl<TaskBloc>()),
-        BlocProvider(create: (context) => sl<AiSuggestionBloc>()),
-        BlocProvider(create: (context) => sl<ProjectBloc>()),
+        BlocProvider(create: (context) => di.sl<UserBloc>()),
+        BlocProvider(create: (context) => di.sl<ThemeBloc>()),
+        BlocProvider(create: (context) => di.sl<TaskBloc>()),
+        BlocProvider(create: (context) => di.sl<AiSuggestionBloc>()),
+        BlocProvider(create: (context) => di.sl<ProjectBloc>()),
+        BlocProvider(create: (context) => di.sl<GroupBloc>()),
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {

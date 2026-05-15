@@ -1,11 +1,11 @@
-// presentation/blocs/theme/theme_event.dart
 part of 'theme_bloc.dart';
 
-abstract class ThemeEvent extends Equatable {
+@immutable
+sealed class ThemeEvent extends Equatable {
   const ThemeEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class ThemeChanged extends ThemeEvent {
@@ -14,5 +14,9 @@ class ThemeChanged extends ThemeEvent {
   const ThemeChanged(this.isDarkMode);
 
   @override
-  List<Object> get props => [isDarkMode];
+  List<Object?> get props => [isDarkMode];
+}
+
+class ThemeLoadRequested extends ThemeEvent {
+  const ThemeLoadRequested();
 }

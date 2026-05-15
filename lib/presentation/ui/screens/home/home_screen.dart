@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:devpaul_todo_app/config/global/environment.dart';
-import 'package:devpaul_todo_app/data/models/user_model.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/theme_bloc/theme_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/screens.dart';
@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildDrawerContent(
     BuildContext context,
-    UserModel user,
+    User user,
     bool isAdmin,
   ) {
     return ListView(

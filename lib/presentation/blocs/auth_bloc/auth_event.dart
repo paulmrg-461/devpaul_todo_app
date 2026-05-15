@@ -12,8 +12,8 @@ class AuthLoginEvent extends AuthEvent {
 class AuthLogoutEvent extends AuthEvent {}
 
 class AuthRegisterEvent extends AuthEvent {
-  final UserModel userModel;
-  AuthRegisterEvent(this.userModel);
+  final User user;
+  AuthRegisterEvent(this.user);
 }
 
 class AuthCheckUserEvent extends AuthEvent {}

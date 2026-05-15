@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:devpaul_todo_app/data/datasources/auth_storage.dart';
-import 'package:devpaul_todo_app/data/models/user_model.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:meta/meta.dart';
 import 'package:devpaul_todo_app/domain/usecases/authentication/authentication_use_cases.dart';
 
@@ -28,14 +28,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLogin(AuthLoginEvent event, Emitter<AuthState> emit) async {
+    if (state is AuthLoading) return;
     emit(AuthLoading());
     try {
       final user = await loginUseCase(event.email, event.password);
       if (user != null) {
-        // Almacena el token y el correo
-        await authStorage.storeToken(
-          user.token,
-        ); // Asumiendo que UserEntity tiene un campo token
+        await authStorage.storeToken(user.token);
         await authStorage.storeEmail(event.email);
         emit(AuthAuthenticated(user));
       } else {
@@ -48,7 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onLogout(AuthLogoutEvent event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
-    await authStorage.clear(); // Limpia el almacenamiento al hacer logout
+    await authStorage.clear();
     await logoutUseCase();
     emit(AuthUnauthenticated());
   }
@@ -57,25 +55,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthRegisterEvent event,
     Emitter<AuthState> emit,
   ) async {
+    if (state is AuthLoading) return;
     emit(AuthLoading());
     try {
-      final user = await registerUseCase(event.userModel);
+      final user = await registerUseCase(event.user);
       if (user != null) {
         await authStorage.storeToken(user.token);
-        await authStorage.storeEmail(event.userModel.email);
+        await authStorage.storeEmail(event.user.email);
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthError('Registration failed'));
       }
     } catch (e) {
       if (e.toString().contains("already in use")) {
-        // Si el correo ya está en uso, se intenta iniciar sesión con ese usuario
         try {
           final user = await loginUseCase(
-              event.userModel.email, event.userModel.password);
+              event.user.email, event.user.password);
           if (user != null) {
             await authStorage.storeToken(user.token);
-            await authStorage.storeEmail(event.userModel.email);
+            await authStorage.storeEmail(event.user.email);
             emit(AuthAuthenticated(user));
           } else {
             emit(AuthError('Login failed after duplicate registration'));

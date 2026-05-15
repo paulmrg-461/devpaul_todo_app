@@ -1,11 +1,12 @@
-// lib/presentation/ui/tabs/tasks/widgets/task_form_dialog.dart
+import 'package:devpaul_todo_app/config/themes/design_tokens.dart';
+import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
-import 'package:devpaul_todo_app/data/models/task_model.dart';
+import 'package:devpaul_todo_app/presentation/blocs/project_bloc/project_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
+import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
 
 class TaskFormDialog extends StatefulWidget {
   final Task? task;
@@ -14,7 +15,7 @@ class TaskFormDialog extends StatefulWidget {
   const TaskFormDialog({super.key, this.task, required this.onSave});
 
   @override
-  _TaskFormDialogState createState() => _TaskFormDialogState();
+  State<TaskFormDialog> createState() => _TaskFormDialogState();
 }
 
 class _TaskFormDialogState extends State<TaskFormDialog> {
@@ -27,11 +28,12 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
   TaskPriority _selectedPriority = TaskPriority.medium;
   TaskType _selectedType = TaskType.work;
   TaskStatus _selectedStatus = TaskStatus.pending;
+  String? _selectedProjectId;
 
   DateTime? _startDate;
   DateTime? _dueDate;
 
-  static const double _inputsWidth = 420;
+  bool get isEditing => widget.task != null;
 
   @override
   void initState() {
@@ -50,48 +52,30 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     _selectedPriority = widget.task?.priority ?? TaskPriority.medium;
     _selectedType = widget.task?.type ?? TaskType.work;
     _selectedStatus = widget.task?.status ?? TaskStatus.pending;
+    _selectedProjectId = widget.task?.projectId;
     _startDate = widget.task?.startDate;
     _dueDate = widget.task?.dueDate;
-  }
-
-  Future<void> _selectDate(BuildContext context, bool isStartDate) async {
-    final initialDate = DateTime.now();
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: initialDate.subtract(const Duration(days: 365)),
-      lastDate: initialDate.add(const Duration(days: 365)),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        if (isStartDate) {
-          _startDate = pickedDate;
-          _startDateController.text =
-              pickedDate.toLocal().toString().split(' ')[0];
-        } else {
-          _dueDate = pickedDate;
-          _dueDateController.text =
-              pickedDate.toLocal().toString().split(' ')[0];
-        }
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<ProjectBloc>().add(const GetProjectsEvent());
+      }
+    });
   }
 
   void _saveForm() {
     if (!_formKey.currentState!.validate()) return;
-
     if (_startDate == null || _dueDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor, selecciona las fechas de inicio y fin'),
+          content: Text('Please select start and due dates'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    final task = TaskModel(
-      id: widget.task?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+    final task = Task(
+      id: widget.task?.id ?? '',
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
       priority: _selectedPriority,
@@ -99,127 +83,157 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
       startDate: _startDate!,
       dueDate: _dueDate!,
       status: _selectedStatus,
+      projectId: _selectedProjectId,
     );
 
-    if (widget.task == null) {
-      context.read<TaskBloc>().add(CreateTaskEvent(task));
-    } else {
-      context.read<TaskBloc>().add(UpdateTaskEvent(task));
-    }
-
-    Navigator.of(context).pop();
+    widget.onSave(task);
   }
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return AlertDialog(
-      title: Text(widget.task == null ? 'Nueva Tarea' : 'Editar Tarea'),
+      title: Text(isEditing ? 'Edit task' : 'New task',
+          style: textTheme.titleLarge),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              CustomInput(
-                width: _inputsWidth,
-                hintText: "Nombre de la tarea",
-                icon: Icons.task,
-                controller: _nameController,
-                validator: (value) => InputValidator.emptyValidator(
-                    value: value, minCharacters: 3),
-              ),
-              CustomInput(
-                width: _inputsWidth,
-                hintText: "Descripción",
-                icon: Icons.description,
-                controller: _descriptionController,
-                minLines: 3,
-                maxLines: 5,
-                validator: (value) => InputValidator.emptyValidator(
-                    value: value, minCharacters: 3),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 4),
-                child: Divider(),
-              ),
-              CustomDropdownPriority(
-                labelText: 'Prioridad',
-                priorities: TaskPriority.values,
-                value: _selectedPriority,
-                width: _inputsWidth,
-                icon: Icons.priority_high_rounded,
-                onChanged: (priority) {
-                  setState(() {
-                    _selectedPriority = priority!;
-                  });
-                },
-              ),
-              CustomDropdownType(
-                labelText: 'Tipo',
-                types: TaskType.values,
-                value: _selectedType,
-                icon: Icons.category,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedType = value!;
-                  });
-                },
-                width: _inputsWidth,
-              ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 6),
-                child: Divider(),
-              ),
-              CustomDateTimePicker(
-                hintText: 'Fecha de inicio',
-                initialDateTime: _startDate,
-                width: _inputsWidth,
-                icon: Icons.calendar_today,
-                onDateTimeChanged: (newDateTime) {
-                  setState(() {
-                    _startDate = newDateTime;
-                  });
-                },
-              ),
-              CustomDateTimePicker(
-                hintText: 'Fecha de vencimiento',
-                initialDateTime: _dueDate,
-                width: _inputsWidth,
-                icon: Icons.event,
-                onDateTimeChanged: (newDateTime) {
-                  setState(() {
-                    _dueDate = newDateTime;
-                  });
-                },
-              ),
-              if (widget.task != null)
-                CustomDropdownStatus(
-                  labelText: 'Estado',
-                  statuses: TaskStatus.values,
-                  value: _selectedStatus,
-                  width: _inputsWidth,
-                  icon: Icons.check_circle_outline,
-                  onChanged: (status) {
-                    setState(() {
-                      _selectedStatus = status!;
-                    });
+          child: SizedBox(
+            width: 400,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomInput(
+                  width: 400,
+                  hintText: "Task name",
+                  icon: Icons.task,
+                  controller: _nameController,
+                  validator: (value) => InputValidator.emptyValidator(
+                      value: value, minCharacters: 3),
+                ),
+                CustomInput(
+                  width: 400,
+                  hintText: "Description",
+                  icon: Icons.description,
+                  controller: _descriptionController,
+                  minLines: 3,
+                  maxLines: 5,
+                  validator: (value) => InputValidator.emptyValidator(
+                      value: value, minCharacters: 3),
+                ),
+                const Divider(),
+                _buildProjectSelector(context),
+                const SizedBox(height: AppSpacing.md),
+                CustomDropdownPriority(
+                  labelText: 'Priority',
+                  priorities: TaskPriority.values,
+                  value: _selectedPriority,
+                  width: 400,
+                  icon: Icons.priority_high_rounded,
+                  onChanged: (priority) {
+                    setState(() => _selectedPriority = priority!);
                   },
                 ),
-            ],
+                CustomDropdownType(
+                  labelText: 'Type',
+                  types: TaskType.values,
+                  value: _selectedType,
+                  icon: Icons.category,
+                  onChanged: (value) {
+                    setState(() => _selectedType = value!);
+                  },
+                  width: 400,
+                ),
+                const Divider(),
+                CustomDateTimePicker(
+                  hintText: 'Start date',
+                  initialDateTime: _startDate,
+                  width: 400,
+                  icon: Icons.calendar_today,
+                  onDateTimeChanged: (date) {
+                    setState(() => _startDate = date);
+                  },
+                ),
+                CustomDateTimePicker(
+                  hintText: 'Due date',
+                  initialDateTime: _dueDate,
+                  width: 400,
+                  icon: Icons.event,
+                  onDateTimeChanged: (date) {
+                    setState(() => _dueDate = date);
+                  },
+                ),
+                if (isEditing)
+                  CustomDropdownStatus(
+                    labelText: 'Status',
+                    statuses: TaskStatus.values,
+                    value: _selectedStatus,
+                    width: 400,
+                    icon: Icons.check_circle_outline,
+                    onChanged: (status) {
+                      setState(() => _selectedStatus = status!);
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
         ),
         FilledButton.icon(
           onPressed: _saveForm,
-          label: const Text('Guardar'),
-          icon: const Icon(Icons.save),
+          icon: const Icon(Icons.save, size: 18),
+          label: Text(isEditing ? 'Save' : 'Create'),
         ),
       ],
+    );
+  }
+
+  Widget _buildProjectSelector(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return BlocBuilder<ProjectBloc, ProjectState>(
+      builder: (context, state) {
+        if (state is ProjectLoaded) {
+          return StreamBuilder<List<Project>>(
+            stream: state.projects,
+            builder: (context, snapshot) {
+              final projects = snapshot.data ?? [];
+              return DropdownButtonFormField<String?>(
+                value: _selectedProjectId,
+                decoration: InputDecoration(
+                  labelText: 'Project (optional)',
+                  prefixIcon:
+                      const Icon(Icons.folder_outlined, size: 20),
+                  contentPadding: AppSpacing.inputPadding,
+                ),
+                style: textTheme.bodyLarge,
+                items: [
+                  const DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text('No project'),
+                  ),
+                  ...projects.map((p) => DropdownMenuItem<String?>(
+                        value: p.id,
+                        child: Text(p.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis),
+                      )),
+                ],
+                onChanged: (val) =>
+                    setState(() => _selectedProjectId = val),
+                isExpanded: true,
+              );
+            },
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 

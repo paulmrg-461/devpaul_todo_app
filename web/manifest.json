@@ -1,11 +1,11 @@
 {
-    "name": "devpaul_todo_app",
-    "short_name": "devpaul_todo_app",
+    "name": "DevPaul ToDo",
+    "short_name": "DevPaul ToDo",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#hexcode",
-    "theme_color": "#FFFFFF",
-    "description": "A new Flutter project.",
+    "background_color": "#FFFFFF",
+    "theme_color": "#1976D2",
+    "description": "DevPaul ToDo - ToDo App + AI Assistant.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

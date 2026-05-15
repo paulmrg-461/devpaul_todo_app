@@ -61,15 +61,7 @@ class ProjectDataSourceImpl implements ProjectDataSource {
   @override
   Future<void> updateProject(Project project) async {
     try {
-      final projectModel = ProjectModel(
-        id: project.id,
-        name: project.name,
-        description: project.description,
-        userIds: project.userIds,
-        taskIds: project.taskIds,
-        createdAt: project.createdAt,
-        status: project.status,
-      );
+      final projectModel = ProjectModel.fromEntity(project);
       await _projectsCollection.doc(project.id).update(projectModel.toMap());
     } catch (e) {
       throw Exception('Error al actualizar el proyecto: $e');

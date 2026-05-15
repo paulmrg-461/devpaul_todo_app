@@ -1,10 +1,7 @@
-// lib/data/models/task_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 
 class TaskModel extends Task {
-  final String? aiSuggestion;
-
   const TaskModel({
     required super.id,
     required super.name,
@@ -14,7 +11,7 @@ class TaskModel extends Task {
     required super.startDate,
     required super.dueDate,
     required super.status,
-    this.aiSuggestion,
+    super.aiSuggestion,
     super.projectId,
   });
 
@@ -44,7 +41,7 @@ class TaskModel extends Task {
       startDate: task.startDate,
       dueDate: task.dueDate,
       status: task.status,
-      aiSuggestion: task is TaskModel ? task.aiSuggestion : null,
+      aiSuggestion: task.aiSuggestion,
       projectId: task.projectId,
     );
   }
@@ -96,32 +93,5 @@ class TaskModel extends Task {
       default:
         return TaskStatus.pending;
     }
-  }
-
-  @override
-  TaskModel copyWith({
-    String? id,
-    String? name,
-    String? description,
-    TaskPriority? priority,
-    TaskType? type,
-    DateTime? startDate,
-    DateTime? dueDate,
-    TaskStatus? status,
-    String? aiSuggestion,
-    String? projectId,
-  }) {
-    return TaskModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      priority: priority ?? this.priority,
-      type: type ?? this.type,
-      startDate: startDate ?? this.startDate,
-      dueDate: dueDate ?? this.dueDate,
-      status: status ?? this.status,
-      aiSuggestion: aiSuggestion ?? this.aiSuggestion,
-      projectId: projectId ?? this.projectId,
-    );
   }
 }

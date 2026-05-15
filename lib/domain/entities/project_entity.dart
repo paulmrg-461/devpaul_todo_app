@@ -1,4 +1,3 @@
-// lib/domain/entities/project_entity.dart
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:equatable/equatable.dart';
 
@@ -6,10 +5,12 @@ class Project extends Equatable {
   final String id;
   final String name;
   final String description;
-  final List<String> userIds; // IDs de los usuarios asociados al proyecto
-  final List<String> taskIds; // IDs de las tareas asociadas al proyecto
+  final List<String> userIds;
+  final List<String> taskIds;
   final DateTime createdAt;
   final TaskStatus status;
+  final String? ownerId;
+  final String? groupId;
 
   const Project({
     required this.id,
@@ -20,9 +21,8 @@ class Project extends Equatable {
     required this.createdAt,
     required this.status,
     this.ownerId,
+    this.groupId,
   });
-
-  final String? ownerId;
 
   Project copyWith({
     String? id,
@@ -32,6 +32,8 @@ class Project extends Equatable {
     List<String>? taskIds,
     DateTime? createdAt,
     TaskStatus? status,
+    String? ownerId,
+    String? groupId,
   }) {
     return Project(
       id: id ?? this.id,
@@ -41,6 +43,8 @@ class Project extends Equatable {
       taskIds: taskIds ?? this.taskIds,
       createdAt: createdAt ?? this.createdAt,
       status: status ?? this.status,
+      ownerId: ownerId ?? this.ownerId,
+      groupId: groupId ?? this.groupId,
     );
   }
 
@@ -54,5 +58,6 @@ class Project extends Equatable {
         createdAt,
         status,
         ownerId,
+        groupId,
       ];
 }

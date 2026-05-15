@@ -99,7 +99,7 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
     final effectiveBackgroundColor =
         widget.backgroundColor ?? colorScheme.surface;
     final effectiveBorderColor =
-        widget.borderColor ?? colorScheme.primary.withOpacity(0.4);
+        widget.borderColor ?? colorScheme.primary.withValues(alpha: 0.4);
     final effectiveFontColor = widget.fontColor ?? colorScheme.onSurface;
     Color getIconColor() => widget.borderColor ?? colorScheme.primary;
 
@@ -123,7 +123,7 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
           border: Border.all(color: effectiveBorderColor, width: 1.2),
           boxShadow: [
             BoxShadow(
-              color: colorScheme.shadow.withOpacity(0.1),
+              color: colorScheme.shadow.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             )

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tabs.dart';
-import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/projects/project_management_tab.dart';
 
 class BottomBarItem {
   final String label;
@@ -17,42 +16,52 @@ class BottomBarItem {
       NavigationDestination(icon: Icon(icon), label: label);
 }
 
-List<BottomBarItem> getBottombarListAdmin() => [
-      const BottomBarItem(
-        label: 'Tareas',
+List<BottomBarItem> getBottombarListAdmin() => const [
+      BottomBarItem(
+        label: 'Tasks',
         icon: Icons.checklist_outlined,
         widget: TaskManagementTab(),
       ),
-      const BottomBarItem(
-        label: 'Proyectos',
-        icon: Icons.assignment_outlined, // Or any other suitable icon
+      BottomBarItem(
+        label: 'Groups',
+        icon: Icons.folder_rounded,
+        widget: GroupManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Projects',
+        icon: Icons.assignment_outlined,
         widget: ProjectManagementTab(),
       ),
-      const BottomBarItem(
-        label: 'Usuarios',
+      BottomBarItem(
+        label: 'Users',
         icon: Icons.people_outline_rounded,
         widget: OperatorsTab(),
       ),
-      const BottomBarItem(
-        label: 'Perfil',
+      BottomBarItem(
+        label: 'Profile',
         icon: Icons.person_outline_rounded,
         widget: ProfileTab(),
       ),
     ];
 
-List<BottomBarItem> getBottombarList() => [
-      const BottomBarItem(
-        label: 'Tareas',
+List<BottomBarItem> getBottombarList() => const [
+      BottomBarItem(
+        label: 'Tasks',
         icon: Icons.checklist_outlined,
         widget: TaskManagementTab(),
       ),
-      const BottomBarItem(
-        label: 'Proyectos',
-        icon: Icons.assignment_outlined, // Or any other suitable icon
+      BottomBarItem(
+        label: 'Groups',
+        icon: Icons.folder_rounded,
+        widget: GroupManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Projects',
+        icon: Icons.assignment_outlined,
         widget: ProjectManagementTab(),
       ),
-      const BottomBarItem(
-        label: 'Perfil',
+      BottomBarItem(
+        label: 'Profile',
         icon: Icons.person_outline_rounded,
         widget: ProfileTab(),
       ),

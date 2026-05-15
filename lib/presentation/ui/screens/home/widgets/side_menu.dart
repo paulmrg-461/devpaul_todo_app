@@ -89,9 +89,19 @@ class SideMenu extends StatelessWidget {
           child: Divider(),
         ),
         const NavigationDrawerDestination(
-          icon: Icon(Icons.task_alt),
-          label: Text('Tareas'),
-          selectedIcon: Icon(Icons.task_alt),
+          icon: Icon(Icons.checklist_rounded),
+          label: Text('Tasks'),
+          selectedIcon: Icon(Icons.checklist_rounded),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.folder_outlined),
+          label: Text('Groups'),
+          selectedIcon: Icon(Icons.folder_rounded),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.assignment_outlined),
+          label: Text('Projects'),
+          selectedIcon: Icon(Icons.assignment),
         ),
         if (isAdmin)
           const NavigationDrawerDestination(

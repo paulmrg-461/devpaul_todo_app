@@ -6,7 +6,7 @@ abstract class UserEvent extends Equatable {
 }
 
 class CreateUserEvent extends UserEvent {
-  final UserModel user;
+  final User user;
   final Uint8List signatureBytes;
 
   CreateUserEvent(this.user, this.signatureBytes);
@@ -18,7 +18,7 @@ class CreateUserEvent extends UserEvent {
 class GetUsersEvent extends UserEvent {}
 
 class UpdateUserEvent extends UserEvent {
-  final UserModel user;
+  final User user;
 
   UpdateUserEvent(this.user);
 

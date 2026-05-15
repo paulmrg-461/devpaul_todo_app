@@ -1,18 +1,19 @@
-
 class Environment {
   static final List<String> adminEmails = [
     'co.devpaul@gmail.com',
   ];
 
-  // Use String.fromEnvironment for web compatibility
+  static const String backendApiUrl = String.fromEnvironment(
+    'BACKEND_API_URL',
+    defaultValue: 'http://localhost:3000',
+  );
+
   static const String deepseekApiUrl = String.fromEnvironment(
     'DEEPSEEK_API_URL',
-    defaultValue:
-        'https://api.deepseek.com/v1', // Provide a default or handle appropriately
+    defaultValue: '',
   );
   static const String deepseekApiKey = String.fromEnvironment(
     'DEEPSEEK_API_KEY',
-    defaultValue:
-        'YOUR_DEFAULT_KEY_IF_ANY', // Provide a default or handle appropriately
+    defaultValue: '',
   );
 }

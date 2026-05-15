@@ -68,7 +68,7 @@ class CustomDropdownStatus extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final effectiveBackgroundColor = backgroundColor ?? colorScheme.surface;
     final effectiveBorderColor =
-        borderColor ?? colorScheme.primary.withOpacity(0.4);
+        borderColor ?? colorScheme.primary.withValues(alpha: 0.4);
     Color getIconColor() => borderColor ?? colorScheme.primary;
     Color getFontColor() => fontColor ?? colorScheme.onSurface;
 
@@ -86,14 +86,14 @@ class CustomDropdownStatus extends StatelessWidget {
         border: Border.all(color: effectiveBorderColor, width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           )
         ],
       ),
       child: DropdownButtonFormField<TaskStatus>(
-        value: value,
+        initialValue: value,
         decoration: InputDecoration(
           isCollapsed: true,
           contentPadding: EdgeInsets.symmetric(
@@ -103,37 +103,37 @@ class CustomDropdownStatus extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             borderSide: BorderSide(
-              color: effectiveBorderColor.withOpacity(0.8),
+              color: effectiveBorderColor.withValues(alpha: 0.8),
               width: 0.6,
             ),
           ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             borderSide: BorderSide(
-              color: effectiveBorderColor.withOpacity(0.4),
+              color: effectiveBorderColor.withValues(alpha: 0.4),
               width: 0.2,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(borderRadius),
             borderSide: BorderSide(
-              color: effectiveBorderColor.withOpacity(0.4),
+              color: effectiveBorderColor.withValues(alpha: 0.4),
               width: 0.2,
             ),
           ),
           labelText: labelText,
           labelStyle: textTheme.bodySmall?.copyWith(
-                color: getFontColor().withOpacity(0.6),
+                color: getFontColor().withValues(alpha: 0.6),
               ) ??
               GoogleFonts.inter(
-                color: getFontColor().withOpacity(0.6),
+                color: getFontColor().withValues(alpha: 0.6),
               ),
           floatingLabelStyle: TextStyle(color: effectiveBorderColor),
           hintStyle: textTheme.bodySmall?.copyWith(
-                color: getFontColor().withOpacity(0.4),
+                color: getFontColor().withValues(alpha: 0.4),
               ) ??
               GoogleFonts.inter(
-                color: getFontColor().withOpacity(0.4),
+                color: getFontColor().withValues(alpha: 0.4),
               ),
           counterText: '',
           fillColor: effectiveBackgroundColor,

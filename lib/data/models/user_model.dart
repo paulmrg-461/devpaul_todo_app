@@ -15,6 +15,7 @@ class UserModel extends User {
     required super.id,
   });
 
+  @override
   UserModel copyWith({
     String? name,
     String? photoUrl,

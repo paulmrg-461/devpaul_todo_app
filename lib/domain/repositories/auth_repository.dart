@@ -1,8 +1,8 @@
-import 'package:devpaul_todo_app/data/models/user_model.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 
 abstract class AuthRepository {
-  Future<UserModel?> login(String email, String password);
-  Future<UserModel?> register(UserModel userModel);
-  Future<UserModel?> getCurrentUser();
+  Future<User?> login(String email, String password);
+  Future<User?> register(User user);
+  Future<User?> getCurrentUser();
   Future<void> logout();
 }

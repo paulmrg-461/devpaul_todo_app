@@ -1,4 +1,3 @@
-// lib/domain/entities/task.dart
 import 'package:equatable/equatable.dart';
 
 enum TaskPriority { low, medium, high }
@@ -16,8 +15,8 @@ class Task extends Equatable {
   final DateTime startDate;
   final DateTime dueDate;
   final TaskStatus status;
-  final String?
-      projectId; // Nuevo campo para el ID del proyecto al que pertenece la tarea
+  final String? projectId;
+  final String? aiSuggestion;
 
   const Task({
     required this.id,
@@ -28,7 +27,8 @@ class Task extends Equatable {
     required this.startDate,
     required this.dueDate,
     required this.status,
-    this.projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
+    this.projectId,
+    this.aiSuggestion,
   });
 
   Task copyWith({
@@ -40,8 +40,8 @@ class Task extends Equatable {
     DateTime? startDate,
     DateTime? dueDate,
     TaskStatus? status,
-    String?
-        projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
+    String? projectId,
+    String? aiSuggestion,
   }) {
     return Task(
       id: id ?? this.id,
@@ -52,8 +52,8 @@ class Task extends Equatable {
       startDate: startDate ?? this.startDate,
       dueDate: dueDate ?? this.dueDate,
       status: status ?? this.status,
-      projectId: projectId ??
-          this.projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
+      projectId: projectId ?? this.projectId,
+      aiSuggestion: aiSuggestion ?? this.aiSuggestion,
     );
   }
 
@@ -67,6 +67,7 @@ class Task extends Equatable {
         startDate,
         dueDate,
         status,
-        projectId, // Nuevo campo para el ID del proyecto al que pertenece la tarea
+        projectId,
+        aiSuggestion,
       ];
 }

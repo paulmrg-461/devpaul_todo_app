@@ -46,7 +46,8 @@ class TaskDataSourceImpl implements TaskDataSource {
   @override
   Future<void> createTask(Task task) async {
     try {
-      await _tasksCollection.add((task as TaskModel).toMap());
+      final model = TaskModel.fromEntity(task);
+      await _tasksCollection.add(model.toMap());
     } catch (e) {
       throw Exception('Error al crear la tarea: $e');
     }
@@ -55,7 +56,8 @@ class TaskDataSourceImpl implements TaskDataSource {
   @override
   Future<void> updateTask(Task task) async {
     try {
-      await _tasksCollection.doc(task.id).update((task as TaskModel).toMap());
+      final model = TaskModel.fromEntity(task);
+      await _tasksCollection.doc(task.id).update(model.toMap());
     } catch (e) {
       throw Exception('Error al actualizar la tarea: $e');
     }

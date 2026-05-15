@@ -12,7 +12,7 @@ class AiSuggestionInitial extends AiSuggestionState {}
 class AiSuggestionLoading extends AiSuggestionState {}
 
 class AiSuggestionLoaded extends AiSuggestionState {
-  final AiSuggestionModel suggestion;
+  final AiSuggestion suggestion;
 
   const AiSuggestionLoaded(this.suggestion);
 

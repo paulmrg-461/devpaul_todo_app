@@ -1,4 +1,4 @@
 {
     "java.configuration.updateBuildConfiguration": "interactive",
-    "cmake.sourceDirectory": "C:/Users/paulm/Documents/dev-projects/DevPaul/devpaul_todo_app/linux"
+    "cmake.sourceDirectory": "/home/devpaul/Documents/dev_projects/DevPaul/devpaul_todo_app/linux"
 }
