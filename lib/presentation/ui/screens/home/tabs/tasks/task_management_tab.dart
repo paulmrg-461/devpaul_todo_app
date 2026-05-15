@@ -9,6 +9,7 @@ import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_card.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_form_dialog.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/animations.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -357,43 +358,83 @@ class _TaskManagementTabState extends State<TaskManagementTab>
           ),
         ),
         Expanded(
-          child: tasks.isEmpty
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.xxl),
-                    child: Text(
-                      status == TaskStatus.pending
-                          ? 'No pending tasks'
-                          : status == TaskStatus.inProgress
-                              ? 'Nothing in progress'
-                              : 'Nothing completed',
-                      style: textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant),
-                    ),
-                  ),
-                )
-              : ListView.builder(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  itemCount: tasks.length,
-                  itemBuilder: (context, index) {
-                    return AnimatedFadeSlide(
-                      index: index,
-                      delay: const Duration(milliseconds: 30),
-                      duration: const Duration(milliseconds: 300),
-                      child: TaskCard(
-                        task: tasks[index],
-                        onEdit: () =>
-                            _showForm(context, task: tasks[index]),
-                        onDelete: () =>
-                            _deleteTask(context, tasks[index]),
-                        onStatusChanged: (newStatus) =>
-                            _changeStatus(context, tasks[index], newStatus),
-                        groupName: _groupNameForTask(tasks[index]),
-                        projectName: _projectNameForTask(tasks[index]),
+          child: DragTarget<Task>(
+            onWillAcceptWithDetails: (details) =>
+                details.data.status != status,
+            onAcceptWithDetails: (details) {
+              _changeStatus(context, details.data, status);
+            },
+            builder: (context, candidateData, rejectedData) {
+              final isHovering = candidateData.isNotEmpty;
+              return Container(
+                color: isHovering
+                    ? color.withAlpha(15)
+                    : Colors.transparent,
+                child: tasks.isEmpty && !isHovering
+                    ? Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(AppSpacing.xxl),
+                          child: Text(
+                            status == TaskStatus.pending
+                                ? 'No pending tasks'
+                                : status == TaskStatus.inProgress
+                                    ? 'Nothing in progress'
+                                    : 'Nothing completed',
+                            style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurfaceVariant),
+                          ),
+                        ),
+                      )
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        itemCount: tasks.length,
+                        itemBuilder: (context, index) {
+                          final task = tasks[index];
+                          final card = AnimatedFadeSlide(
+                            index: index,
+                            delay: const Duration(milliseconds: 30),
+                            duration: const Duration(milliseconds: 300),
+                            child: TaskCard(
+                              task: task,
+                              onEdit: () =>
+                                  _showForm(context, task: task),
+                              onDelete: () =>
+                                  _deleteTask(context, task),
+                              onStatusChanged: (newStatus) =>
+                                  _changeStatus(context, task, newStatus),
+                              groupName: _groupNameForTask(task),
+                              projectName: _projectNameForTask(task),
+                            ),
+                          );
+
+                          if (kIsWeb || defaultTargetPlatform == TargetPlatform.macOS ||
+                              defaultTargetPlatform == TargetPlatform.windows ||
+                              defaultTargetPlatform == TargetPlatform.linux) {
+                            return LongPressDraggable<Task>(
+                              data: task,
+                              delay: const Duration(milliseconds: 200),
+                              feedback: Material(
+                                elevation: 6,
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.md),
+                                child: SizedBox(
+                                  width: 260,
+                                  child: card,
+                                ),
+                              ),
+                              childWhenDragging: Opacity(
+                                opacity: 0.4,
+                                child: card,
+                              ),
+                              child: card,
+                            );
+                          }
+                          return card;
+                        },
                       ),
-                    );
-                  },
-                ),
+              );
+            },
+          ),
         ),
       ],
     );
