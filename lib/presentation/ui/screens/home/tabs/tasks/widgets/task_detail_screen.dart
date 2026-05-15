@@ -17,11 +17,14 @@ class TaskDetailScreen extends StatefulWidget {
 }
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
+  late Task _task;
+
   @override
   void initState() {
     super.initState();
-    if (widget.task.aiSuggestion == null) {
-      context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(widget.task));
+    _task = widget.task;
+    if (_task.aiSuggestion == null) {
+      context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(_task));
     }
   }
 
@@ -29,7 +32,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final task = widget.task;
+    final task = _task;
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -330,12 +333,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                     );
                   }
                   if (state is AiSuggestionLoaded) {
+                    final updatedTask = task.copyWith(
+                      aiSuggestion: state.suggestion.suggestion,
+                    );
                     WidgetsBinding.instance.addPostFrameCallback((_) {
-                      final updatedTask = task.copyWith(
-                        aiSuggestion: state.suggestion.suggestion,
-                      );
                       context.read<TaskBloc>().add(UpdateTaskEvent(updatedTask));
                     });
+                    _task = updatedTask;
                     return MarkdownBody(
                       data: state.suggestion.suggestion,
                       styleSheet: MarkdownStyleSheet(
@@ -384,9 +388,9 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   void _changeStatus(TaskStatus newStatus) {
-    final updated = widget.task.copyWith(status: newStatus);
+    final updated = _task.copyWith(status: newStatus);
     context.read<TaskBloc>().add(UpdateTaskEvent(updated));
-    setState(() {});
+    setState(() => _task = updated);
   }
 
   Color _statusColor(TaskStatus s) {
@@ -466,9 +470,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     showDialog(
       context: context,
       builder: (ctx) => TaskFormDialog(
-        task: widget.task,
-        onSave: (task) {
-          context.read<TaskBloc>().add(UpdateTaskEvent(task));
+        task: _task,
+        onSave: (updated) {
+          context.read<TaskBloc>().add(UpdateTaskEvent(updated));
+          setState(() => _task = updated);
           Navigator.pop(ctx);
         },
       ),
@@ -481,7 +486,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete task'),
-        content: Text('Delete "${widget.task.name}"?'),
+        content: Text('Delete "${_task.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -489,7 +494,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
           ),
           FilledButton(
             onPressed: () {
-              context.read<TaskBloc>().add(DeleteTaskEvent(widget.task));
+              context.read<TaskBloc>().add(DeleteTaskEvent(_task));
               Navigator.pop(ctx);
               Navigator.pop(context);
             },
