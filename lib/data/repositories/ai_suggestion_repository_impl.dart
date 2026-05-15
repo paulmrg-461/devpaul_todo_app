@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:devpaul_todo_app/config/global/environment.dart';
 import 'package:devpaul_todo_app/domain/entities/ai_suggestion_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/domain/repositories/ai_suggestion_repository.dart';
@@ -7,14 +6,22 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
+  static const _deepseekApiUrl = String.fromEnvironment(
+    'DEEPSEEK_API_URL',
+    defaultValue: '',
+  );
+  static const _deepseekApiKey = String.fromEnvironment(
+    'DEEPSEEK_API_KEY',
+    defaultValue: '',
+  );
+  static const _backendApiUrl = 'http://localhost:3000';
+
   String get _apiUrl {
     try {
       final envUrl = dotenv.env['DEEPSEEK_API_URL'];
       if (envUrl != null && envUrl.isNotEmpty) return envUrl;
     } catch (_) {}
-    return Environment.deepseekApiUrl.isNotEmpty
-        ? Environment.deepseekApiUrl
-        : Environment.backendApiUrl;
+    return _deepseekApiUrl.isNotEmpty ? _deepseekApiUrl : _backendApiUrl;
   }
 
   String get _apiKey {
@@ -22,11 +29,10 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
       final envKey = dotenv.env['DEEPSEEK_API_KEY'];
       if (envKey != null && envKey.isNotEmpty) return envKey;
     } catch (_) {}
-    return Environment.deepseekApiKey;
+    return _deepseekApiKey;
   }
 
-  bool get _isProxy => _apiUrl == Environment.backendApiUrl ||
-      _apiKey.isEmpty;
+  bool get _isProxy => _apiUrl == _backendApiUrl || _apiKey.isEmpty;
 
   @override
   Future<AiSuggestion> getTaskSuggestion(Task task, {String? technology}) async {
