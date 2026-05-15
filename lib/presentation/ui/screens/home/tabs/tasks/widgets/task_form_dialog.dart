@@ -1,6 +1,7 @@
 import 'package:devpaul_todo_app/config/themes/design_tokens.dart';
 import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
+import 'package:devpaul_todo_app/presentation/blocs/ai_suggestion_bloc/ai_suggestion_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/project_bloc/project_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,7 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
 
   DateTime? _startDate;
   DateTime? _dueDate;
+  bool _isImprovingDescription = false;
 
   bool get isEditing => widget.task != null;
 
@@ -96,7 +98,20 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     return AlertDialog(
       title: Text(isEditing ? 'Edit task' : 'New task',
           style: textTheme.titleLarge),
-      content: Form(
+      content: BlocListener<AiSuggestionBloc, AiSuggestionState>(
+        listener: (context, state) {
+          if (state is AiSuggestionLoaded) {
+            _descriptionController.text = state.suggestion.suggestion;
+            _descriptionController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _descriptionController.text.length),
+            );
+            setState(() => _isImprovingDescription = false);
+          }
+          if (state is AiSuggestionError) {
+            setState(() => _isImprovingDescription = false);
+          }
+        },
+        child: Form(
         key: _formKey,
         child: SingleChildScrollView(
           child: SizedBox(
@@ -122,6 +137,7 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                   validator: (value) => InputValidator.emptyValidator(
                       value: value, minCharacters: 3),
                 ),
+                _buildAiImproveButton(context),
                 const Divider(),
                 _buildProjectSelector(context),
                 const SizedBox(height: AppSpacing.md),
@@ -180,6 +196,7 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
           ),
         ),
       ),
+      ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
@@ -191,6 +208,47 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
           label: Text(isEditing ? 'Save' : 'Create'),
         ),
       ],
+    );
+  }
+
+  Widget _buildAiImproveButton(BuildContext context) {
+    final description = _descriptionController.text.trim();
+    if (description.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.md),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: _isImprovingDescription
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : TextButton.icon(
+                onPressed: () {
+                  if (description.length < 10) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Escribe al menos 10 caracteres para mejorar con IA'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                    return;
+                  }
+                  setState(() => _isImprovingDescription = true);
+                  context
+                      .read<AiSuggestionBloc>()
+                      .add(ImproveDescriptionEvent(description));
+                },
+                icon: const Icon(Icons.auto_awesome, size: 16),
+                label: const Text('Mejorar con IA'),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.primary,
+                  textStyle: Theme.of(context).textTheme.labelSmall,
+                ),
+              ),
+      ),
     );
   }
 

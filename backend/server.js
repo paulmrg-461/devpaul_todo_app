@@ -28,10 +28,28 @@ if (!DEEPSEEK_API_KEY) {
 
 app.post('/api/suggestions', async (req, res) => {
   try {
-    const { task } = req.body;
+    const { task, systemPrompt, userPrompt, temperature, maxTokens } = req.body;
 
-    if (!task) {
-      return res.status(400).json({ error: 'Task data is required' });
+    let messages;
+
+    if (systemPrompt && userPrompt) {
+      messages = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ];
+    } else if (task) {
+      messages = [
+        {
+          role: 'system',
+          content: 'Eres un asistente experto en gestión de tareas que proporciona sugerencias en español. Tus respuestas deben ser: 1. Prácticas y específicas 2. En español con acentos y caracteres especiales correctos 3. Numeradas y bien estructuradas 4. Concisas y directas',
+        },
+        {
+          role: 'user',
+          content: `Tarea: ${task.name}\nDescripción: ${task.description}\nPrioridad: ${task.priority}\nTipo: ${task.type}\nFecha límite: ${task.dueDate}\n\nPor favor, proporciona 3 sugerencias prácticas y específicas para resolver esta tarea. Asegúrate de que las sugerencias estén numeradas y sean fáciles de entender y en formato MarkDown.`,
+        },
+      ];
+    } else {
+      return res.status(400).json({ error: 'task or (systemPrompt + userPrompt) is required' });
     }
 
     const response = await fetch(`${DEEPSEEK_API_URL}/chat/completions`, {
@@ -42,34 +60,9 @@ app.post('/api/suggestions', async (req, res) => {
       },
       body: JSON.stringify({
         model: 'deepseek-chat',
-        messages: [
-          {
-            role: 'system',
-            content: `
-              Eres un asistente experto en gestión de tareas que proporciona sugerencias en español.
-              Tus respuestas deben ser:
-              1. Prácticas y específicas
-              2. En español con acentos y caracteres especiales correctos
-              3. Numeradas y bien estructuradas
-              4. Concisas y directas
-            `,
-          },
-          {
-            role: 'user',
-            content: `
-              Tarea: ${task.name}
-              Descripción: ${task.description}
-              Prioridad: ${task.priority}
-              Tipo: ${task.type}
-              Fecha límite: ${task.dueDate}
-              
-              Por favor, proporciona 3 sugerencias prácticas y específicas para resolver esta tarea.
-              Asegúrate de que las sugerencias estén numeradas y sean fáciles de entender y en formato MarkDown.
-            `,
-          },
-        ],
-        temperature: 0.7,
-        max_tokens: 1300,
+        messages,
+        temperature: temperature ?? 0.7,
+        max_tokens: maxTokens ?? 1300,
       }),
     });
 

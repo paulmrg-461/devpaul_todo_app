@@ -1,10 +1,12 @@
 import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:devpaul_todo_app/config/themes/design_tokens.dart';
+import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:devpaul_todo_app/presentation/blocs/ai_suggestion_bloc/ai_suggestion_bloc.dart';
+import 'package:devpaul_todo_app/presentation/blocs/project_bloc/project_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_form_dialog.dart';
 
@@ -18,12 +20,19 @@ class TaskDetailScreen extends StatefulWidget {
 
 class _TaskDetailScreenState extends State<TaskDetailScreen> {
   late Task _task;
+  String? _projectTechnology;
 
   @override
   void initState() {
     super.initState();
     _task = widget.task;
-    if (_task.aiSuggestion == null) {
+    _fetchProjectAndSuggestions();
+  }
+
+  void _fetchProjectAndSuggestions() {
+    if (_task.projectId != null) {
+      context.read<ProjectBloc>().add(GetProjectByIdEvent(_task.projectId!));
+    } else if (_task.aiSuggestion == null) {
       context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(_task));
     }
   }
@@ -34,7 +43,26 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     final textTheme = Theme.of(context).textTheme;
     final task = _task;
 
-    return Scaffold(
+    return BlocListener<ProjectBloc, ProjectState>(
+      listener: (context, state) {
+        if (state is SingleProjectLoaded &&
+            state.project.technology != null &&
+            state.project.technology!.isNotEmpty) {
+          _projectTechnology = state.project.technology;
+          if (_task.aiSuggestion == null) {
+            context.read<AiSuggestionBloc>().add(
+                  GetTaskSuggestionEvent(_task,
+                      technology: _projectTechnology),
+                );
+          }
+        } else if (state is SingleProjectLoaded &&
+            _task.aiSuggestion == null) {
+          context
+              .read<AiSuggestionBloc>()
+              .add(GetTaskSuggestionEvent(_task));
+        }
+      },
+      child: Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('Task detail'),
@@ -71,6 +99,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               _buildAiSection(context, task),
             ],
           ),
+      ),
       ),
     );
   }
@@ -302,7 +331,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                 if (task.aiSuggestion != null)
                   TextButton.icon(
                     onPressed: () {
-                      context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(task));
+                      context.read<AiSuggestionBloc>().add(
+                            GetTaskSuggestionEvent(task,
+                                technology: _projectTechnology),
+                          );
                     },
                     icon: const Icon(Icons.refresh, size: 16),
                     label: const Text('Regenerate'),
@@ -357,8 +389,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                         const SizedBox(height: AppSpacing.sm),
                         OutlinedButton.icon(
                           onPressed: () {
-                            context.read<AiSuggestionBloc>()
-                                .add(GetTaskSuggestionEvent(task));
+                            context.read<AiSuggestionBloc>().add(
+                                  GetTaskSuggestionEvent(task,
+                                      technology: _projectTechnology),
+                                );
                           },
                           icon: const Icon(Icons.refresh, size: 16),
                           label: const Text('Retry'),
@@ -371,8 +405,10 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
                       child: FilledButton.icon(
                         onPressed: () {
-                          context.read<AiSuggestionBloc>()
-                              .add(GetTaskSuggestionEvent(task));
+                          context.read<AiSuggestionBloc>().add(
+                                GetTaskSuggestionEvent(task,
+                                    technology: _projectTechnology),
+                              );
                         },
                         icon: const Icon(Icons.psychology_outlined, size: 18),
                         label: const Text('Generate AI Suggestions'),

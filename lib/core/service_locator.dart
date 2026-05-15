@@ -179,10 +179,14 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthStorage>(() => AuthStorage());
 
   sl.registerFactory(
-    () => AiSuggestionBloc(getTaskSuggestionUseCase: sl()),
+    () => AiSuggestionBloc(
+      getTaskSuggestionUseCase: sl(),
+      improveDescriptionUseCase: sl(),
+    ),
   );
 
   sl.registerLazySingleton(() => GetTaskSuggestion(sl()));
+  sl.registerLazySingleton(() => ImproveDescription(sl()));
 
   sl.registerLazySingleton<AiSuggestionRepository>(
     () => AiSuggestionRepositoryImpl(),

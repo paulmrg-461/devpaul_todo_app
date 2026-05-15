@@ -11,6 +11,7 @@ class Project extends Equatable {
   final TaskStatus status;
   final String? ownerId;
   final String? groupId;
+  final String? technology;
 
   const Project({
     required this.id,
@@ -22,6 +23,7 @@ class Project extends Equatable {
     required this.status,
     this.ownerId,
     this.groupId,
+    this.technology,
   });
 
   Project copyWith({
@@ -34,6 +36,7 @@ class Project extends Equatable {
     TaskStatus? status,
     String? ownerId,
     String? groupId,
+    String? technology,
   }) {
     return Project(
       id: id ?? this.id,
@@ -45,6 +48,7 @@ class Project extends Equatable {
       status: status ?? this.status,
       ownerId: ownerId ?? this.ownerId,
       groupId: groupId ?? this.groupId,
+      technology: technology ?? this.technology,
     );
   }
 
@@ -59,5 +63,38 @@ class Project extends Equatable {
         status,
         ownerId,
         groupId,
+        technology,
       ];
 }
+
+final List<String> availableTechnologies = [
+  'Python',
+  'JavaScript',
+  'TypeScript',
+  'Java',
+  'Kotlin',
+  'Swift',
+  'Dart',
+  'Flutter',
+  'React',
+  'Angular',
+  'Vue',
+  'Next.js',
+  'Node.js',
+  'Express',
+  'PHP',
+  'Laravel',
+  'Ruby',
+  'Go',
+  'Rust',
+  'C#',
+  '.NET',
+  'Docker',
+  'AWS',
+  'Firebase',
+  'MongoDB',
+  'PostgreSQL',
+  'MySQL',
+  'GraphQL',
+  'REST',
+];

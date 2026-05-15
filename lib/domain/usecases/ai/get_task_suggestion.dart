@@ -7,7 +7,7 @@ class GetTaskSuggestion {
 
   GetTaskSuggestion(this.repository);
 
-  Future<AiSuggestion> call(Task task) async {
-    return await repository.getTaskSuggestion(task);
+  Future<AiSuggestion> call(Task task, {String? technology}) async {
+    return await repository.getTaskSuggestion(task, technology: technology);
   }
 }

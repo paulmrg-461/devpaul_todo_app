@@ -14,6 +14,7 @@ class ProjectModel extends Project {
     required super.status,
     super.ownerId,
     super.groupId,
+    super.technology,
   });
 
   factory ProjectModel.fromSnapshot(DocumentSnapshot doc) {
@@ -28,6 +29,7 @@ class ProjectModel extends Project {
       status: TaskStatus.values[data['status'] ?? 0],
       ownerId: data['ownerId'],
       groupId: data['groupId'],
+      technology: data['technology'],
     );
   }
 
@@ -42,6 +44,7 @@ class ProjectModel extends Project {
       status: project.status,
       ownerId: project.ownerId,
       groupId: project.groupId,
+      technology: project.technology,
     );
   }
 
@@ -55,6 +58,7 @@ class ProjectModel extends Project {
       'status': status.index,
       if (ownerId != null) 'ownerId': ownerId,
       if (groupId != null) 'groupId': groupId,
+      if (technology != null) 'technology': technology,
     };
   }
 }

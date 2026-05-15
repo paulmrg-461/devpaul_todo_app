@@ -9,9 +9,19 @@ abstract class AiSuggestionEvent extends Equatable {
 
 class GetTaskSuggestionEvent extends AiSuggestionEvent {
   final Task task;
+  final String? technology;
 
-  const GetTaskSuggestionEvent(this.task);
+  const GetTaskSuggestionEvent(this.task, {this.technology});
 
   @override
-  List<Object?> get props => [task];
+  List<Object?> get props => [task, technology];
+}
+
+class ImproveDescriptionEvent extends AiSuggestionEvent {
+  final String description;
+
+  const ImproveDescriptionEvent(this.description);
+
+  @override
+  List<Object?> get props => [description];
 }

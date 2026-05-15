@@ -24,6 +24,7 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
   late TextEditingController _descriptionController;
   TaskStatus _selectedStatus = TaskStatus.pending;
   String? _selectedGroupId;
+  String? _selectedTechnology;
 
   bool get isEditing => widget.project != null;
 
@@ -35,6 +36,7 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
         TextEditingController(text: widget.project?.description ?? '');
     _selectedStatus = widget.project?.status ?? TaskStatus.pending;
     _selectedGroupId = widget.project?.groupId;
+    _selectedTechnology = widget.project?.technology;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<GroupBloc>().add(const GetGroupsEvent());
@@ -61,6 +63,7 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
       taskIds: widget.project?.taskIds ?? [],
       createdAt: widget.project?.createdAt ?? DateTime.now(),
       groupId: _selectedGroupId,
+      technology: _selectedTechnology,
       ownerId: widget.project?.ownerId,
     );
 
@@ -107,6 +110,8 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
                 // Group selector
                 _buildGroupSelector(context),
                 const SizedBox(height: AppSpacing.md),
+                _buildTechnologySelector(context),
+                const SizedBox(height: AppSpacing.md),
                 if (isEditing)
                   CustomDropdownStatus(
                     labelText: 'Status',
@@ -134,6 +139,33 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
           label: Text(isEditing ? 'Save' : 'Create'),
         ),
       ],
+    );
+  }
+
+  Widget _buildTechnologySelector(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return DropdownButtonFormField<String?>(
+      value: _selectedTechnology,
+      decoration: InputDecoration(
+        labelText: 'Technology / Stack (optional)',
+        prefixIcon: const Icon(Icons.code, size: 20),
+        contentPadding: AppSpacing.inputPadding,
+      ),
+      style: textTheme.bodyLarge,
+      items: [
+        const DropdownMenuItem<String?>(
+          value: null,
+          child: Text('None'),
+        ),
+        ...availableTechnologies.map((tech) => DropdownMenuItem<String?>(
+              value: tech,
+              child: Text(tech),
+            )),
+      ],
+      onChanged: (val) => setState(() => _selectedTechnology = val),
+      isExpanded: true,
+      menuMaxHeight: 300,
     );
   }
 

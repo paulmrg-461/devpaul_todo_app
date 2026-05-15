@@ -29,7 +29,34 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
       _apiKey.isEmpty;
 
   @override
-  Future<AiSuggestion> getTaskSuggestion(Task task) async {
+  Future<AiSuggestion> getTaskSuggestion(Task task, {String? technology}) async {
+    final techContext = technology != null && technology.isNotEmpty
+        ? '\nTecnología del proyecto: $technology. Proporciona sugerencias específicas para este stack tecnológico.'
+        : '';
+
+    return _callAi(
+      systemPrompt: 'Eres un asistente experto en gestión de tareas y desarrollo de software. Proporcionas sugerencias prácticas y específicas adaptadas a la tecnología del proyecto. Tus respuestas deben ser: 1. Prácticas y específicas 2. En español con acentos y caracteres especiales correctos 3. Numeradas y bien estructuradas 4. Concisas y directas 5. Con ejemplos de código si aplica al stack tecnológico',
+      userPrompt: 'Tarea: ${task.name}\nDescripción: ${task.description}\nPrioridad: ${task.priority}\nTipo: ${task.type}\nFecha límite: ${task.dueDate}$techContext\n\nPor favor, proporciona 3 sugerencias prácticas y específicas para resolver esta tarea. Si hay una tecnología especificada, da ejemplos de código o herramientas específicas de ese stack. Asegúrate de que las sugerencias estén numeradas y sean fáciles de entender y en formato MarkDown.',
+      maxTokens: 2500,
+    );
+  }
+
+  @override
+  Future<AiSuggestion> improveDescription(String description) async {
+    return _callAi(
+      systemPrompt: 'Eres un asistente experto en redacción que mejora descripciones de tareas en español. Tus respuestas deben ser: 1. Solo la descripción mejorada, sin prefacios ni explicaciones 2. Clara, detallada y accionable 3. En español con acentos y caracteres especiales correctos 4. Máximo 3-4 líneas',
+      userPrompt: 'Mejora la siguiente descripción de tarea para que sea más clara, detallada y accionable. Responde ÚNICAMENTE con la descripción mejorada, sin texto adicional:\n\n$description',
+      maxTokens: 600,
+      temperature: 0.5,
+    );
+  }
+
+  Future<AiSuggestion> _callAi({
+    required String systemPrompt,
+    required String userPrompt,
+    int maxTokens = 1300,
+    double temperature = 0.7,
+  }) async {
     try {
       final http.Response response;
 
@@ -38,13 +65,10 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
           Uri.parse('$_apiUrl/api/suggestions'),
           headers: {'Content-Type': 'application/json; charset=UTF-8'},
           body: utf8.encode(jsonEncode({
-            'task': {
-              'name': task.name,
-              'description': task.description,
-              'priority': task.priority.toString(),
-              'type': task.type.toString(),
-              'dueDate': task.dueDate.toIso8601String(),
-            },
+            'systemPrompt': systemPrompt,
+            'userPrompt': userPrompt,
+            'temperature': temperature,
+            'maxTokens': maxTokens,
           })),
         );
       } else {
@@ -57,33 +81,11 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
           body: utf8.encode(jsonEncode({
             'model': 'deepseek-chat',
             'messages': [
-              {
-                'role': 'system',
-                'content': '''
-                  Eres un asistente experto en gestión de tareas que proporciona sugerencias en español.
-                  Tus respuestas deben ser:
-                  1. Prácticas y específicas
-                  2. En español con acentos y caracteres especiales correctos
-                  3. Numeradas y bien estructuradas
-                  4. Concisas y directas
-                ''',
-              },
-              {
-                'role': 'user',
-                'content': '''
-                  Tarea: ${task.name}
-                  Descripción: ${task.description}
-                  Prioridad: ${task.priority}
-                  Tipo: ${task.type}
-                  Fecha límite: ${task.dueDate}
-
-                  Por favor, proporciona 3 sugerencias prácticas y específicas para resolver esta tarea.
-                  Asegúrate de que las sugerencias estén numeradas y sean fáciles de entender y en formato MarkDown.
-                ''',
-              },
+              {'role': 'system', 'content': systemPrompt},
+              {'role': 'user', 'content': userPrompt},
             ],
-            'temperature': 0.7,
-            'max_tokens': 1300,
+            'temperature': temperature,
+            'max_tokens': maxTokens,
           })),
         );
       }
@@ -99,7 +101,7 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
         }
 
         return AiSuggestion(
-          suggestion: suggestion,
+          suggestion: suggestion.trim(),
           createdAt: DateTime.now(),
         );
       } else {
