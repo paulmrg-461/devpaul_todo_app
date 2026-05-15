@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:devpaul_todo_app/data/models/user_model.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 
 abstract class FirebaseAuthDataSource {
-  Future<UserModel?> login(String email, String password);
-  Future<UserModel?> register(UserModel userModel);
+  Future<User?> login(String email, String password);
+  Future<User?> register(User user);
   Future<void> logout();
-  Future<UserModel?> getCurrentUser();
+  Future<User?> getCurrentUser();
 }
 
 class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
@@ -14,7 +15,7 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
   FirebaseAuthDataSourceImpl(this.auth);
 
   @override
-  Future<UserModel?> login(String email, String password) async {
+  Future<User?> login(String email, String password) async {
     firebase_auth.UserCredential userCredential =
         await auth.signInWithEmailAndPassword(
       email: email,
@@ -23,23 +24,23 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
 
     String token = await userCredential.user?.getIdToken() ?? '';
 
-    return UserModel.fromFirebaseUser(userCredential.user!, token);
+    return UserModel.fromFirebaseUser(userCredential.user!, token).toEntity();
   }
 
   @override
-  Future<UserModel?> register(UserModel userModel) async {
+  Future<User?> register(User user) async {
     firebase_auth.UserCredential userCredential =
         await auth.createUserWithEmailAndPassword(
-      email: userModel.email,
-      password: userModel.password,
+      email: user.email,
+      password: user.password,
     );
 
     String token = await userCredential.user?.getIdToken() ?? '';
 
-    await userCredential.user?.updateDisplayName(userModel.name);
-    await userCredential.user?.updatePhotoURL(userModel.photoUrl);
+    await userCredential.user?.updateDisplayName(user.name);
+    await userCredential.user?.updatePhotoURL(user.photoUrl);
 
-    return UserModel.fromFirebaseUser(userCredential.user!, token);
+    return UserModel.fromFirebaseUser(userCredential.user!, token).toEntity();
   }
 
   @override
@@ -48,11 +49,11 @@ class FirebaseAuthDataSourceImpl implements FirebaseAuthDataSource {
   }
 
   @override
-  Future<UserModel?> getCurrentUser() async {
+  Future<User?> getCurrentUser() async {
     firebase_auth.User? user = auth.currentUser;
     if (user != null) {
       String token = await user.getIdToken() ?? '';
-      return UserModel.fromFirebaseUser(user, token);
+      return UserModel.fromFirebaseUser(user, token).toEntity();
     } else {
       return null;
     }

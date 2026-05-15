@@ -52,7 +52,7 @@ class ProjectBloc extends Bloc<ProjectEvent, ProjectState> {
   ) async {
     emit(ProjectLoading());
     try {
-      final projects = await getProjectsUseCase();
+      final projects = getProjectsUseCase();
       emit(ProjectLoaded(projects));
     } catch (e) {
       emit(ProjectError(e.toString()));

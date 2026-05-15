@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 part 'task_event.dart';
 part 'task_state.dart';
 
-// Bloc
 class TaskBloc extends Bloc<TaskEvent, TaskState> {
   final GetTasks getTasksUseCase;
   final CreateTask createTaskUseCase;
@@ -41,7 +40,7 @@ class TaskBloc extends Bloc<TaskEvent, TaskState> {
     }
   }
 
-  void _onGetTasksByProject(
+  Future<void> _onGetTasksByProject(
     GetTasksByProjectEvent event,
     Emitter<TaskState> emit,
   ) async {

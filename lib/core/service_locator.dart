@@ -12,15 +12,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  // Shared Preferences
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
-  // Firebase
+
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
 
-  // Registros de Data sources
+  // Data sources
   sl.registerLazySingleton<FirebaseAuthDataSource>(
     () => FirebaseAuthDataSourceImpl(sl()),
   );
@@ -36,8 +35,11 @@ Future<void> init() async {
   sl.registerLazySingleton<ProjectDataSource>(
     () => ProjectDataSourceImpl(sl<FirebaseFirestore>(), sl<FirebaseAuth>()),
   );
+  sl.registerLazySingleton<GroupDataSource>(
+    () => GroupDataSourceImpl(sl<FirebaseFirestore>(), sl<FirebaseAuth>()),
+  );
 
-  // Repositorios
+  // Repositories
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
   sl.registerLazySingleton<UserRepository>(
     () => UserRepositoryImpl(
@@ -52,8 +54,11 @@ Future<void> init() async {
   sl.registerLazySingleton<ProjectRepository>(
     () => ProjectRepositoryImpl(sl<ProjectDataSource>()),
   );
+  sl.registerLazySingleton<GroupRepository>(
+    () => GroupRepositoryImpl(sl<GroupDataSource>()),
+  );
 
-  // Casos de Uso
+  // Auth Use Cases
   sl.registerLazySingleton(() => Login(sl()));
   sl.registerLazySingleton(() => Logout(sl()));
   sl.registerLazySingleton(() => Register(sl()));
@@ -68,11 +73,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => DeleteUser(sl<UserRepository>()));
   sl.registerLazySingleton(() => UploadFile(sl()));
-  // Theme Use Cases
   sl.registerLazySingleton(() => GetThemeModeUseCase(sl()));
   sl.registerLazySingleton(() => SaveThemeModeUseCase(sl()));
 
-  // Tasks Use Cases
+  // Task Use Cases
   sl.registerLazySingleton(() => GetTasks(sl<TaskRepository>()));
   sl.registerLazySingleton(() => UpdateTask(sl<TaskRepository>()));
   sl.registerLazySingleton(() => DeleteTask(sl<TaskRepository>()));
@@ -94,7 +98,18 @@ Future<void> init() async {
   sl.registerLazySingleton(
       () => RemoveUserFromProject(sl<ProjectRepository>()));
 
-  // Bloc
+  // Group Use Cases
+  sl.registerLazySingleton(() => GetGroups(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => GetGroupById(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => GetGroupsByUser(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => CreateGroup(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => UpdateGroup(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => DeleteGroup(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => AddUserToGroup(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => RemoveUserFromGroup(sl<GroupRepository>()));
+  sl.registerLazySingleton(() => ShareGroupWithUser(sl<GroupRepository>()));
+
+  // BLoCs
   sl.registerFactory(
     () => AuthBloc(
       loginUseCase: sl(),
@@ -115,7 +130,6 @@ Future<void> init() async {
     ),
   );
 
-  // Theme Bloc
   sl.registerFactory(
     () => ThemeBloc(
       getThemeModeUseCase: sl(),
@@ -123,7 +137,6 @@ Future<void> init() async {
     ),
   );
 
-  // Task Bloc
   sl.registerFactory(
     () => TaskBloc(
       createTaskUseCase: sl<CreateTask>(),
@@ -134,7 +147,6 @@ Future<void> init() async {
     ),
   );
 
-  // Project Bloc
   sl.registerFactory(() => ProjectBloc(
         createProjectUseCase: sl<CreateProject>(),
         getProjectsUseCase: sl<GetProjects>(),
@@ -149,14 +161,22 @@ Future<void> init() async {
         shareProjectWithUserUseCase: sl<ShareProjectWithUser>(),
       ));
 
-  // Data storage
+  sl.registerFactory(() => GroupBloc(
+        getGroupsUseCase: sl<GetGroups>(),
+        getGroupByIdUseCase: sl<GetGroupById>(),
+        getGroupsByUserUseCase: sl<GetGroupsByUser>(),
+        createGroupUseCase: sl<CreateGroup>(),
+        updateGroupUseCase: sl<UpdateGroup>(),
+        deleteGroupUseCase: sl<DeleteGroup>(),
+        addUserToGroupUseCase: sl<AddUserToGroup>(),
+        removeUserFromGroupUseCase: sl<RemoveUserFromGroup>(),
+        shareGroupWithUserUseCase: sl<ShareGroupWithUser>(),
+      ));
+
   sl.registerLazySingleton<AuthStorage>(() => AuthStorage());
 
-  // New additions
   sl.registerFactory(
-    () => AiSuggestionBloc(
-      getTaskSuggestionUseCase: sl(),
-    ),
+    () => AiSuggestionBloc(getTaskSuggestionUseCase: sl()),
   );
 
   sl.registerLazySingleton(() => GetTaskSuggestion(sl()));

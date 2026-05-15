@@ -1,3 +1,4 @@
+export 'package:devpaul_todo_app/presentation/ui/widgets/animations.dart';
 export 'package:devpaul_todo_app/presentation/ui/widgets/custom_asset_image.dart';
 export 'package:devpaul_todo_app/presentation/ui/widgets/custom_icon.dart';
 export 'package:devpaul_todo_app/presentation/ui/widgets/trailing_widget.dart';
@@ -8,3 +9,4 @@ export 'package:devpaul_todo_app/presentation/ui/widgets/custom_dropdown_priorit
 export 'package:devpaul_todo_app/presentation/ui/widgets/custom_dropdown_task_type.dart';
 export 'package:devpaul_todo_app/presentation/ui/widgets/custom_date_time_picker.dart';
 export 'package:devpaul_todo_app/presentation/ui/widgets/custom_dropdown_status.dart';
+

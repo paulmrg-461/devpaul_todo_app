@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
-import 'package:devpaul_todo_app/data/models/user_model.dart';
 import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:devpaul_todo_app/domain/usecases/users/user_use_cases.dart';
 import 'package:equatable/equatable.dart';
@@ -46,7 +45,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         event.user.copyWith(photoUrl: fileUrl),
       );
 
-      // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
       emit(OperatorFailure('Error to create user: $e'));
@@ -74,7 +72,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       await updateUserUseCase(event.user);
 
-      // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
       emit(OperatorFailure('Error to update user: $e'));
@@ -89,7 +86,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       await deleteUserUseCase(event.id);
 
-      // Emitir el evento para recargar la lista actualizada de users
       add(GetUsersEvent());
     } catch (e) {
       emit(OperatorFailure('Error to delete user: $e'));

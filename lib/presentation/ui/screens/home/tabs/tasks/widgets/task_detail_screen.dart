@@ -1,9 +1,8 @@
 import 'package:devpaul_todo_app/core/extensions/string_extension.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
-import 'package:devpaul_todo_app/data/models/task_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_markdown/flutter_markdown.dart'; // Importar flutter_markdown
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:devpaul_todo_app/presentation/blocs/ai_suggestion_bloc/ai_suggestion_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_form_dialog.dart';
@@ -21,15 +20,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   void initState() {
     super.initState();
-    final taskModel = widget.task as TaskModel;
-    if (taskModel.aiSuggestion == null) {
+    if (widget.task.aiSuggestion == null) {
       context.read<AiSuggestionBloc>().add(GetTaskSuggestionEvent(widget.task));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final taskModel = widget.task as TaskModel;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalles de la Tarea'),
@@ -116,8 +113,8 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
               content: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (taskModel.aiSuggestion != null)
-                    MarkdownBody(data: taskModel.aiSuggestion!) // Usar MarkdownBody
+                  if (widget.task.aiSuggestion != null)
+                    MarkdownBody(data: widget.task.aiSuggestion!)
                   else
                     BlocBuilder<AiSuggestionBloc, AiSuggestionState>(
                       builder: (context, state) {
@@ -127,14 +124,13 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
                           );
                         }
                         if (state is AiSuggestionLoaded) {
-                          // Actualizar la tarea con la sugerencia
-                          final updatedTask = taskModel.copyWith(
+                          final updatedTask = widget.task.copyWith(
                             aiSuggestion: state.suggestion.suggestion,
                           );
                           context
                               .read<TaskBloc>()
                               .add(UpdateTaskEvent(updatedTask));
-                          return MarkdownBody(data: state.suggestion.suggestion); // Usar MarkdownBody
+                          return MarkdownBody(data: state.suggestion.suggestion);
                         }
                         if (state is AiSuggestionError) {
                           return Text(
@@ -282,7 +278,7 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
         task: widget.task,
         onSave: (task) {
           context.read<TaskBloc>().add(UpdateTaskEvent(task));
-                  Navigator.pop(context);
+          Navigator.pop(context);
         },
       ),
     );

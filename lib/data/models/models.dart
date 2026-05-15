@@ -1,3 +1,5 @@
+export 'package:devpaul_todo_app/data/models/group_model.dart';
 export 'package:devpaul_todo_app/data/models/user_model.dart';
 export 'package:devpaul_todo_app/data/models/task_model.dart';
 export 'package:devpaul_todo_app/data/models/ai_suggestion_model.dart';
+export 'package:devpaul_todo_app/data/models/project_model.dart';

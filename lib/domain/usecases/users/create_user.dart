@@ -1,4 +1,4 @@
-import 'package:devpaul_todo_app/data/models/user_model.dart';
+import 'package:devpaul_todo_app/domain/entities/user.dart';
 import 'package:devpaul_todo_app/domain/repositories/auth_repository.dart';
 import 'package:devpaul_todo_app/domain/repositories/user_repository.dart';
 
@@ -8,15 +8,12 @@ class CreateUser {
 
   CreateUser({required this.authRepository, required this.repository});
 
-  Future<void> call(UserModel newUser) async {
-    // Si el uid ya viene asignado, significa que el usuario ya está autenticado,
-    // por lo que solo debemos crear el registro en Firestore.
-    if (newUser.uid.isEmpty) {
-      final UserModel? user = await authRepository.register(newUser);
-      newUser = newUser.copyWith(
-        uid: user?.uid ?? '',
-      );
+  Future<void> call(User newUser) async {
+    User user = newUser;
+    if (user.uid.isEmpty) {
+      final User? registered = await authRepository.register(user);
+      user = user.copyWith(uid: registered?.uid ?? '');
     }
-    return repository.createUser(newUser);
+    return repository.createUser(user);
   }
 }

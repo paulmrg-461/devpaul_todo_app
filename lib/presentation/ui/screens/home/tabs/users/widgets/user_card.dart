@@ -86,7 +86,7 @@ class UserCard extends StatelessWidget {
                     color: Theme.of(context)
                         .colorScheme
                         .onSurface
-                        .withOpacity(0.8),
+                        .withValues(alpha: 0.8),
                   ),
             ),
           ),
@@ -139,7 +139,7 @@ class UserCard extends StatelessWidget {
             style: TextStyle(color: colorScheme.onSurface)),
         content: Text(
           '¿Eliminar al usuario ${user.name}? Esta acción no se puede deshacer.',
-          style: TextStyle(color: colorScheme.onSurface.withOpacity(0.8)),
+          style: TextStyle(color: colorScheme.onSurface.withValues(alpha: 0.8)),
         ),
         actions: [
           TextButton(

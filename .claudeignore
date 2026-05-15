@@ -1,0 +1,54 @@
+# Git & IDEs
+.git/
+.vscode/
+.idea/
+.DS_Store
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*
+dist/
+.next/
+
+# Flutter / Dart
+build/
+.dart_tool/
+.packages
+.pub-cache/
+ios/
+android/
+linux/
+windows/
+macos/
+*.err
+*.p7m
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.env
+.pytest_cache/
+.mypy_cache/
+
+# Go
+bin/
+vendor/
+
+# Binaries & Media
+*.exe
+*.dll
+*.so
+*.dylib
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+*.zip
+*.tar.gz

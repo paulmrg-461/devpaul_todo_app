@@ -13,6 +13,7 @@ class ProjectModel extends Project {
     required super.createdAt,
     required super.status,
     super.ownerId,
+    super.groupId,
   });
 
   factory ProjectModel.fromSnapshot(DocumentSnapshot doc) {
@@ -25,6 +26,8 @@ class ProjectModel extends Project {
       taskIds: List<String>.from(data['taskIds'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: TaskStatus.values[data['status'] ?? 0],
+      ownerId: data['ownerId'],
+      groupId: data['groupId'],
     );
   }
 
@@ -38,6 +41,7 @@ class ProjectModel extends Project {
       createdAt: project.createdAt,
       status: project.status,
       ownerId: project.ownerId,
+      groupId: project.groupId,
     );
   }
 
@@ -50,6 +54,7 @@ class ProjectModel extends Project {
       'createdAt': Timestamp.fromDate(createdAt),
       'status': status.index,
       if (ownerId != null) 'ownerId': ownerId,
+      if (groupId != null) 'groupId': groupId,
     };
   }
 }
