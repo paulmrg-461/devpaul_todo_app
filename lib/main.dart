@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 import 'package:devpaul_todo_app/config/routes/app_routes.dart';
 import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
@@ -27,6 +28,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = AppBlocObserver();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await dotenv.load(fileName: '.env');
   await di.init();
 
   if (!kIsWeb) {

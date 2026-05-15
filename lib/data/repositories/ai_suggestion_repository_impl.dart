@@ -3,23 +3,39 @@ import 'package:devpaul_todo_app/config/global/environment.dart';
 import 'package:devpaul_todo_app/domain/entities/ai_suggestion_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/domain/repositories/ai_suggestion_repository.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
+  String get _apiUrl {
+    try {
+      final envUrl = dotenv.env['DEEPSEEK_API_URL'];
+      if (envUrl != null && envUrl.isNotEmpty) return envUrl;
+    } catch (_) {}
+    return Environment.deepseekApiUrl.isNotEmpty
+        ? Environment.deepseekApiUrl
+        : Environment.backendApiUrl;
+  }
+
+  String get _apiKey {
+    try {
+      final envKey = dotenv.env['DEEPSEEK_API_KEY'];
+      if (envKey != null && envKey.isNotEmpty) return envKey;
+    } catch (_) {}
+    return Environment.deepseekApiKey;
+  }
+
+  bool get _isProxy => _apiUrl == Environment.backendApiUrl ||
+      _apiKey.isEmpty;
+
   @override
   Future<AiSuggestion> getTaskSuggestion(Task task) async {
     try {
-      final apiUrl = Environment.deepseekApiUrl.isNotEmpty
-          ? Environment.deepseekApiUrl
-          : Environment.backendApiUrl;
-
-      final isProxy = Environment.deepseekApiUrl.isEmpty;
-
       final http.Response response;
 
-      if (isProxy) {
+      if (_isProxy) {
         response = await http.post(
-          Uri.parse('$apiUrl/api/suggestions'),
+          Uri.parse('$_apiUrl/api/suggestions'),
           headers: {'Content-Type': 'application/json; charset=UTF-8'},
           body: utf8.encode(jsonEncode({
             'task': {
@@ -33,10 +49,10 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
         );
       } else {
         response = await http.post(
-          Uri.parse('$apiUrl/chat/completions'),
+          Uri.parse('$_apiUrl/chat/completions'),
           headers: {
             'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': 'Bearer ${Environment.deepseekApiKey}',
+            'Authorization': 'Bearer $_apiKey',
           },
           body: utf8.encode(jsonEncode({
             'model': 'deepseek-chat',
@@ -76,7 +92,7 @@ class AiSuggestionRepositoryImpl implements AiSuggestionRepository {
         final data = jsonDecode(utf8.decode(response.bodyBytes));
 
         final String suggestion;
-        if (isProxy) {
+        if (_isProxy) {
           suggestion = data['suggestion'] as String;
         } else {
           suggestion = data['choices'][0]['message']['content'] as String;
