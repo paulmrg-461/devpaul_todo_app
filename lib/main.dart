@@ -4,11 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:workmanager/workmanager.dart';
 import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 import 'package:devpaul_todo_app/config/routes/app_routes.dart';
 import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:devpaul_todo_app/core/firebase/firebase_options.dart';
 import 'package:devpaul_todo_app/core/service_locator.dart' as di;
+import 'package:devpaul_todo_app/core/notifications/scheduled_notification_work.dart';
+import 'package:devpaul_todo_app/core/notifications/notification_service.dart';
 
 class AppBlocObserver extends BlocObserver {
   @override
@@ -35,6 +38,13 @@ void main() async {
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
     );
+
+    Workmanager().initialize(callbackDispatcher, isInDebugMode: kDebugMode);
+
+    final notificationService = di.sl<NotificationService>();
+    await notificationService.initialize();
+    await scheduleDailyNotification();
+    await setupPeriodicDueCheck();
   }
 
   runApp(const MyApp());

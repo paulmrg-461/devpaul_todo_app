@@ -1,12 +1,15 @@
 import 'package:get_it/get_it.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:devpaul_todo_app/domain/repositories/domain_repositories.dart';
 import 'package:devpaul_todo_app/domain/usecases/use_cases.dart';
 import 'package:devpaul_todo_app/data/datasources/data_datasources.dart';
 import 'package:devpaul_todo_app/data/repositories/data_repositories.dart';
 import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
+import 'package:devpaul_todo_app/core/notifications/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
@@ -183,5 +186,20 @@ Future<void> init() async {
 
   sl.registerLazySingleton<AiSuggestionRepository>(
     () => AiSuggestionRepositoryImpl(),
+  );
+
+  sl.registerLazySingleton<FirebaseMessaging>(
+    () => FirebaseMessaging.instance,
+  );
+
+  sl.registerLazySingleton<FlutterLocalNotificationsPlugin>(
+    () => FlutterLocalNotificationsPlugin(),
+  );
+
+  sl.registerLazySingleton<NotificationService>(
+    () => NotificationService(
+      fcm: sl<FirebaseMessaging>(),
+      localNotifications: sl<FlutterLocalNotificationsPlugin>(),
+    ),
   );
 }
