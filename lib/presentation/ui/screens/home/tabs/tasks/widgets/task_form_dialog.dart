@@ -57,11 +57,19 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     _selectedProjectId = widget.task?.projectId;
     _startDate = widget.task?.startDate;
     _dueDate = widget.task?.dueDate;
+
+    _nameController.addListener(_onTextChanged);
+    _descriptionController.addListener(_onTextChanged);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<ProjectBloc>().add(const GetProjectsEvent());
       }
     });
+  }
+
+  void _onTextChanged() {
+    setState(() {});
   }
 
   void _saveForm() {
@@ -102,6 +110,17 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
         listener: (context, state) {
           if (state is AiSuggestionLoaded) {
             _descriptionController.text = state.suggestion.suggestion;
+            _descriptionController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _descriptionController.text.length),
+            );
+            setState(() => _isImprovingDescription = false);
+          }
+          if (state is TaskImprovementLoaded) {
+            _nameController.text = state.improvement.name;
+            _nameController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _nameController.text.length),
+            );
+            _descriptionController.text = state.improvement.description;
             _descriptionController.selection = TextSelection.fromPosition(
               TextPosition(offset: _descriptionController.text.length),
             );
@@ -212,8 +231,11 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
   }
 
   Widget _buildAiImproveButton(BuildContext context) {
+    final name = _nameController.text.trim();
     final description = _descriptionController.text.trim();
-    if (description.isEmpty) return const SizedBox.shrink();
+    if (name.isEmpty && description.isEmpty) return const SizedBox.shrink();
+
+    final hasMinContent = name.length + description.length >= 10;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
@@ -227,10 +249,10 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
               )
             : TextButton.icon(
                 onPressed: () {
-                  if (description.length < 10) {
+                  if (!hasMinContent) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Escribe al menos 10 caracteres para mejorar con IA'),
+                        content: Text('Escribe al menos 10 caracteres entre nombre y descripción para mejorar con IA'),
                         duration: Duration(seconds: 2),
                       ),
                     );
@@ -239,7 +261,7 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                   setState(() => _isImprovingDescription = true);
                   context
                       .read<AiSuggestionBloc>()
-                      .add(ImproveDescriptionEvent(description));
+                      .add(ImproveTaskEvent(name, description));
                 },
                 icon: const Icon(Icons.auto_awesome, size: 16),
                 label: const Text('Mejorar con IA'),
@@ -297,6 +319,8 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
 
   @override
   void dispose() {
+    _nameController.removeListener(_onTextChanged);
+    _descriptionController.removeListener(_onTextChanged);
     _nameController.dispose();
     _descriptionController.dispose();
     _startDateController.dispose();

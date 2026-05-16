@@ -20,6 +20,15 @@ class AiSuggestionLoaded extends AiSuggestionState {
   List<Object?> get props => [suggestion];
 }
 
+class TaskImprovementLoaded extends AiSuggestionState {
+  final TaskImprovement improvement;
+
+  const TaskImprovementLoaded(this.improvement);
+
+  @override
+  List<Object?> get props => [improvement];
+}
+
 class AiSuggestionError extends AiSuggestionState {
   final String message;
 

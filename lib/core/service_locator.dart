@@ -178,18 +178,20 @@ Future<void> init() async {
 
   sl.registerLazySingleton<AuthStorage>(() => AuthStorage());
 
-  sl.registerFactory(
-    () => AiSuggestionBloc(
-      getTaskSuggestionUseCase: sl(),
-      improveDescriptionUseCase: sl(),
-    ),
+  sl.registerLazySingleton<AiSuggestionRepository>(
+    () => AiSuggestionRepositoryImpl(),
   );
 
   sl.registerLazySingleton(() => GetTaskSuggestion(sl()));
   sl.registerLazySingleton(() => ImproveDescription(sl()));
+  sl.registerLazySingleton(() => ImproveTask(sl()));
 
-  sl.registerLazySingleton<AiSuggestionRepository>(
-    () => AiSuggestionRepositoryImpl(),
+  sl.registerFactory(
+    () => AiSuggestionBloc(
+      getTaskSuggestionUseCase: sl(),
+      improveDescriptionUseCase: sl(),
+      improveTaskUseCase: sl(),
+    ),
   );
 
   sl.registerLazySingleton<FirebaseMessaging>(
