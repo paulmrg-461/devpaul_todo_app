@@ -46,17 +46,22 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     _startDateController = TextEditingController(
         text: widget.task != null
             ? widget.task!.startDate.toLocal().toString().split(' ')[0]
-            : '');
+            : DateTime.now().toLocal().toString().split(' ')[0]);
     _dueDateController = TextEditingController(
         text: widget.task != null
             ? widget.task!.dueDate.toLocal().toString().split(' ')[0]
-            : '');
+            : DateTime.now()
+                .add(const Duration(days: 1))
+                .toLocal()
+                .toString()
+                .split(' ')[0]);
     _selectedPriority = widget.task?.priority ?? TaskPriority.medium;
     _selectedType = widget.task?.type ?? TaskType.work;
     _selectedStatus = widget.task?.status ?? TaskStatus.pending;
     _selectedProjectId = widget.task?.projectId;
-    _startDate = widget.task?.startDate;
-    _dueDate = widget.task?.dueDate;
+    _startDate = widget.task?.startDate ?? DateTime.now();
+    _dueDate =
+        widget.task?.dueDate ?? DateTime.now().add(const Duration(days: 1));
 
     _nameController.addListener(_onTextChanged);
     _descriptionController.addListener(_onTextChanged);
@@ -131,90 +136,92 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
           }
         },
         child: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: SizedBox(
-            width: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                CustomInput(
-                  width: 400,
-                  hintText: "Task name",
-                  icon: Icons.task,
-                  controller: _nameController,
-                  validator: (value) => InputValidator.emptyValidator(
-                      value: value, minCharacters: 3),
-                ),
-                CustomInput(
-                  width: 400,
-                  hintText: "Description",
-                  icon: Icons.description,
-                  controller: _descriptionController,
-                  minLines: 3,
-                  maxLines: 5,
-                  validator: (value) => InputValidator.emptyValidator(
-                      value: value, minCharacters: 3),
-                ),
-                _buildAiImproveButton(context),
-                const Divider(),
-                _buildProjectSelector(context),
-                const SizedBox(height: AppSpacing.md),
-                CustomDropdownPriority(
-                  labelText: 'Priority',
-                  priorities: TaskPriority.values,
-                  value: _selectedPriority,
-                  width: 400,
-                  icon: Icons.priority_high_rounded,
-                  onChanged: (priority) {
-                    setState(() => _selectedPriority = priority!);
-                  },
-                ),
-                CustomDropdownType(
-                  labelText: 'Type',
-                  types: TaskType.values,
-                  value: _selectedType,
-                  icon: Icons.category,
-                  onChanged: (value) {
-                    setState(() => _selectedType = value!);
-                  },
-                  width: 400,
-                ),
-                const Divider(),
-                CustomDateTimePicker(
-                  hintText: 'Start date',
-                  initialDateTime: _startDate,
-                  width: 400,
-                  icon: Icons.calendar_today,
-                  onDateTimeChanged: (date) {
-                    setState(() => _startDate = date);
-                  },
-                ),
-                CustomDateTimePicker(
-                  hintText: 'Due date',
-                  initialDateTime: _dueDate,
-                  width: 400,
-                  icon: Icons.event,
-                  onDateTimeChanged: (date) {
-                    setState(() => _dueDate = date);
-                  },
-                ),
-                if (isEditing)
-                  CustomDropdownStatus(
-                    labelText: 'Status',
-                    statuses: TaskStatus.values,
-                    value: _selectedStatus,
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: SizedBox(
+              width: 400,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CustomInput(
                     width: 400,
-                    icon: Icons.check_circle_outline,
-                    onChanged: (status) {
-                      setState(() => _selectedStatus = status!);
+                    hintText: "Task name",
+                    icon: Icons.task,
+                    controller: _nameController,
+                    validator: (value) => InputValidator.emptyValidator(
+                        value: value, minCharacters: 3),
+                  ),
+                  CustomInput(
+                    width: 400,
+                    hintText: "Description",
+                    icon: Icons.description,
+                    controller: _descriptionController,
+                    minLines: 3,
+                    maxLines: 5,
+                    validator: (value) => InputValidator.emptyValidator(
+                        value: value, minCharacters: 3),
+                  ),
+                  _buildAiImproveButton(context),
+                  // const Divider(),
+                  // const SizedBox(height: AppSpacing.md),
+                  _buildProjectSelector(context),
+                  CustomDropdownPriority(
+                    labelText: 'Priority',
+                    priorities: TaskPriority.values,
+                    value: _selectedPriority,
+                    width: 400,
+                    icon: Icons.priority_high_rounded,
+                    onChanged: (priority) {
+                      setState(() => _selectedPriority = priority!);
                     },
                   ),
-              ],
+
+                  CustomDateTimePicker(
+                    hintText: 'Start date',
+                    initialDateTime: _startDate,
+                    width: 400,
+                    icon: Icons.calendar_today,
+                    onDateTimeChanged: (date) {
+                      setState(() => _startDate = date);
+                    },
+                  ),
+                  CustomDateTimePicker(
+                    hintText: 'Due date',
+                    initialDateTime: _dueDate,
+                    width: 400,
+                    icon: Icons.event,
+                    onDateTimeChanged: (date) {
+                      setState(() => _dueDate = date);
+                    },
+                  ),
+                  if (isEditing)
+                    CustomDropdownStatus(
+                      labelText: 'Status',
+                      statuses: TaskStatus.values,
+                      value: _selectedStatus,
+                      width: 400,
+                      icon: Icons.check_circle_outline,
+                      onChanged: (status) {
+                        setState(() => _selectedStatus = status!);
+                      },
+                    ),
+                  const Divider(),
+                  const SizedBox(height: AppSpacing.sm),
+                  CustomDropdownType(
+                    labelText: 'Type',
+                    types: TaskType.values,
+                    value: _selectedType,
+                    icon: Icons.category,
+                    onChanged: (value) {
+                      setState(() => _selectedType = value!);
+                    },
+                    width: 394,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
       ),
       actions: [
         TextButton(
@@ -252,7 +259,8 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                   if (!hasMinContent) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Escribe al menos 10 caracteres entre nombre y descripción para mejorar con IA'),
+                        content: Text(
+                            'Escribe al menos 10 caracteres entre nombre y descripción para mejorar con IA'),
                         duration: Duration(seconds: 2),
                       ),
                     );
@@ -275,7 +283,9 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
   }
 
   Widget _buildProjectSelector(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+    final effectiveBorderColor = colorScheme.primary.withValues(alpha: 0.4);
 
     return BlocBuilder<ProjectBloc, ProjectState>(
       builder: (context, state) {
@@ -284,30 +294,116 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
             stream: state.projects,
             builder: (context, snapshot) {
               final projects = snapshot.data ?? [];
-              return DropdownButtonFormField<String?>(
-                value: _selectedProjectId,
-                decoration: InputDecoration(
-                  labelText: 'Project (optional)',
-                  prefixIcon:
-                      const Icon(Icons.folder_outlined, size: 20),
-                  contentPadding: AppSpacing.inputPadding,
+              return Container(
+                width: 400,
+                margin: const EdgeInsets.only(
+                  left: 4,
+                  top: 4,
+                  right: 4,
+                  bottom: 12,
                 ),
-                style: textTheme.bodyLarge,
-                items: [
-                  const DropdownMenuItem<String?>(
-                    value: null,
-                    child: Text('No project'),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: effectiveBorderColor, width: 1.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.shadow.withValues(alpha: 0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    )
+                  ],
+                ),
+                child: DropdownButtonFormField<String?>(
+                  initialValue: _selectedProjectId,
+                  decoration: InputDecoration(
+                    isCollapsed: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 14,
+                      horizontal: 12,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: effectiveBorderColor.withValues(alpha: 0.8),
+                        width: 0.6,
+                      ),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: effectiveBorderColor.withValues(alpha: 0.4),
+                        width: 0.2,
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(
+                        color: effectiveBorderColor.withValues(alpha: 0.4),
+                        width: 0.2,
+                      ),
+                    ),
+                    labelText: 'Project (optional)',
+                    labelStyle: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                    floatingLabelStyle: TextStyle(color: effectiveBorderColor),
+                    hintStyle: textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                    counterText: '',
+                    fillColor: colorScheme.surface,
+                    filled: true,
                   ),
-                  ...projects.map((p) => DropdownMenuItem<String?>(
-                        value: p.id,
-                        child: Text(p.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                      )),
-                ],
-                onChanged: (val) =>
-                    setState(() => _selectedProjectId = val),
-                isExpanded: true,
+                  items: [
+                    DropdownMenuItem<String?>(
+                      value: null,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Icon(
+                              Icons.folder_outlined,
+                              color: colorScheme.primary,
+                              size: 20,
+                            ),
+                          ),
+                          Text('No project',
+                              style: textTheme.bodySmall?.copyWith(
+                                color: colorScheme.onSurface,
+                                fontSize: 12,
+                              )),
+                        ],
+                      ),
+                    ),
+                    ...projects.map((p) => DropdownMenuItem<String?>(
+                          value: p.id,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Icon(
+                                  Icons.folder_outlined,
+                                  color: colorScheme.primary,
+                                  size: 20,
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(p.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurface,
+                                      fontSize: 12,
+                                    )),
+                              ),
+                            ],
+                          ),
+                        )),
+                  ],
+                  onChanged: (val) => setState(() => _selectedProjectId = val),
+                  isExpanded: true,
+                ),
               );
             },
           );
