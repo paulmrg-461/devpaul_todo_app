@@ -101,10 +101,10 @@ class CustomDropdownPriority extends StatelessWidget {
           ),
           labelText: labelText,
           labelStyle: textTheme.bodySmall?.copyWith(
-                color: getFontColor().withValues(alpha: 0.6),
+                color: getFontColor().withValues(alpha: 0.85),
               ) ??
               GoogleFonts.inter(
-                color: getFontColor().withValues(alpha: 0.6),
+                color: getFontColor().withValues(alpha: 0.85),
               ),
           floatingLabelStyle: TextStyle(color: effectiveBorderColor),
           hintStyle: textTheme.bodySmall?.copyWith(

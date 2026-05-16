@@ -93,11 +93,11 @@ class CustomDropdownType extends StatelessWidget {
           ),
           labelText: labelText,
           labelStyle: theme.textTheme.bodySmall?.copyWith(
-                color: effectiveTextColor.withValues(alpha: 0.6),
+                color: effectiveTextColor.withValues(alpha: 0.85),
                 fontSize: 12,
               ) ??
               GoogleFonts.inter(
-                color: effectiveTextColor.withValues(alpha: 0.6),
+                color: effectiveTextColor.withValues(alpha: 0.85),
                 fontSize: 12,
               ),
           floatingLabelStyle: TextStyle(color: effectiveBorderColor),

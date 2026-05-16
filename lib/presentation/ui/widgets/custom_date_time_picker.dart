@@ -18,6 +18,7 @@ class CustomDateTimePicker extends StatefulWidget {
   final double marginRight;
   final double marginBottom;
   final IconData? icon;
+  final String? labelText;
 
   const CustomDateTimePicker({
     super.key,
@@ -35,6 +36,7 @@ class CustomDateTimePicker extends StatefulWidget {
     this.marginRight = 4,
     this.marginBottom = 8,
     this.icon,
+    this.labelText,
   });
 
   @override
@@ -96,65 +98,93 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final effectiveBackgroundColor =
         widget.backgroundColor ?? colorScheme.surface;
     final effectiveBorderColor =
         widget.borderColor ?? colorScheme.primary.withValues(alpha: 0.4);
     final effectiveFontColor = widget.fontColor ?? colorScheme.onSurface;
+    final displayLabel = widget.labelText ?? widget.hintText;
+
     Color getIconColor() => widget.borderColor ?? colorScheme.primary;
 
-    return GestureDetector(
-      onTap: _pickDateTime,
-      child: Container(
-        width: widget.width,
-        margin: EdgeInsets.only(
-          left: widget.marginLeft,
-          top: widget.marginTop,
-          right: widget.marginRight,
-          bottom: widget.marginBottom,
-        ),
-        padding: EdgeInsets.symmetric(
-          vertical: widget.contentPadding,
-          horizontal: 12,
-        ),
-        decoration: BoxDecoration(
-          color: effectiveBackgroundColor,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          border: Border.all(color: effectiveBorderColor, width: 1.2),
-          boxShadow: [
-            BoxShadow(
-              color: colorScheme.shadow.withValues(alpha: 0.1),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            )
-          ],
-        ),
-        child: Row(
-          children: [
-            if (widget.icon != null)
-              Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Icon(widget.icon, color: getIconColor(), size: 20),
-              ),
-            Expanded(
-              child: Text(
-                _selectedDateTime != null
-                    ? _formatDateTime(_selectedDateTime!)
-                    : widget.hintText,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        GestureDetector(
+          onTap: _pickDateTime,
+          child: Container(
+            width: widget.width,
+            margin: EdgeInsets.only(
+              left: widget.marginLeft,
+              top: widget.marginTop,
+              right: widget.marginRight,
+              bottom: widget.marginBottom,
+            ),
+            padding: EdgeInsets.symmetric(
+              vertical: widget.contentPadding,
+              horizontal: 12,
+            ),
+            decoration: BoxDecoration(
+              color: effectiveBackgroundColor,
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              border: Border.all(color: effectiveBorderColor, width: 1.2),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: 0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                )
+              ],
+            ),
+            child: Row(
+              children: [
+                if (widget.icon != null)
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child:
+                        Icon(widget.icon, color: getIconColor(), size: 20),
+                  ),
+                Expanded(
+                  child: Text(
+                    _selectedDateTime != null
+                        ? _formatDateTime(_selectedDateTime!)
+                        : widget.hintText,
+                    style: textTheme.bodyMedium?.copyWith(
+                              fontSize: 12,
+                              color: effectiveFontColor,
+                            ) ??
+                        GoogleFonts.inter(
                           fontSize: 12,
                           color: effectiveFontColor,
-                        ) ??
-                    GoogleFonts.inter(
-                      fontSize: 12,
-                      color: effectiveFontColor,
-                    ),
-              ),
+                        ),
+                  ),
+                ),
+                const Icon(Icons.calendar_today, size: 20, color: Colors.grey),
+              ],
             ),
-            const Icon(Icons.calendar_today, size: 20, color: Colors.grey),
-          ],
+          ),
         ),
-      ),
+        Positioned(
+          left: widget.marginLeft + 12,
+          top: widget.marginTop - 8,
+          child: Container(
+            color: effectiveBackgroundColor,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Text(
+              displayLabel,
+              style: textTheme.bodySmall?.copyWith(
+                    color: effectiveFontColor.withValues(alpha: 0.85),
+                    fontSize: 11,
+                  ) ??
+                  GoogleFonts.inter(
+                    color: effectiveFontColor.withValues(alpha: 0.85),
+                    fontSize: 11,
+                  ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

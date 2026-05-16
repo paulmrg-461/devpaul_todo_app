@@ -345,7 +345,7 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                     ),
                     labelText: 'Project (optional)',
                     labelStyle: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurface.withValues(alpha: 0.6),
+                      color: colorScheme.onSurface.withValues(alpha: 0.85),
                     ),
                     floatingLabelStyle: TextStyle(color: effectiveBorderColor),
                     hintStyle: textTheme.bodySmall?.copyWith(
