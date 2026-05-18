@@ -1,8 +1,8 @@
 # Flutter Project: DevPaul ToDo App
 
-DevPaul ToDo is a responsive Flutter app (Web & Android) for activity management. It features Firebase Auth, Firestore, and Storage integration, and leverages DeepSeek AI to generate step-by-step solution suggestions based on task details.
+DevPaul ToDo is a cross-platform Flutter app (Web, Android, Windows) for task management. It features Firebase Auth, Firestore, and Storage integration, and leverages DeepSeek AI to generate step-by-step solution suggestions and improve task descriptions with spelling correction and content expansion.
 
-This repository contains a cross-platform application (Web & Android) developed in **Flutter** for efficient activity management. The app allows users to **create, view, edit, and filter** tasks while synchronizing data with **Firebase** for authentication, secure storage, and media hosting.
+> **Nota:** Linux y macOS no tienen soporte nativo de Firebase (los plugins `firebase_core`, `cloud_firestore` no incluyen implementaciones para estas plataformas). Usa la versión web en su lugar.
 
 ---
 
@@ -37,32 +37,57 @@ This repository contains a cross-platform application (Web & Android) developed 
    flutter pub get
    ```
 
-3. **Firebase configuration**
-- Create project at Firebase Console.
-- Add Android and Web app.
-- Download file google-services.json (Android) and firebaseConfig (Web):
-  - Android: /android/app/
-  - Web: /web/
+3. **Set environment variables (.env)**
 
-4. **Run app**
-- Android:
    ```bash
-   flutter run
+   cp example.env .env
    ```
-- Web:
-   ```bash
-   flutter run -d chrome
+   Edit `.env` with your credentials:
+   ```
+   DEEPSEEK_API_KEY=sk-your-deepseek-api-key
+   DEEPSEEK_API_URL=https://api.deepseek.com/v1
    ```
 
-5. **Deployment**
-- Android:
+4. **Firebase configuration**
+   - Create a project at [Firebase Console](https://console.firebase.google.com).
+   - Register apps for **Android**, **Web**, **Windows**, and **Linux**.
+   - Place `google-services.json` → `android/app/`
+   - Web config is auto-generated in `lib/core/firebase/firebase_options.dart`
+
+5. **Build & Run per platform**
+
+   | Platform | Command |
+   |---|---|
+   | **Web (dev)** | `flutter run -d chrome --dart-define=DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY --dart-define=DEEPSEEK_API_URL=$DEEPSEEK_API_URL` |
+   | **Android (dev)** | `flutter run --dart-define=DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY --dart-define=DEEPSEEK_API_URL=$DEEPSEEK_API_URL` |
+   | **Windows (dev)** | `flutter run -d windows --dart-define=DEEPSEEK_API_KEY=%DEEPSEEK_API_KEY% --dart-define=DEEPSEEK_API_URL=%DEEPSEEK_API_URL%` |
+
+   > Load env vars first: `source .env` (Linux/macOS) or use `$env:DEEPSEEK_API_KEY` (Windows PowerShell).
+
+6. **Production builds & deployment**
+
+   ### Web → Firebase Hosting
    ```bash
-   flutter build apk --release --dart-define=FLUTTER_WEB_USE_SKIA=true
+   source .env
+   flutter build web --dart-define=DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY --dart-define=DEEPSEEK_API_URL=$DEEPSEEK_API_URL
+   firebase deploy --only hosting
    ```
-- Web:
+   App disponible en: `https://devpaultodo.web.app`
+
+   ### Windows
+   ```batch
+   REM Run from PowerShell or CMD
+   flutter build windows --dart-define=DEEPSEEK_API_KEY=sk-your-key --dart-define=DEEPSEEK_API_URL=https://api.deepseek.com/v1
+   ```
+   El ejecutable estará en: `build\windows\x64\runner\Release\devpaul_todo_app.exe`
+
+   ### Android
    ```bash
-   flutter build web --dart-define=DEEPSEEK_API_KEY=YOUR_API_KEY --dart-define=DEEPSEEK_API_URL=YOUR_DEEPSEEK_API_URL --dart-define=FLUTTER_WEB_USE_SKIA=true
+   source .env
+   flutter build apk --release --dart-define=DEEPSEEK_API_KEY=$DEEPSEEK_API_KEY --dart-define=DEEPSEEK_API_URL=$DEEPSEEK_API_URL
    ```
+   APK en: `build/app/outputs/flutter-apk/app-release.apk`
+
 ---
 ## Application Usage
 

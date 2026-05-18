@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["https://devpaultodo.web.app", "http://localhost:*"],
+    "method": ["GET", "HEAD"],
+    "responseHeader": ["Content-Type", "Content-Disposition"],
+    "maxAgeSeconds": 3600
+  }
+]

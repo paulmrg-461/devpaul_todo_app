@@ -50,6 +50,19 @@ class UserCard extends StatelessWidget {
   Widget _buildUserAvatar(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
+    if (user.photoUrl.isEmpty) {
+      return Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child:
+            Icon(Icons.person_outline, color: colorScheme.onSurfaceVariant),
+      );
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: Image.network(

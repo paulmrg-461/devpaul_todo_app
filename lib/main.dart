@@ -17,20 +17,32 @@ class AppBlocObserver extends BlocObserver {
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
-    debugPrint('[BLoC] ${bloc.runtimeType} $change');
+    if (kDebugMode) {
+      debugPrint('[BLoC] ${bloc.runtimeType} $change');
+    }
   }
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
     super.onError(bloc, error, stackTrace);
-    debugPrint('[BLoC Error] ${bloc.runtimeType}: $error');
+    if (kDebugMode) {
+      debugPrint('[BLoC Error] ${bloc.runtimeType}: $error');
+    }
   }
 }
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = AppBlocObserver();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    debugPrint('[Firebase] Init failed: $e');
+    runApp(_unsupportedPlatformApp(e));
+    return;
+  }
+
   await dotenv.load(fileName: '.env');
   await di.init();
 
@@ -48,6 +60,56 @@ void main() async {
   }
 
   runApp(const MyApp());
+}
+
+Widget _unsupportedPlatformApp(Object error) {
+  final isDesktop = defaultTargetPlatform == TargetPlatform.linux ||
+      defaultTargetPlatform == TargetPlatform.windows ||
+      defaultTargetPlatform == TargetPlatform.macOS;
+
+  final platformName = switch (defaultTargetPlatform) {
+    TargetPlatform.linux => 'Linux',
+    TargetPlatform.windows => 'Windows',
+    TargetPlatform.macOS => 'macOS',
+    _ => 'esta plataforma',
+  };
+
+  final message = isDesktop
+      ? 'Firebase no tiene soporte nativo para $platformName.\n\n'
+          'Usa la versión web en tu navegador:\n'
+          'devpaultodo.web.app'
+      : 'Error al inicializar Firebase:\n$error';
+
+  return MaterialApp(
+    debugShowCheckedModeBanner: false,
+    theme: CustomTheme.getThemeData(false),
+    home: Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.warning_amber_rounded,
+                  size: 64, color: Colors.orange),
+              const SizedBox(height: 24),
+              const Text(
+                'Plataforma no soportada',
+                style: TextStyle(
+                    fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 14, height: 1.5),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
