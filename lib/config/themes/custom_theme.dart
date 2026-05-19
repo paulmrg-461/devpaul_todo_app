@@ -6,10 +6,10 @@ import 'design_tokens.dart';
 class AppColors {
   AppColors._();
 
-  // Primary palette — refined indigo
-  static const Color primary = Color(0xFF4F46E5);
-  static const Color primaryLight = Color(0xFF818CF8);
-  static const Color primaryDark = Color(0xFF3730A3);
+  // Primary palette — navy blue
+  static const Color primary = Color(0xFF1E3A8A);
+  static const Color primaryLight = Color(0xFF3B82F6);
+  static const Color primaryDark = Color(0xFF172554);
 
   // Accent — warm amber
   static const Color accent = Color(0xFFF59E0B);
@@ -27,7 +27,7 @@ class AppColors {
 
   // Task type colors
   static const Color typeWork = Color(0xFF3B82F6);
-  static const Color typePersonal = Color(0xFF8B5CF6);
+  static const Color typePersonal = Color(0xFF06B6D4);
   static const Color typeAcademic = Color(0xFF10B981);
   static const Color typeLeisure = Color(0xFFF97316);
 
@@ -257,6 +257,10 @@ class CustomTheme {
       // Filled Button
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
+          foregroundColor: colorScheme.onPrimary,
+          backgroundColor: colorScheme.primary,
+          disabledForegroundColor: colorScheme.onPrimary.withAlpha(180),
+          disabledBackgroundColor: colorScheme.primary.withAlpha(128),
           shape: RoundedRectangleBorder(
             borderRadius: AppRadius.buttonBorder,
           ),
@@ -264,7 +268,7 @@ class CustomTheme {
             horizontal: AppSpacing.xl,
             vertical: AppSpacing.md + 2,
           ),
-          textStyle: textTheme.labelLarge,
+          textStyle: textTheme.labelLarge?.copyWith(color: colorScheme.onPrimary),
           minimumSize: const Size(0, 48),
         ),
       ),

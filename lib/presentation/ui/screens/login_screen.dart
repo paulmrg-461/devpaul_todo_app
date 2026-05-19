@@ -96,8 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           SizedBox(
                             width: formWidth,
-                            child:
-                                _buildForm(context, textTheme, colorScheme),
+                            child: _buildForm(context, textTheme, colorScheme),
                           ),
                           const SizedBox(width: AppSpacing.giant * 2),
                           Expanded(
@@ -127,11 +126,13 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           Center(
             child: Container(
-              width: 72,
-              height: 72,
+              width: 84,
+              height: 84,
               decoration: BoxDecoration(
                 color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(AppRadius.lg),
+                image:
+                    DecorationImage(image: const AssetImage('assets/logo.png')),
                 boxShadow: [
                   BoxShadow(
                     color: colorScheme.primary.withAlpha(80),
@@ -140,15 +141,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-              child: Center(
-                child: Text(
-                  'D',
-                  style: textTheme.headlineLarge?.copyWith(
-                    color: colorScheme.onPrimary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
+              // child: Center(
+              //   child: Text(
+              //     'D',
+              //     style: textTheme.headlineLarge?.copyWith(
+              //       color: colorScheme.onPrimary,
+              //       fontWeight: FontWeight.w800,
+              //     ),
+              //   ),
+              // ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxl),
@@ -187,8 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
             onFieldSubmitted: (_) => _onLoginPressed(),
             decoration: InputDecoration(
               labelText: 'Password',
-              prefixIcon:
-                  const Icon(Icons.lock_outlined, size: 20),
+              prefixIcon: const Icon(Icons.lock_outlined, size: 20),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.visibility_outlined, size: 20),
                 onPressed: () {},
@@ -214,11 +214,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: Colors.white,
                           ),
                         )
-                      : const Icon(Icons.arrow_forward_rounded,
-                          size: 18),
-                  label: Text(
-                      isLoading ? 'Signing in...' : 'Sign in',
-                      style: textTheme.labelLarge),
+                      : const Icon(Icons.arrow_forward_rounded, size: 18),
+                  label: Text(isLoading ? 'Signing in...' : 'Sign in'),
                 ),
               );
             },
@@ -299,12 +296,10 @@ class _LoginScreenState extends State<LoginScreen> {
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: [
-                _featureChip(context, Icons.psychology_outlined,
-                    'AI Suggestions'),
                 _featureChip(
-                    context, Icons.people_outline, 'Team Projects'),
-                _featureChip(
-                    context, Icons.trending_up, 'Track Progress'),
+                    context, Icons.psychology_outlined, 'AI Suggestions'),
+                _featureChip(context, Icons.people_outline, 'Team Projects'),
+                _featureChip(context, Icons.trending_up, 'Track Progress'),
               ],
             ),
           ],

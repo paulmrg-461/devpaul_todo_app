@@ -19,15 +19,22 @@ class ProjectModel extends Project {
 
   factory ProjectModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final rawUserIds = List<String>.from(data['userIds'] ?? []);
+    final ownerId = data['ownerId'] as String?;
+
+    if (ownerId != null && ownerId.isNotEmpty && !rawUserIds.contains(ownerId)) {
+      rawUserIds.add(ownerId);
+    }
+
     return ProjectModel(
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
-      userIds: List<String>.from(data['userIds'] ?? []),
+      userIds: rawUserIds,
       taskIds: List<String>.from(data['taskIds'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: TaskStatus.values[data['status'] ?? 0],
-      ownerId: data['ownerId'],
+      ownerId: ownerId,
       groupId: data['groupId'],
       technology: data['technology'],
     );

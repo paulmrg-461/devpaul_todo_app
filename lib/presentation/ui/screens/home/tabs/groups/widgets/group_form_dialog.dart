@@ -1,6 +1,8 @@
 import 'package:devpaul_todo_app/config/themes/design_tokens.dart';
 import 'package:devpaul_todo_app/domain/entities/group_entity.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class GroupFormDialog extends StatefulWidget {
   final Group? group;
@@ -41,16 +43,27 @@ class _GroupFormDialogState extends State<GroupFormDialog> {
   void _save() {
     if (!_formKey.currentState!.validate()) return;
 
+    final userIds = List<String>.from(widget.group?.userIds ?? []);
+    String? ownerId = widget.group?.ownerId;
+
+    if (!isEditing) {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        ownerId = authState.user.uid;
+        if (!userIds.contains(ownerId)) {
+          userIds.add(ownerId);
+        }
+      }
+    }
+
     final group = Group(
       id: widget.group?.id ?? '',
       name: _nameCtrl.text.trim(),
       description: _descCtrl.text.trim(),
-      userIds: widget.group?.userIds ??
-          [],
-      projectIds: widget.group?.projectIds ??
-          [],
+      userIds: userIds,
+      projectIds: widget.group?.projectIds ?? [],
       createdAt: widget.group?.createdAt ?? DateTime.now(),
-      ownerId: widget.group?.ownerId,
+      ownerId: ownerId,
     );
 
     widget.onSave(group);

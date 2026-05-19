@@ -53,8 +53,15 @@ class ProjectDataSourceImpl implements ProjectDataSource {
 
   @override
   Future<String> createProject(Project project) async {
-    final docRef =
-        await _projectsCollection.add(ProjectModel.fromEntity(project).toMap());
+    final userIds = List<String>.from(project.userIds);
+    final currentUser = _auth.currentUser;
+    if (currentUser != null && !userIds.contains(currentUser.uid)) {
+      userIds.add(currentUser.uid);
+    }
+
+    final docRef = await _projectsCollection.add(
+      ProjectModel.fromEntity(project.copyWith(userIds: userIds)).toMap(),
+    );
     return docRef.id;
   }
 

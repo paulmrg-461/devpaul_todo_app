@@ -14,14 +14,21 @@ class GroupModel extends Group {
 
   factory GroupModel.fromSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    final rawUserIds = List<String>.from(data['userIds'] ?? []);
+    final ownerId = data['ownerId'] as String?;
+
+    if (ownerId != null && ownerId.isNotEmpty && !rawUserIds.contains(ownerId)) {
+      rawUserIds.add(ownerId);
+    }
+
     return GroupModel(
       id: doc.id,
       name: data['name'] ?? '',
       description: data['description'] ?? '',
-      userIds: List<String>.from(data['userIds'] ?? []),
+      userIds: rawUserIds,
       projectIds: List<String>.from(data['projectIds'] ?? []),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      ownerId: data['ownerId'],
+      ownerId: ownerId,
     );
   }
 

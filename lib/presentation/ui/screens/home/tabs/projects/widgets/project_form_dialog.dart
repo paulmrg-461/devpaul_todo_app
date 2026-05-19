@@ -2,6 +2,7 @@ import 'package:devpaul_todo_app/config/themes/design_tokens.dart';
 import 'package:devpaul_todo_app/domain/entities/group_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
+import 'package:devpaul_todo_app/presentation/blocs/auth_bloc/auth_bloc.dart';
 import 'package:devpaul_todo_app/presentation/blocs/group_bloc/group_bloc.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -54,17 +55,30 @@ class _ProjectFormDialogState extends State<ProjectFormDialog> {
   void _saveForm() {
     if (!_formKey.currentState!.validate()) return;
 
+    final userIds = List<String>.from(widget.project?.userIds ?? []);
+    String? ownerId = widget.project?.ownerId;
+
+    if (!isEditing) {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        ownerId = authState.user.uid;
+        if (!userIds.contains(ownerId)) {
+          userIds.add(ownerId);
+        }
+      }
+    }
+
     final projectToSave = Project(
       id: widget.project?.id ?? '',
       name: _nameController.text.trim(),
       description: _descriptionController.text.trim(),
       status: _selectedStatus,
-      userIds: widget.project?.userIds ?? [],
+      userIds: userIds,
       taskIds: widget.project?.taskIds ?? [],
       createdAt: widget.project?.createdAt ?? DateTime.now(),
       groupId: _selectedGroupId,
       technology: _selectedTechnology,
-      ownerId: widget.project?.ownerId,
+      ownerId: ownerId,
     );
 
     widget.onSave(projectToSave);

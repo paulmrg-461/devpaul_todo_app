@@ -42,7 +42,13 @@ class GroupDataSourceImpl implements GroupDataSource {
 
   @override
   Future<void> createGroup(Group group) async {
-    final model = GroupModel.fromEntity(group);
+    final userIds = List<String>.from(group.userIds);
+    final currentUser = auth.currentUser;
+    if (currentUser != null && !userIds.contains(currentUser.uid)) {
+      userIds.add(currentUser.uid);
+    }
+
+    final model = GroupModel.fromEntity(group.copyWith(userIds: userIds));
     await _collection.add(model.toMap());
   }
 
