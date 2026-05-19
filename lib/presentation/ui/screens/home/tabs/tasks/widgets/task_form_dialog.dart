@@ -15,9 +15,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TaskFormDialog extends StatefulWidget {
   final Task? task;
+  final String? initialProjectId;
   final Function(Task) onSave;
 
-  const TaskFormDialog({super.key, this.task, required this.onSave});
+  const TaskFormDialog({
+    super.key,
+    this.task,
+    this.initialProjectId,
+    required this.onSave,
+  });
 
   @override
   State<TaskFormDialog> createState() => _TaskFormDialogState();
@@ -71,7 +77,7 @@ class _TaskFormDialogState extends State<TaskFormDialog>
     _selectedPriority = widget.task?.priority ?? TaskPriority.medium;
     _selectedType = widget.task?.type ?? TaskType.work;
     _selectedStatus = widget.task?.status ?? TaskStatus.pending;
-    _selectedProjectId = widget.task?.projectId;
+    _selectedProjectId = widget.task?.projectId ?? widget.initialProjectId;
     _startDate = widget.task?.startDate ?? DateTime.now();
     _dueDate =
         widget.task?.dueDate ?? DateTime.now().add(const Duration(days: 1));

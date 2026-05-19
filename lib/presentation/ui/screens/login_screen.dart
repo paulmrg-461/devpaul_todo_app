@@ -141,15 +141,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-              // child: Center(
-              //   child: Text(
-              //     'D',
-              //     style: textTheme.headlineLarge?.copyWith(
-              //       color: colorScheme.onPrimary,
-              //       fontWeight: FontWeight.w800,
-              //     ),
-              //   ),
-              // ),
             ),
           ),
           const SizedBox(height: AppSpacing.xxl),

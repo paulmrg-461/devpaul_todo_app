@@ -47,7 +47,13 @@ class TaskDataSourceImpl implements TaskDataSource {
   Future<void> createTask(Task task) async {
     try {
       final model = TaskModel.fromEntity(task);
-      await _tasksCollection.add(model.toMap());
+      final docRef = await _tasksCollection.add(model.toMap());
+
+      if (task.projectId != null && task.projectId!.isNotEmpty) {
+        await _firestore.collection('projects').doc(task.projectId).update({
+          'taskIds': FieldValue.arrayUnion([docRef.id]),
+        });
+      }
     } catch (e) {
       throw Exception('Error al crear la tarea: $e');
     }

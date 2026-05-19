@@ -144,6 +144,7 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
       context: context,
       builder: (ctx) => TaskFormDialog(
         task: task,
+        initialProjectId: task?.projectId ?? widget.project.id,
         onSave: (saved) {
           final taskBloc = context.read<TaskBloc>();
           if (saved.id.isEmpty) {
