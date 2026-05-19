@@ -103,6 +103,11 @@ class SideMenu extends StatelessWidget {
           label: Text('Projects'),
           selectedIcon: Icon(Icons.assignment),
         ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.analytics_outlined),
+          label: Text('Metrics'),
+          selectedIcon: Icon(Icons.analytics),
+        ),
         if (isAdmin)
           const NavigationDrawerDestination(
             icon: Icon(Icons.people_outline_rounded),

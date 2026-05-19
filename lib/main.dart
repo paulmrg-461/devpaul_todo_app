@@ -125,6 +125,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => di.sl<UserBloc>()),
         BlocProvider(create: (context) => di.sl<ThemeBloc>()),
         BlocProvider(create: (context) => di.sl<TaskBloc>()),
+        BlocProvider(create: (context) => di.sl<MetricsBloc>()),
         BlocProvider(create: (context) => di.sl<AiSuggestionBloc>()),
         BlocProvider(create: (context) => di.sl<ProjectBloc>()),
         BlocProvider(create: (context) => di.sl<GroupBloc>()),

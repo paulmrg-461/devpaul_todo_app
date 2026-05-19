@@ -11,10 +11,9 @@ class BottomBarItem {
     required this.icon,
     required this.widget,
   });
-
-  NavigationDestination get navigationDestination =>
-      NavigationDestination(icon: Icon(icon), label: label);
 }
+
+// ─── Bottom bar (compact – mobile only, max 4) ────────────────────
 
 List<BottomBarItem> getBottombarListAdmin() => const [
       BottomBarItem(
@@ -33,14 +32,9 @@ List<BottomBarItem> getBottombarListAdmin() => const [
         widget: ProjectManagementTab(),
       ),
       BottomBarItem(
-        label: 'Users',
-        icon: Icons.people_outline_rounded,
-        widget: OperatorsTab(),
-      ),
-      BottomBarItem(
-        label: 'Profile',
-        icon: Icons.person_outline_rounded,
-        widget: ProfileTab(),
+        label: 'Metrics',
+        icon: Icons.analytics_outlined,
+        widget: MetricsTab(),
       ),
     ];
 
@@ -59,6 +53,69 @@ List<BottomBarItem> getBottombarList() => const [
         label: 'Projects',
         icon: Icons.assignment_outlined,
         widget: ProjectManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Metrics',
+        icon: Icons.analytics_outlined,
+        widget: MetricsTab(),
+      ),
+    ];
+
+// ─── Drawer / Side-menu (full list – all sections) ───────────────
+
+List<BottomBarItem> getDrawerItemsAdmin() => const [
+      BottomBarItem(
+        label: 'Tasks',
+        icon: Icons.checklist_outlined,
+        widget: TaskManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Groups',
+        icon: Icons.folder_rounded,
+        widget: GroupManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Projects',
+        icon: Icons.assignment_outlined,
+        widget: ProjectManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Metrics',
+        icon: Icons.analytics_outlined,
+        widget: MetricsTab(),
+      ),
+      BottomBarItem(
+        label: 'Users',
+        icon: Icons.people_outline_rounded,
+        widget: OperatorsTab(),
+      ),
+      BottomBarItem(
+        label: 'Profile',
+        icon: Icons.person_outline_rounded,
+        widget: ProfileTab(),
+      ),
+    ];
+
+List<BottomBarItem> getDrawerItems() => const [
+      BottomBarItem(
+        label: 'Tasks',
+        icon: Icons.checklist_outlined,
+        widget: TaskManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Groups',
+        icon: Icons.folder_rounded,
+        widget: GroupManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Projects',
+        icon: Icons.assignment_outlined,
+        widget: ProjectManagementTab(),
+      ),
+      BottomBarItem(
+        label: 'Metrics',
+        icon: Icons.analytics_outlined,
+        widget: MetricsTab(),
       ),
       BottomBarItem(
         label: 'Profile',

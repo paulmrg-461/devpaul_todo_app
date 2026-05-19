@@ -18,7 +18,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int currentPageIndex = 0;
+  int _bottomBarIndex = 0;
+  int _bodyIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,10 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     width: 280,
                     child: SideMenu(
-                      selectedIndex: currentPageIndex,
+                      selectedIndex: _bodyIndex,
                       onDestinationSelected: (index) {
                         setState(() {
-                          currentPageIndex = index;
+                          _bodyIndex = index;
                         });
                       },
                       onAboutTap: () =>
@@ -63,6 +64,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
           final bottomBarItems =
               isAdmin ? getBottombarListAdmin() : getBottombarList();
+          final drawerItems =
+              isAdmin ? getDrawerItemsAdmin() : getDrawerItems();
 
           return Scaffold(
             appBar: AppBar(
@@ -73,16 +76,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 context,
                 state.user,
                 isAdmin,
+                drawerItems,
               ),
             ),
-            body: bottomBarItems[currentPageIndex].widget,
+            body: _getSelectedScreen(isAdmin),
             bottomNavigationBar: NavigationBar(
               onDestinationSelected: (int index) {
                 setState(() {
-                  currentPageIndex = index;
+                  _bottomBarIndex = index;
+                  _bodyIndex = index;
                 });
               },
-              selectedIndex: currentPageIndex,
+              selectedIndex: _bottomBarIndex,
               destinations: bottomBarItems
                   .map(
                     (e) => NavigationDestination(
@@ -105,15 +110,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _getSelectedScreen(bool isAdmin) {
-    final screens = isAdmin ? getBottombarListAdmin() : getBottombarList();
-    return screens[currentPageIndex].widget;
+    final drawerItems =
+        isAdmin ? getDrawerItemsAdmin() : getDrawerItems();
+    return drawerItems[_bodyIndex].widget;
   }
 
   Widget _buildDrawerContent(
     BuildContext context,
     User user,
     bool isAdmin,
+    List<BottomBarItem> drawerItems,
   ) {
+    final bottomBarItems =
+        isAdmin ? getBottombarListAdmin() : getBottombarList();
+
     return ListView(
       padding: EdgeInsets.zero,
       children: [
@@ -152,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        ..._buildDrawerItems(context, isAdmin),
+        ..._buildDrawerItems(context, isAdmin, drawerItems, bottomBarItems),
         const Divider(),
         BlocBuilder<ThemeBloc, ThemeState>(
           builder: (context, state) {
@@ -184,19 +194,24 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Widget> _buildDrawerItems(BuildContext context, bool isAdmin) {
-    final bottomBarItems =
-        isAdmin ? getBottombarListAdmin() : getBottombarList();
-
-    return List.generate(bottomBarItems.length, (index) {
-      final item = bottomBarItems[index];
+  List<Widget> _buildDrawerItems(
+    BuildContext context,
+    bool isAdmin,
+    List<BottomBarItem> drawerItems,
+    List<BottomBarItem> bottomBarItems,
+  ) {
+    return List.generate(drawerItems.length, (index) {
+      final item = drawerItems[index];
       return ListTile(
         leading: Icon(item.icon),
         title: Text(item.label),
-        selected: currentPageIndex == index,
+        selected: _bodyIndex == index,
         onTap: () {
           setState(() {
-            currentPageIndex = index;
+            _bodyIndex = index;
+            if (index < bottomBarItems.length) {
+              _bottomBarIndex = index;
+            }
           });
           Navigator.pop(context);
         },

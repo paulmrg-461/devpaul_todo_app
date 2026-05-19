@@ -1,7 +1,7 @@
 name: devpaul_todo_app
 description: "DevPaul ToDo - ToDo App + AI Assistant"
 
-version: 1.1.17+19
+version: 1.2.17+26
 
 environment:
   sdk: ^3.5.0-323.2.beta
