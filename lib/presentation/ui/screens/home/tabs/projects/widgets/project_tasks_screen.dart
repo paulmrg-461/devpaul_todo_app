@@ -2,6 +2,7 @@ import 'package:devpaul_todo_app/config/themes/design_tokens.dart';
 import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
+import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/projects/widgets/project_metrics_screen.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_card.dart';
 import 'package:devpaul_todo_app/presentation/ui/screens/home/tabs/tasks/widgets/task_form_dialog.dart';
 import 'package:devpaul_todo_app/presentation/ui/widgets/animations.dart';
@@ -33,6 +34,21 @@ class _ProjectTasksScreenState extends State<ProjectTasksScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.project.name),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ProjectMetricsScreen(
+                      project: widget.project),
+                ),
+              );
+            },
+            icon: const Icon(Icons.analytics_outlined),
+            tooltip: 'Project metrics',
+          ),
+        ],
       ),
       body: BlocBuilder<TaskBloc, TaskState>(
         builder: (context, state) {
