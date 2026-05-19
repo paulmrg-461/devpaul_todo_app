@@ -1,4 +1,9 @@
+import 'dart:async';
+
+import 'package:devpaul_todo_app/config/themes/custom_theme.dart';
 import 'package:devpaul_todo_app/config/themes/design_tokens.dart';
+import 'package:devpaul_todo_app/core/service_locator.dart';
+import 'package:devpaul_todo_app/core/speech/speech_service.dart';
 import 'package:devpaul_todo_app/domain/entities/project_entity.dart';
 import 'package:devpaul_todo_app/domain/entities/task_entity.dart';
 import 'package:devpaul_todo_app/presentation/blocs/ai_suggestion_bloc/ai_suggestion_bloc.dart';
@@ -7,7 +12,6 @@ import 'package:devpaul_todo_app/presentation/ui/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:devpaul_todo_app/core/validators/input_validators.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:devpaul_todo_app/presentation/blocs/task_bloc/task_bloc.dart';
 
 class TaskFormDialog extends StatefulWidget {
   final Task? task;
@@ -19,7 +23,8 @@ class TaskFormDialog extends StatefulWidget {
   State<TaskFormDialog> createState() => _TaskFormDialogState();
 }
 
-class _TaskFormDialogState extends State<TaskFormDialog> {
+class _TaskFormDialogState extends State<TaskFormDialog>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
@@ -34,6 +39,14 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
   DateTime? _startDate;
   DateTime? _dueDate;
   bool _isImprovingDescription = false;
+
+  final SpeechService _speechService = sl<SpeechService>();
+  bool _isSttListening = false;
+  String _sttError = '';
+  bool _sttAvailable = true;
+  StreamSubscription<SttStatus>? _sttSubscription;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   bool get isEditing => widget.task != null;
 
@@ -66,9 +79,48 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     _nameController.addListener(_onTextChanged);
     _descriptionController.addListener(_onTextChanged);
 
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
+    _pulseAnimation = Tween<double>(begin: 0.6, end: 1.0).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
+
+    _sttSubscription = _speechService.statusStream.listen((status) {
+      if (!mounted) return;
+      switch (status) {
+        case SttStatus.idle:
+          setState(() {
+            _isSttListening = false;
+            _sttError = '';
+          });
+          break;
+        case SttStatus.listening:
+          setState(() {
+            _isSttListening = true;
+            _sttError = '';
+          });
+          break;
+        case SttStatus.error:
+          setState(() {
+            _isSttListening = false;
+            _sttError = 'Speech recognition error. Check microphone permissions.';
+          });
+          break;
+        case SttStatus.unavailable:
+          setState(() {
+            _isSttListening = false;
+            _sttAvailable = false;
+          });
+          break;
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<ProjectBloc>().add(const GetProjectsEvent());
+        _speechService.initialize();
       }
     });
   }
@@ -102,6 +154,49 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     );
 
     widget.onSave(task);
+  }
+
+  Future<void> _startDictation() async {
+    if (!_speechService.isAvailable) {
+      setState(() => _sttAvailable = false);
+      return;
+    }
+
+    setState(() {
+      _isSttListening = true;
+      _sttError = '';
+    });
+
+    try {
+      final ok = await _speechService.startListening(
+        onResult: (text) {
+          if (!mounted) return;
+          if (text.isNotEmpty) {
+            final current = _descriptionController.text;
+            final separator = current.isEmpty ? '' : ' ';
+            _descriptionController.text = '$current$separator$text';
+            _descriptionController.selection = TextSelection.fromPosition(
+              TextPosition(offset: _descriptionController.text.length),
+            );
+          }
+        },
+      );
+
+      if (!ok && mounted) {
+        setState(() => _isSttListening = false);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isSttListening = false;
+        _sttError = 'Speech recognition failed';
+      });
+    }
+  }
+
+  void _stopDictation() {
+    _speechService.stopListening();
+    setState(() => _isSttListening = false);
   }
 
   @override
@@ -161,9 +256,7 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                     validator: (value) => InputValidator.emptyValidator(
                         value: value, minCharacters: 3),
                   ),
-                  _buildAiImproveButton(context),
-                  // const Divider(),
-                  // const SizedBox(height: AppSpacing.md),
+                  _buildActionButtons(context),
                   _buildProjectSelector(context),
                   CustomDropdownPriority(
                     labelText: 'Priority',
@@ -175,7 +268,6 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
                       setState(() => _selectedPriority = priority!);
                     },
                   ),
-
                   CustomDateTimePicker(
                     hintText: 'Start date',
                     initialDateTime: _startDate,
@@ -237,47 +329,128 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     );
   }
 
-  Widget _buildAiImproveButton(BuildContext context) {
+  Widget _buildActionButtons(BuildContext context) {
     final name = _nameController.text.trim();
     final description = _descriptionController.text.trim();
-    if (name.isEmpty && description.isEmpty) return const SizedBox.shrink();
-
-    final hasMinContent = name.length + description.length >= 10;
+    final hasAiContent = name.length + description.length >= 10;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.md),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: _isImprovingDescription
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : TextButton.icon(
-                onPressed: () {
-                  if (!hasMinContent) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                            'Escribe al menos 10 caracteres entre nombre y descripción para mejorar con IA'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                    return;
-                  }
-                  setState(() => _isImprovingDescription = true);
-                  context
-                      .read<AiSuggestionBloc>()
-                      .add(ImproveTaskEvent(name, description));
-                },
-                icon: const Icon(Icons.auto_awesome, size: 16),
-                label: const Text('Mejorar con IA'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Theme.of(context).colorScheme.primary,
-                  textStyle: Theme.of(context).textTheme.labelSmall,
-                ),
+      child: Row(
+        children: [
+          _buildSttButton(context),
+          const Spacer(),
+          if (_isImprovingDescription)
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          else if (hasAiContent)
+            TextButton.icon(
+              onPressed: () {
+                setState(() => _isImprovingDescription = true);
+                context
+                    .read<AiSuggestionBloc>()
+                    .add(ImproveTaskEvent(name, description));
+              },
+              icon: const Icon(Icons.auto_awesome, size: 16),
+              label: const Text('Mejorar con IA'),
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                textStyle: Theme.of(context).textTheme.labelSmall,
               ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSttButton(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    if (!_sttAvailable) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.mic_off, size: 16, color: colorScheme.onSurfaceVariant),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                'Speech not available on this device',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_sttError.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.mic_off, size: 16, color: colorScheme.error),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                _sttError,
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: colorScheme.error,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_isSttListening) {
+      return AnimatedBuilder(
+        animation: _pulseAnimation,
+        builder: (context, child) {
+          return TextButton.icon(
+            onPressed: _stopDictation,
+            icon: Transform.scale(
+              scale: _pulseAnimation.value,
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.priorityHigh.withAlpha(40),
+                ),
+                child: const Icon(Icons.mic, size: 16, color: AppColors.priorityHigh),
+              ),
+            ),
+            label: const Text('Listening...',
+                style: TextStyle(color: AppColors.priorityHigh)),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.priorityHigh,
+              textStyle: Theme.of(context).textTheme.labelSmall,
+            ),
+          );
+        },
+      );
+    }
+
+    return TextButton.icon(
+      onPressed: _startDictation,
+      icon: const Icon(Icons.mic_outlined, size: 16),
+      label: const Text('Dictate'),
+      style: TextButton.styleFrom(
+        foregroundColor: colorScheme.onSurfaceVariant,
+        textStyle: Theme.of(context).textTheme.labelSmall,
       ),
     );
   }
@@ -421,6 +594,8 @@ class _TaskFormDialogState extends State<TaskFormDialog> {
     _descriptionController.dispose();
     _startDateController.dispose();
     _dueDateController.dispose();
+    _pulseController.dispose();
+    _sttSubscription?.cancel();
     super.dispose();
   }
 }

@@ -10,6 +10,7 @@ import 'package:devpaul_todo_app/data/datasources/data_datasources.dart';
 import 'package:devpaul_todo_app/data/repositories/data_repositories.dart';
 import 'package:devpaul_todo_app/presentation/blocs/blocs.dart';
 import 'package:devpaul_todo_app/core/notifications/notification_service.dart';
+import 'package:devpaul_todo_app/core/speech/speech_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final sl = GetIt.instance;
@@ -215,4 +216,6 @@ Future<void> init() async {
       localNotifications: sl<FlutterLocalNotificationsPlugin>(),
     ),
   );
+
+  sl.registerLazySingleton<SpeechService>(() => SpeechService());
 }
